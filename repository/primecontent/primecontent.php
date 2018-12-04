@@ -300,10 +300,13 @@ class primecontent {
                                                 $title = $page->title;
                                                 $title .= '.mp4';
                                                 
+                                                $isMedia = ($page->isMedia) ? 1 : 0;
+                                                $resourceType = ($page->resourceType) ? $page->resourceType : '';
+                                                $cType = ($page->cType) ? $page->cType : '';
                                                 if (strpos($page->thumbnail, '?'))
-                                                    $thumbnail = $page->thumbnail . '&resourceId=' . $page->id;
+                                                    $thumbnail = $page->thumbnail . '&resourceId=' . $page->id . '@@' . $resourceType . '@@' . $isMedia . '@@' . $cType;
                                                 else
-                                                    $thumbnail = $page->thumbnail . '?resourceId=' . $page->id;
+                                                    $thumbnail = $page->thumbnail . '?resourceId=' . $page->id . '@@' . $resourceType . '@@' . $isMedia . '@@' . $cType;
                                                 $files_array[] = array(
                                                     'title'=>$title,
                                                     'thumbnail' => $page->thumbnail,
@@ -341,7 +344,7 @@ class primecontent {
                     $form['allowcaching'] = false; // indicates that login form can NOT
                     // be cached in filepicker.js (maxwidth and maxheight are dynamic)
                     return $form;
-                } else {
+                }/* else {
                     echo <<<EOD
 <table>
 <tr>
@@ -350,9 +353,9 @@ class primecontent {
 </table>
 <input type="submit" />
 EOD;
-                }
+                }*/
             }
-            return;
+            return $files_array;
         } else {
             $params = 'searchKey=' . $keyword;
             if (!empty($boardCode)) {
@@ -385,10 +388,11 @@ EOD;
                     $title = $page->topicName;
                     $title .= '.mp4';
                     
+                    $isMedia = ($page->isMedia) ? 1 : 0;
                     if (strpos($page->thumbnail, '?'))
-                        $thumbnail = $page->thumbnail . '&resourceId=' . $page->resourceLanguages[0]->resourceId;
+                        $thumbnail = $page->thumbnail . '&resourceId=' . $page->resourceLanguages[0]->resourceId . '@@' . $page->mediaType . '@@' . $isMedia . '@@' . $page->cType;
                     else
-                        $thumbnail = $page->thumbnail . '?resourceId=' . $page->resourceLanguages[0]->resourceId;
+                        $thumbnail = $page->thumbnail . '?resourceId=' . $page->resourceLanguages[0]->resourceId . '@@' . $page->mediaType . '@@' . $isMedia . '@@' . $page->cType;
                     $files_array[] = array(
                         'title'=>$title,         //chop off 'File:'
                         'thumbnail' => $page->thumbnail,

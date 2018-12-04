@@ -78,8 +78,13 @@ class media_primeplayer_plugin extends core_media_player {
                         $parts = parse_url($fileData->source);
                         parse_str($parts['query'], $query);
                     }
+                    
                     if (!empty($query['resourceId'])) {
-                        $resourceId = $query['resourceId'];
+                        $res = explode('@@', $query['resourceId']);
+                        $resourceId = $res[0];
+                        $mediaType = $res[1];
+                        $isMedia = $res[2];
+                        $cType = $res[3];
                         $conn = new curl(array('cache'=>true, 'debug'=>false));
 
                         $api_path = PRIME_URL . "/resource/url?resourceId=$resourceId&product=prime&tagKey=null";
@@ -96,8 +101,15 @@ class media_primeplayer_plugin extends core_media_player {
                         if (empty($result->error) && !empty($result->response)) {
                             $cdnPath = $result->response->cdnPath;
                             $path = $cdnPath;
-                            $urls = array();
-                            $urls[] = new moodle_url($path);
+
+                            if ($isMedia || $mediaType == 'MP4' || $mediaType == 'AVI' || $mediaType == 'FLV' || $cType == '3d') {
+                                $urls = array();
+                                $urls[] = new moodle_url($path);
+                            } else {
+                                $iFrame = "<iframe height='600' width='900' src='" . $path . "'></iframe>";
+                                return $iFrame;
+
+                            }
                         }
                     }
                 }
