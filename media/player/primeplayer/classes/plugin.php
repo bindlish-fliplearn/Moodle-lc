@@ -62,10 +62,10 @@ class media_primeplayer_plugin extends core_media_player {
                 $chunks = array_reverse(explode('/', $source));
 
                 if (!empty($chunks)) {
-                    $filename = $chunks[0];
-                    $filearea = $chunks[2];
-                    $component = $chunks[3];
-                    $contextid = $chunks[4];
+                    $filename = (isset($chunks[0]) && !empty($chunks[0])) ? $chunks[0] : '';
+                    $filearea = (isset($chunks[2]) && !empty($chunks[2])) ? $chunks[2] : '';
+                    $component = (isset($chunks[3]) && !empty($chunks[3])) ? $chunks[3] : '';
+                    $contextid = (isset($chunks[4]) && !empty($chunks[4])) ? $chunks[4] : '';
                     if (!empty($filename) && !empty($filearea) && !empty($component) && !empty($contextid)) {
                         $condition['filename'] = $filename;
                         $condition['filearea'] = $filearea;
@@ -81,10 +81,10 @@ class media_primeplayer_plugin extends core_media_player {
                     
                     if (!empty($query['resourceId'])) {
                         $res = explode('@@', $query['resourceId']);
-                        $resourceId = $res[0];
-                        $mediaType = $res[1];
-                        $isMedia = $res[2];
-                        $cType = $res[3];
+                        $resourceId = (isset($res[0]) && !empty($res[0])) ? $res[0] : '';
+                        $mediaType = (isset($res[1]) && !empty($res[1])) ? $res[1] : '';
+                        $isMedia = (isset($res[2]) && !empty($res[2])) ? $res[2] : '';
+                        $cType = (isset($res[3]) && !empty($res[3])) ? $res[3] : '';
                         $conn = new curl(array('cache'=>true, 'debug'=>false));
 
                         $api_path = PRIME_URL . "/resource/url?resourceId=$resourceId&product=prime&tagKey=null";
