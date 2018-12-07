@@ -55,12 +55,12 @@ function offlinequiz_get_question_infostring($offlinequiz, $question) {
 
 function offlinequiz_get_questioninfo($offlinequiz, $question) {
     if ($offlinequiz->showquestioninfo == OFFLINEQUIZ_QUESTIONINFO_QTYPE) {
-        if ($question->qtype == 'multichoice') {
+        if ($question->qtype == 'primetype') {
 
             if ($question->options->single) {
                 $questioninfo = get_string('singlechoice', 'offlinequiz');
             } else {
-                $questioninfo = get_string('multichoice', 'offlinequiz');
+                $questioninfo = get_string('primetype', 'offlinequiz');
             }
         } else if ($question->qtype == 'multichoiceset') {
             $questioninfo = get_string('allornothing', 'offlinequiz');

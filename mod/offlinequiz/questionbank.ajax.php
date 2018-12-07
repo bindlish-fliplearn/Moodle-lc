@@ -34,6 +34,7 @@ require_once($CFG->dirroot . '/question/editlib.php');
 
 list($thispageurl, $contexts, $cmid, $cm, $offlinequiz, $pagevars)
      = question_edit_setup('editq', '/mod/offlinequiz/edit.php', true);
+// echo "<pre>";print_r($contexts);die('ewry');
 
 // Get the course object and related bits.
 $course = $DB->get_record('course', array('id' => $offlinequiz->course), '*', MUST_EXIST);
@@ -61,7 +62,6 @@ if ($offlinequizgroup = offlinequiz_get_group($offlinequiz, $groupnumber)) {
 } else {
     print_error('invalidgroupnumber', 'offlinequiz');
 }
-
 // Create offlinequiz question bank view.
 $questionbank = new mod_offlinequiz\question\bank\custom_view($contexts, $thispageurl, $course, $cm, $offlinequiz);
 $questionbank->set_offlinequiz_has_scanned_pages(offlinequiz_has_scanned_pages($offlinequiz->id));
@@ -69,6 +69,7 @@ $questionbank->set_offlinequiz_has_scanned_pages(offlinequiz_has_scanned_pages($
 // Output.
 $output = $PAGE->get_renderer('mod_offlinequiz', 'edit');
 $contents = $output->question_bank_contents($questionbank, $pagevars);
+// print_r($output);die;
 echo json_encode(array(
     'status'   => 'OK',
     'contents' => $contents,

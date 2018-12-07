@@ -435,29 +435,29 @@ function offlinequiz_submit_scanned_page($offlinequiz, $scannedpage, $choicesdat
             // Check what the scanner recognised.
             if ($choicesdata[$slot][$key]->value == 1) {
                 // Also fill the response array s.t. we can grade later if possible.
-                if ($slotquestion instanceof qtype_multichoice_single_question) {
+                if ($slotquestion instanceof qtype_primetype_single_question) {
                     $response['answer'] = $key;
                     // In case of singlechoice we count the crosses.
                     // If more than 1 cross have been made, we don't submit the response.
                     $count++;
-                } else if ($slotquestion instanceof qtype_multichoice_multi_question) {
+                } else if ($slotquestion instanceof qtype_primetype_multi_question) {
                     $response['choice' . $key] = 1;
                 }
             } else if ($choicesdata[$slot][$key]->value == 0) {
-                if ($slotquestion instanceof qtype_multichoice_multi_question) {
+                if ($slotquestion instanceof qtype_primetype_multi_question) {
                     $response['choice' . $key] = 0;
                 }
             }
         }
 
         // We can submit the response and finish the attempt for this question.
-        if ($slotquestion instanceof qtype_multichoice_single_question) {
+        if ($slotquestion instanceof qtype_primetype_single_question) {
             // We only submit the response of at most 1 cross has been made.
             if ($count <= 1) {
                 $quba->process_action($slot, $response);
                 $quba->finish_question($slot, time());
             }
-        } else if ($slotquestion instanceof qtype_multichoice_multi_question) {
+        } else if ($slotquestion instanceof qtype_primetype_multi_question) {
             $quba->process_action($slot, $response);
             $quba->finish_question($slot, time());
         }

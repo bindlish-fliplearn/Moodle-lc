@@ -587,7 +587,7 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
             $html = '';
 
             $html .= $questiontext . '<br/><br/>';
-            if ($question->qtype == 'multichoice' || $question->qtype == 'multichoiceset') {
+            if ($question->qtype == 'primetype' || $question->qtype == 'multichoiceset') {
 
                 // There is only a slot for multichoice questions.
                 $attempt = $templateusage->get_question_attempt($slot);
@@ -643,7 +643,7 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
                 $html = preg_replace("/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/ms", "", $html);
             }
             // Finally print the question number and the HTML string.
-            if ($question->qtype == 'multichoice' || $question->qtype == 'multichoiceset') {
+            if ($question->qtype == 'primetype' || $question->qtype == 'multichoiceset') {
                 $pdf->SetFont('FreeSans', 'B', $offlinequiz->fontsize);
                 $pdf->Cell(4, round($offlinequiz->fontsize / 2), "$number)  ", 0, 0, 'R');
                 $pdf->SetFont('FreeSans', '', $offlinequiz->fontsize);
@@ -658,7 +658,7 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
                 $pdf->Ln(14);
 
                 // Print the question number and the HTML string again on the new page.
-                if ($question->qtype == 'multichoice' || $question->qtype == 'multichoiceset') {
+                if ($question->qtype == 'primetype' || $question->qtype == 'multichoiceset') {
                     $pdf->SetFont('FreeSans', 'B', $offlinequiz->fontsize);
                     $pdf->Cell(4, round($offlinequiz->fontsize / 2), "$number)  ", 0, 0, 'R');
                     $pdf->SetFont('FreeSans', '', $offlinequiz->fontsize);
@@ -725,7 +725,7 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
             $html = '';
 
             $html .= $questiontext . '<br/><br/>';
-            if ($question->qtype == 'multichoice' || $question->qtype == 'multichoiceset') {
+            if ($question->qtype == 'primetype' || $question->qtype == 'multichoiceset') {
 
                 $slot = $questionslots[$currentquestionid];
 
@@ -777,7 +777,7 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
             }
 
             // Finally print the question number and the HTML string.
-            if ($question->qtype == 'multichoice' || $question->qtype == 'multichoiceset') {
+            if ($question->qtype == 'primetype' || $question->qtype == 'multichoiceset') {
                 $pdf->SetFont ( 'FreeSans', 'B', $offlinequiz->fontsize );
                 $pdf->Cell ( 4, round ( $offlinequiz->fontsize / 2 ), "$number)  ", 0, 0, 'R' );
                 $pdf->SetFont ( 'FreeSans', '', $offlinequiz->fontsize );
@@ -799,7 +799,7 @@ function offlinequiz_create_pdf_question(question_usage_by_activity $templateusa
                 $pdf->Ln ( 14 );
 
                 // Print the question number and the HTML string again on the new page.
-                if ($question->qtype == 'multichoice' || $question->qtype == 'multichoiceset') {
+                if ($question->qtype == 'primetype' || $question->qtype == 'multichoiceset') {
                     $pdf->SetFont ( 'FreeSans', 'B', $offlinequiz->fontsize );
                     $pdf->Cell ( 4, round ( $offlinequiz->fontsize / 2 ), "$number)  ", 0, 0, 'R' );
                     $pdf->SetFont ( 'FreeSans', '', $offlinequiz->fontsize );
@@ -928,7 +928,7 @@ function offlinequiz_create_pdf_answer($maxanswers, $templateusage, $offlinequiz
     }
 
     // Counting the total number of multichoice questions in the question usage.
-    $totalnumber = offlinequiz_count_multichoice_questions($templateusage);
+    $totalnumber = offlinequiz_count_primetype_questions($templateusage);
 
     $number = 0;
     $col = 1;
@@ -950,7 +950,7 @@ function offlinequiz_create_pdf_answer($maxanswers, $templateusage, $offlinequiz
         $question = $questions[$currentquestionid];
 
         // Only look at multichoice questions.
-        if ($question->qtype != 'multichoice' && $question->qtype != 'multichoiceset') {
+        if ($question->qtype != 'primetype' && $question->qtype != 'multichoiceset') {
             continue;
         }
 

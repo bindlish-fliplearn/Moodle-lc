@@ -87,7 +87,7 @@ class offlinequiz_question_usage_by_activity extends question_usage_by_activity 
 
             // We have to check for the type because we might have old migrated templates
             // that could contain description questions.
-            if ($slotquestion->get_type_name() == 'multichoice' || $slotquestion->get_type_name() == 'multichoiceset') {
+            if ($slotquestion->get_type_name() == 'primetype' || $slotquestion->get_type_name() == 'multichoiceset') {
                 $order = $slotquestion->get_order($attempt);  // Order of the answers.
                 $order = implode(',', $order);
                 $newslot = $newquba->add_question($slotquestion, $qinstances[$slotquestion->id]->maxmark);
@@ -930,12 +930,12 @@ function offlinequiz_number_of_pages($layout) {
  * @param question_usage_by_activity $questionusage
  * @return number
  */
-function offlinequiz_count_multichoice_questions(question_usage_by_activity $questionusage) {
+function offlinequiz_count_primetype_questions(question_usage_by_activity $questionusage) {
     $count = 0;
     $slots = $questionusage->get_slots();
     foreach ($slots as $slot) {
         $question = $questionusage->get_question($slot);
-        if ($question->qtype->name() == 'multichoice' || $question->qtype->name() == 'multichoiceset') {
+        if ($question->qtype->name() == 'primetype' || $question->qtype->name() == 'multichoiceset') {
             $count++;
         }
     }
@@ -1408,7 +1408,7 @@ function offlinequiz_get_group_template_usage($offlinequiz, $group, $context) {
                 $question = question_bank::make_question($questiondata[$questionid]);
 
                 // We only add multichoice questions which are needed for grading.
-                if ($question->get_type_name() == 'multichoice' || $question->get_type_name() == 'multichoiceset') {
+                if ($question->get_type_name() == 'primetype' || $question->get_type_name() == 'multichoiceset') {
                     $templateusage->add_question($question, $groupquestions[$question->id]->maxmark);
                 }
             }
@@ -2199,7 +2199,7 @@ function offlinequiz_add_random_questions($offlinequiz, $offlinegroup, $category
              WHERE q.category $qcsql
                AND q.parent = 0
                AND q.hidden = 0
-               AND q.qtype IN ('multichoice', 'multichoiceset') ";
+               AND q.qtype IN ('primetype', 'multichoiceset') ";
     if (!$preventsamequestion) {
         // Find all questions in the selected categories that are not in the offline group yet.
         $sql .= "AND NOT EXISTS (SELECT 1
