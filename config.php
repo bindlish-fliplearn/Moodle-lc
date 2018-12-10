@@ -18,6 +18,7 @@ $CFG->dboptions = array (
   'dbcollation' => 'utf8mb4_unicode_ci',
 );
 
+$CFG->customscripts = '/var/www/html/flip-moodleguru/customscript';
 $CFG->wwwroot   = 'http://localhost/flip_moodlelc';
 $CFG->dataroot  = '/var/www/moodledata_lc';
 $CFG->admin     = 'admin';
