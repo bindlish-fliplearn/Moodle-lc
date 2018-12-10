@@ -41,12 +41,7 @@ class primecontent {
     }
     
     public function primContentLogin($keyword = '') {
-        //$this->_param['action']   = 'login';
-        // $param['loginId']   = $loginId;
-        // $param['password'] = $pass;
-        // $param['platform'] = "web";
-        // $data["login"] = $param;
-
+        
         global $DB;
         $query = array();
         $files_array = array();
