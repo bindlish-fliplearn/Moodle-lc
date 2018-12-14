@@ -30,7 +30,7 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
     
   }
   
-  public function user_login() {
+  public function user_login($username, $password) {
     
   }
   
@@ -321,6 +321,18 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
       $user->username = $user->email;
     }
 
+    if (isset($userinfo->uuid) && !empty($userinfo->uuid)) {
+      $userMapping = '';
+      $mappedUsername = '';
+      $uuid = $userinfo->uuid;
+      $userMapping = $DB->get_record('guru_user_mapping', array('uuid' => $uuid), 'user_id');
+      if (!empty($userMapping)) {
+        $mappedUsername = $DB->get_record('user', array('id' => $userMapping), 'username');
+        if (!empty($mappedUsername)) {
+          $user->username = $mappedUsername;
+        }
+      }
+    }
 
     return (array) $user;
   }
