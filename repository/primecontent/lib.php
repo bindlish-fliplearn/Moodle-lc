@@ -246,6 +246,25 @@ EOD;
         return false;
     }
     public function search($search_text, $page = 0) {
+        global $SESSION;
+        if (isset($SESSION->isPrimeUser)) {
+            // print_r($SESSION);die('sff');
+            if (!$SESSION->isPrimeUser) {
+                $keyObj = new stdClass();
+                $keyObj->label = "You are not subscribed to Prime.";
+                // $keyObj->id    = 'input_text_keyword';
+                // $keyObj->type  = 'text';
+                // $keyObj->name  = 'primecontent_keyword';
+                // $keyObj->value = '';
+                $msg = array();
+                $msg['login'] = array($keyObj);
+                print_error(UNSUBSCRIBE_MSG);
+                return;
+            }
+        } else {    
+            print_error(UNSUBSCRIBE_MSG);
+            return ;
+        }
         $client = new primecontent;
         $search_result = array();
         $search_result['list'] = $client->primContentLogin($search_text);

@@ -52,8 +52,8 @@ class media_primeplayer_plugin extends core_media_player {
         //Added by Jatin
         //Check prime license & session Token
         global $SESSION, $USER, $DB, $CFG;
+        $userInfo = $DB->get_record('guru_user_mapping', array('user_id' => $USER->id), '*');
         if (!isset($SESSION->isPrimeUser)) {
-            $userInfo = $DB->get_record('guru_user_mapping', array('user_id' => $USER->id), '*');
 
             if (isset($userInfo->uuid) && !empty($userInfo->uuid)) {
                 $tokenValid = false;
