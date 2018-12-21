@@ -272,6 +272,7 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
    * @return array|false Moodle user fields for the logged in user (or false if request failed)
    */
   public function get_userinfo($client) {
+    global $DB;
     $oauth2code = required_param('oauth2code', PARAM_RAW);
     $url = $client->get_issuer()->get_endpoint_url('userinfo');
     $client->setHeader('Authorization: Bearer ' . $oauth2code);
@@ -326,10 +327,10 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
       $mappedUsername = '';
       $uuid = $userinfo->uuid;
       $userMapping = $DB->get_record('guru_user_mapping', array('uuid' => $uuid), 'user_id');
-      if (!empty($userMapping)) {
-        $mappedUsername = $DB->get_record('user', array('id' => $userMapping), 'username');
-        if (!empty($mappedUsername)) {
-          $user->username = $mappedUsername;
+      if (!empty($userMapping->user_id)) {
+        $mappedUsername = $DB->get_record('user', array('id' => $userMapping->user_id), 'username');
+        if (!empty($mappedUsername->username)) {
+          $user->username = $mappedUsername->username;
         }
       }
     }
