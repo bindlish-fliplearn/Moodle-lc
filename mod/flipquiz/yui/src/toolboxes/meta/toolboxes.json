@@ -1,0 +1,14 @@
+{
+    "moodle-mod_flipquiz-toolboxes": {
+        "requires": [
+            "base",
+            "node",
+            "event",
+            "event-key",
+            "io",
+            "moodle-mod_flipquiz-flipquizbase",
+            "moodle-mod_flipquiz-util-slot",
+            "moodle-core-notification-ajaxexception"
+        ]
+    }
+}

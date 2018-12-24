@@ -1,0 +1,10 @@
+{
+    "name": "moodle-mod_flipquiz-questionchooser",
+    "builds": {
+        "moodle-mod_flipquiz-questionchooser": {
+            "jsfiles": [
+                "questionchooser.js"
+            ]
+        }
+    }
+}

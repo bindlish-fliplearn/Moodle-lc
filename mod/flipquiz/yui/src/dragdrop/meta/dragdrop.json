@@ -1,0 +1,19 @@
+{
+    "moodle-mod_flipquiz-dragdrop": {
+        "requires": [
+            "base",
+            "node",
+            "io",
+            "dom",
+            "dd",
+            "dd-scroll",
+            "moodle-core-dragdrop",
+            "moodle-core-notification",
+            "moodle-mod_flipquiz-flipquizbase",
+            "moodle-mod_flipquiz-util-base",
+            "moodle-mod_flipquiz-util-page",
+            "moodle-mod_flipquiz-util-slot",
+            "moodle-course-util"
+        ]
+    }
+}

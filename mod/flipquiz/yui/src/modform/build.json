@@ -1,0 +1,10 @@
+{
+    "name": "moodle-mod_flipquiz-modform",
+    "builds": {
+        "moodle-mod_flipquiz-modform": {
+            "jsfiles": [
+                "modform.js"
+            ]
+        }
+    }
+}

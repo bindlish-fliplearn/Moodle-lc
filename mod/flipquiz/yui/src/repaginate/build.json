@@ -1,0 +1,10 @@
+{
+    "name": "moodle-mod_flipquiz-repaginate",
+    "builds": {
+        "moodle-mod_flipquiz-repaginate": {
+            "jsfiles": [
+                "repaginate.js"
+            ]
+        }
+    }
+}

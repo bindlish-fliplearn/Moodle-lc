@@ -1,0 +1,10 @@
+{
+    "name": "moodle-mod_flipquiz-autosave",
+    "builds": {
+        "moodle-mod_flipquiz-autosave": {
+            "jsfiles": [
+                "autosave.js"
+            ]
+        }
+    }
+}
