@@ -42,7 +42,7 @@ class primecontent {
     
     public function primContentLogin($keyword = '') {
         
-        global $DB;
+        global $DB, $USER ,$SESSION;
         $query = array();
         $files_array = array();
         $search = 1;
@@ -51,10 +51,14 @@ class primecontent {
         $subjectId = '';
         $subjectCode = '';
         $chapterId = '';
+        $courseId = '';
         $current_link = $_SERVER[HTTP_REFERER];
         $parts = parse_url($current_link);
         parse_str($parts['query'], $query);
 
+        //Get User details
+        $userInfo = $DB->get_record('guru_user_mapping', array('user_id' => $USER->id), '*');
+        
         //Extract course & section form URL
         if (!empty($query)) {
             $courseId = $query['course'];
@@ -176,8 +180,8 @@ EOD;
             // $api_path = "https://stgptoc.fliplearn.com/v1/content/result?boardCode=cbse&classLevelId=9&subjectCode=Mathematics&searchKey=$keyword&ncertEbookEnable=1";
             $api_path = PRIME_URL . "/v1/content/result?$params";
             $this->_conn->setHeader(array(
-                    'loginId: ' . USER_LOGIN,
-                    'sessionToken: ' . SESSION_TOKEN,
+                    'loginId: ' . $userInfo->login_id,
+                    'sessionToken: ' . $SESSION->sessionToken,
                     'platform: web',
                     '3dSupport: 1',
                     'Connection: keep-alive',

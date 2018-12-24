@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+	<libraries>
+		<library>
+			<location>lib/viewerjs</location>
+			<name>ViewerJS</name>
+			<version>0.5.8</version>
+			<license>AGPL</license>
+			<licenseversion>3.0</licenseversion>
+		</library>
+	</libraries>

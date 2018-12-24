@@ -50,9 +50,64 @@ class media_primeplayer_plugin extends core_media_player {
     public function embed($urls, $name, $width, $height, $options) {
 
         //Added by Jatin
-        //Customise Code added to get prime resource CDN path based on resource Id
-        global $CFG, $DB;
+        //Check prime license & session Token
+        global $SESSION, $USER, $DB, $CFG;
+        $userInfo = $DB->get_record('guru_user_mapping', array('user_id' => $USER->id), '*');
+        if (!isset($SESSION->isPrimeUser)) {
 
+            if (isset($userInfo->uuid) && !empty($userInfo->uuid)) {
+                $tokenValid = false;
+                $conn = new curl(array('cache'=>true, 'debug'=>false));
+                if (isset($SESSION->sessionToken) && !empty($SESSION->sessionToken)) {
+                    $api_path = UMS_URL . "/isLoginTokenValidForUserByUuid";
+                    $params = array('uuid' => $userInfo->uuid,
+                                    'sessionToken' => $SESSION->sessionToken
+                                );
+                    $params_json = json_encode($params);
+                    $conn->setHeader(array(
+                        'Content-Type: application/json',
+                        'Connection: keep-alive',
+                        'Cache-Control: no-cache'));
+                    $content = $conn->post($api_path,$params_json);
+                    $result = json_decode($content);
+                    if (isset($result->status)) {
+                        $tokenValid = $result->status;
+                    }
+                } 
+                $tokenValid = false;
+                if (!$tokenValid) {
+                    $conn2 = new curl(array('cache'=>true, 'debug'=>false));
+                    $api_path2 = UMS_URL . "/autologinByUuid/$userInfo->uuid";    
+                    $content2 = $conn2->get($api_path2,'');
+                    $result2 = json_decode($content2);
+                    if (isset($result2->data->sessionToken)) {
+                        $SESSION->sessionToken = $result2->data->sessionToken;
+                    } else {
+                        return API_FAIL_MSG;
+                    }
+                }
+            } else {
+                return USER_MAPPING_MISSING_MSG;
+            }
+            $conn3 = new curl(array('cache'=>true, 'debug'=>false));
+            $api_path3 = BL_URL . "/user/checkUserLicence/$userInfo->uuid?product=prime";
+            $content3 = $conn3->get($api_path3,'');
+            $result3 = json_decode($content3);
+            if (isset($result3->response)) {
+                foreach ($result3->response as $key => $value) {
+                    if (isset($value->status)) {
+                        $SESSION->isPrimeUser = $value->status;
+                    }
+                }
+            } else {
+                return API_FAIL_MSG;
+            }
+        }
+        if (!$SESSION->isPrimeUser) {
+            return UNSUBSCRIBE_MSG;
+        }
+
+        //Customise Code added to get prime resource CDN path based on resource Id
         foreach ($urls as $key) {
             $res_urls[] = urldecode($key->out(false));
         }
@@ -66,6 +121,7 @@ class media_primeplayer_plugin extends core_media_player {
                     $filearea = (isset($chunks[2]) && !empty($chunks[2])) ? $chunks[2] : '';
                     $component = (isset($chunks[3]) && !empty($chunks[3])) ? $chunks[3] : '';
                     $contextid = (isset($chunks[4]) && !empty($chunks[4])) ? $chunks[4] : '';
+                    $condition = array();
                     if (!empty($filename) && !empty($filearea) && !empty($component) && !empty($contextid)) {
                         $condition['filename'] = $filename;
                         $condition['filearea'] = $filearea;
@@ -89,8 +145,8 @@ class media_primeplayer_plugin extends core_media_player {
 
                         $api_path = PRIME_URL . "/resource/url?resourceId=$resourceId&product=prime&tagKey=null";
                         $conn->setHeader(array(
-                        'loginId:' . USER_LOGIN,
-                        'sessionToken:' . SESSION_TOKEN,
+                        'loginId:' . $userInfo->login_id,
+                        'sessionToken:' . $SESSION->sessionToken,
                         'SupportedApiVersion: 1',
                         'platform: web',
                         '3dSupport: 1',
@@ -105,11 +161,14 @@ class media_primeplayer_plugin extends core_media_player {
                             if ($isMedia || $mediaType == 'MP4' || $mediaType == 'AVI' || $mediaType == 'FLV' || $cType == '3d') {
                                 $urls = array();
                                 $urls[] = new moodle_url($path);
+                                $options['originaltext'] = '<video autoplay="true"></video>';
                             } else {
                                 $iFrame = "<iframe height='600' width='900' src='" . $path . "'></iframe>";
                                 return $iFrame;
 
                             }
+                        } else {
+                            return UNSUBSCRIBE_MSG;
                         }
                     }
                 }

@@ -68,27 +68,60 @@ class repository_primecontent extends repository {
     }
    // login
     public function check_login() {
-        global $SESSION;
-        /*
+        global $SESSION, $USER, $DB;
         if (isset($SESSION->isPrimeUser) && !empty($SESSION->isPrimeUser)) {
             return $SESSION->isPrimeUser;
         } else {
-            $conn = new curl(array('cache'=>true, 'debug'=>false));
-            $api_path = "https://stgbl.fliplearn.com/user/checkUserLicence/19355075?product=prime";
-            $content = $conn->get($api_path,'');
-            $result = json_decode($content);
-            if (isset($result->response)) {
-                foreach ($result->response as $key => $value) {
-                    if (isset($value->status)) {
-                        $SESSION->isPrimeUser = $value->status;
-                        // print_r($SESSION);die('qws');
-                        return $SESSION->isPrimeUser;
+            $userInfo = $DB->get_record('guru_user_mapping', array('user_id' => $USER->id), '*');
+            if (isset($userInfo->uuid) && !empty($userInfo->uuid)) {
+                $tokenValid = false;
+                $conn = new curl(array('cache'=>true, 'debug'=>false));
+                if (isset($SESSION->sessionToken) && !empty($SESSION->sessionToken)) {
+                    $api_path = UMS_URL . "/isLoginTokenValidForUserByUuid";
+                    // $api_path = "http://stgums.fliplearn.com/isLoginTokenValidForUserByUuid";    
+                    $params = array('uuid' => $userInfo->uuid,
+                                    'sessionToken' => $SESSION->sessionToken
+                                );
+                    $params_json = json_encode($params);
+                    $conn->setHeader(array(
+                        'Content-Type: application/json',
+                        'Connection: keep-alive',
+                        'Cache-Control: no-cache'));
+                    $content = $conn->post($api_path,$params_json);
+                    $result = json_decode($content);
+                    if (isset($result->status)) {
+                        $tokenValid = $result->status;
+                    }
+                } 
+                if (!$tokenValid) {
+                    $conn2 = new curl(array('cache'=>true, 'debug'=>false));
+                    $api_path2 = UMS_URL . "/autologinByUuid/$userInfo->uuid";    
+                    $content2 = $conn2->get($api_path2,'');
+                    $result2 = json_decode($content2);
+                    if (isset($result2->data->sessionToken)) {
+                        $SESSION->sessionToken = $result2->data->sessionToken;
+                    } else {
+                        return false;
                     }
                 }
             } else {
                 return false;
             }
-        }*/
+            $conn3 = new curl(array('cache'=>true, 'debug'=>false));
+            $api_path3 = BL_URL . "/user/checkUserLicence/$userInfo->uuid?product=prime";
+            $content3 = $conn3->get($api_path3,'');
+            $result3 = json_decode($content3);
+            if (isset($result3->response)) {
+                foreach ($result3->response as $key => $value) {
+                    if (isset($value->status)) {
+                        $SESSION->isPrimeUser = $value->status;
+                    }
+                }
+            } else {
+                return false;
+            }
+        }
+
         $this->keyword = optional_param('primecontent_keyword', '', PARAM_RAW);
         if (empty($this->keyword)) {
             $this->keyword = optional_param('s', '', PARAM_RAW);
@@ -149,10 +182,10 @@ class repository_primecontent extends repository {
     // if check_login returns false,
     // this function will be called to print a login form.
     public function print_login() {
-        /*if (isset($SESSION->isPrimeUser)) {
-            // print_r($SESSION->isPrimeUser);
+        global $SESSION;
+        if (isset($SESSION->isPrimeUser)) {
+            // print_r($SESSION);die('sff');
             if (!$SESSION->isPrimeUser) {
-            // die('fds1');
                 $keyObj = new stdClass();
                 $keyObj->label = "You are not subscribed to Prime.";
                 // $keyObj->id    = 'input_text_keyword';
@@ -161,12 +194,13 @@ class repository_primecontent extends repository {
                 // $keyObj->value = '';
                 $msg = array();
                 $msg['login'] = array($keyObj);
-                return $msg;
+                print_error(UNSUBSCRIBE_MSG);
+                return;
             }
-        } else {
-            echo 'Technical error occurred.';
-            return;
-        }*/
+        } else {    
+            print_error(UNSUBSCRIBE_MSG);
+            return ;
+        }
         $keyword = optional_param('primecontent_keyword', '', PARAM_RAW);
         if (!empty($keyword)) {
             $client = new primecontent;
@@ -212,6 +246,25 @@ EOD;
         return false;
     }
     public function search($search_text, $page = 0) {
+        global $SESSION;
+        if (isset($SESSION->isPrimeUser)) {
+            // print_r($SESSION);die('sff');
+            if (!$SESSION->isPrimeUser) {
+                $keyObj = new stdClass();
+                $keyObj->label = "You are not subscribed to Prime.";
+                // $keyObj->id    = 'input_text_keyword';
+                // $keyObj->type  = 'text';
+                // $keyObj->name  = 'primecontent_keyword';
+                // $keyObj->value = '';
+                $msg = array();
+                $msg['login'] = array($keyObj);
+                print_error(UNSUBSCRIBE_MSG);
+                return;
+            }
+        } else {    
+            print_error(UNSUBSCRIBE_MSG);
+            return ;
+        }
         $client = new primecontent;
         $search_result = array();
         $search_result['list'] = $client->primContentLogin($search_text);
