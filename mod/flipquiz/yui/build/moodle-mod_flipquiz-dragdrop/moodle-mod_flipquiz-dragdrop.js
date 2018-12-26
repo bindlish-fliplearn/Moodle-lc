@@ -343,7 +343,7 @@ Y.extend(DRAGRESOURCE, M.core.dragdrop, {
         });
         del.dd.plug(Y.Plugin.DDWinScroll);
 
-        M.mod_flipquiz.flipquizbase.register_module(this);
+        M.mod_flipquiz.quizbase.register_module(this);
         M.mod_flipquiz.dragres = this;
     },
 
@@ -451,7 +451,7 @@ Y.extend(DRAGRESOURCE, M.core.dragdrop, {
                 success: function(tid, response) {
                     var responsetext = Y.JSON.parse(response.responseText);
                     var params = {element: dragnode, visible: responsetext.visible};
-                    M.mod_flipquiz.flipquizbase.invoke_function('set_visibility_resource_ui', params);
+                    M.mod_flipquiz.quizbase.invoke_function('set_visibility_resource_ui', params);
                     this.unlock_drag_handle(drag, CSS.EDITINGMOVE);
                     window.setTimeout(function() {
                         spinner.hide();
@@ -539,7 +539,7 @@ M.mod_flipquiz.init_resource_dragdrop = function(params) {
         "dd-scroll",
         "moodle-core-dragdrop",
         "moodle-core-notification",
-        "moodle-mod_flipquiz-flipquizbase",
+        "moodle-mod_flipquiz-quizbase",
         "moodle-mod_flipquiz-util-base",
         "moodle-mod_flipquiz-util-page",
         "moodle-mod_flipquiz-util-slot",

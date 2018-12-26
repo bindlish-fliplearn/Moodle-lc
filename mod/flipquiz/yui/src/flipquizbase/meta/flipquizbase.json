@@ -1,8 +1,0 @@
-{
-    "moodle-mod_flipquiz-flipquizbase": {
-        "requires": [
-            "base",
-            "node"
-        ]
-    }
-}

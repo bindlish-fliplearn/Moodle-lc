@@ -210,6 +210,11 @@ echo html_writer::start_tag('div', array('class' => 'mod-flipquiz-edit-content')
 
 echo $output->edit_page($flipquizobj, $structure, $contexts, $thispageurl, $pagevars);
 
+echo '<ul class="menu  align-tr-tr" id="action-menu-2-menu" data-rel="menu-content" aria-labelledby="action-menu-toggle-2" role="menu" data-align="tr-tr" data-constraint=".mod-quiz-edit-content" aria-hidden="false" style="top: -110px;">
+
+<li role="presentation" id="yui_3_17_2_1_1545799467910_546">    <a href="http://localhost/flip-moodle-lc/mod/flipquiz/edit.php?cmid=38391" class="cm-edit-action questionbank menu-action add-menu" data-header="Add from the question bank at the end" data-action="questionbank" data-addonpage="0" role="menuitem" aria-labelledby="actionmenuaction-8" id="yui_3_17_2_1_1545799467910_545"><img class="icon " alt="from question bank" title="from question bank" src="http://localhost/flip-moodle-lc/theme/image.php?theme=adaptable&amp;component=core&amp;rev=1545655717&amp;image=t%2Fadd"><span class="menu-action-text" id="actionmenuaction-8">from question bank</span></a>
+</li> </ul>';
+
 // Questions wrapper end.
 echo html_writer::end_tag('div');
 

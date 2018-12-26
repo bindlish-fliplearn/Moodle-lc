@@ -294,7 +294,7 @@ Y.extend(RESOURCETOOLBOX, TOOLBOX, {
      * @protected
      */
     initializer: function() {
-        M.mod_flipquiz.flipquizbase.register_module(this);
+        M.mod_flipquiz.quizbase.register_module(this);
         Y.delegate('click', this.handle_data_action, BODY, SELECTOR.ACTIVITYACTION, this);
         Y.delegate('click', this.handle_data_action, BODY, SELECTOR.DEPENDENCY_LINK, this);
         this.initialise_select_multiple();
@@ -851,7 +851,7 @@ Y.extend(SECTIONTOOLBOX, TOOLBOX, {
      * @protected
      */
     initializer: function() {
-        M.mod_flipquiz.flipquizbase.register_module(this);
+        M.mod_flipquiz.quizbase.register_module(this);
 
         BODY.delegate('key', this.handle_data_action, 'down:enter', SELECTOR.ACTIVITYACTION, this);
         Y.delegate('click', this.handle_data_action, BODY, SELECTOR.ACTIVITYACTION, this);
@@ -1151,7 +1151,7 @@ M.mod_flipquiz.init_section_toolbox = function(config) {
         "event",
         "event-key",
         "io",
-        "moodle-mod_flipquiz-flipquizbase",
+        "moodle-mod_flipquiz-quizbase",
         "moodle-mod_flipquiz-util-slot",
         "moodle-core-notification-ajaxexception"
     ]

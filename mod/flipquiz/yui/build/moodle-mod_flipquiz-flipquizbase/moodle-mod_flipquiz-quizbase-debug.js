@@ -1,14 +1,14 @@
-YUI.add('moodle-mod_flipquiz-flipquizbase', function (Y, NAME) {
+YUI.add('moodle-mod_flipquiz-quizbase', function (Y, NAME) {
 
 /**
- * The flipquizbase class to provide shared functionality to Modules within Moodle.
+ * The quizbase class to provide shared functionality to Modules within Moodle.
  *
- * @module moodle-mod_flipquiz-flipquizbase
+ * @module moodle-mod_flipquiz-quizbase
  */
-var FLIPQUIZBASENAME = 'mod_flipquiz-flipquizbase';
+var QUIZBASENAME = 'mod_flipquiz-quizbase';
 
-var FLIPQUIZBASE = function() {
-    FLIPQUIZBASE.superclass.constructor.apply(this, arguments);
+var QUIZBASE = function() {
+    QUIZBASE.superclass.constructor.apply(this, arguments);
 };
 
 /**
@@ -18,7 +18,7 @@ var FLIPQUIZBASE = function() {
  * @class M.course.coursebase
  * @constructor
  */
-Y.extend(FLIPQUIZBASE, Y.Base, {
+Y.extend(QUIZBASE, Y.Base, {
     // Registered Modules
     registermodules: [],
 
@@ -54,13 +54,13 @@ Y.extend(FLIPQUIZBASE, Y.Base, {
         return this;
     }
 }, {
-    NAME: FLIPQUIZBASENAME,
+    NAME: QUIZBASENAME,
     ATTRS: {}
 });
 
 // Ensure that M.course exists and that coursebase is initialised correctly
 M.mod_flipquiz = M.mod_flipquiz || {};
-M.mod_flipquiz.flipquizbase = M.mod_flipquiz.flipquizbase || new FLIPQUIZBASE();
+M.mod_flipquiz.quizbase = M.mod_flipquiz.quizbase || new QUIZBASE();
 
 // Abstract functions that needs to be defined per format (course/format/somename/format.js)
 M.mod_flipquiz.edit = M.mod_flipquiz.edit || {};

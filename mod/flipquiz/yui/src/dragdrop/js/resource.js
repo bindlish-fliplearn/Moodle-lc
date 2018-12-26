@@ -48,7 +48,7 @@ Y.extend(DRAGRESOURCE, M.core.dragdrop, {
         });
         del.dd.plug(Y.Plugin.DDWinScroll);
 
-        M.mod_flipquiz.flipquizbase.register_module(this);
+        M.mod_flipquiz.quizbase.register_module(this);
         M.mod_flipquiz.dragres = this;
     },
 
@@ -156,7 +156,7 @@ Y.extend(DRAGRESOURCE, M.core.dragdrop, {
                 success: function(tid, response) {
                     var responsetext = Y.JSON.parse(response.responseText);
                     var params = {element: dragnode, visible: responsetext.visible};
-                    M.mod_flipquiz.flipquizbase.invoke_function('set_visibility_resource_ui', params);
+                    M.mod_flipquiz.quizbase.invoke_function('set_visibility_resource_ui', params);
                     this.unlock_drag_handle(drag, CSS.EDITINGMOVE);
                     window.setTimeout(function() {
                         spinner.hide();

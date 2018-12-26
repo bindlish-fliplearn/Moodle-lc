@@ -61,7 +61,7 @@ Y.extend(RESOURCETOOLBOX, TOOLBOX, {
      * @protected
      */
     initializer: function() {
-        M.mod_flipquiz.flipquizbase.register_module(this);
+        M.mod_flipquiz.quizbase.register_module(this);
         Y.delegate('click', this.handle_data_action, BODY, SELECTOR.ACTIVITYACTION, this);
         Y.delegate('click', this.handle_data_action, BODY, SELECTOR.DEPENDENCY_LINK, this);
         this.initialise_select_multiple();

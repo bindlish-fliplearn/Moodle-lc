@@ -26,5 +26,5 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->version   = 2018051400;
 $plugin->requires  = 2018050800;
-$plugin->component = 'mod_flipflipquiz';
+$plugin->component = 'mod_flipquiz';
 $plugin->cron      = 60;

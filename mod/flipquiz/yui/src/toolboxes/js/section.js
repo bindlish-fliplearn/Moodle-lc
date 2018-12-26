@@ -45,7 +45,7 @@ Y.extend(SECTIONTOOLBOX, TOOLBOX, {
      * @protected
      */
     initializer: function() {
-        M.mod_flipquiz.flipquizbase.register_module(this);
+        M.mod_flipquiz.quizbase.register_module(this);
 
         BODY.delegate('key', this.handle_data_action, 'down:enter', SELECTOR.ACTIVITYACTION, this);
         Y.delegate('click', this.handle_data_action, BODY, SELECTOR.ACTIVITYACTION, this);
