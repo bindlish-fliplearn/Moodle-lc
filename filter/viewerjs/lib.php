@@ -49,7 +49,7 @@ class filter_viewerjs_media_player extends core_media_player {
      * @param array $options Options array
      * @return string HTML code for embed
      */
-    public function embed($urls, $name, $width, $height, $options) {
+    public function embed($urls, $name = null, $width = false, $height = false, $options = false) {
         global $CFG;
         // don't expect alternative urls
         if (count($urls) !== 1) {
