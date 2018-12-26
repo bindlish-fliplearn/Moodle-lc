@@ -59,7 +59,15 @@ class filter_viewerjs_media_player extends core_media_player {
         $file_url            = new moodle_url($urls[0]);
         $viewerjs_player_url = new moodle_url('/filter/viewerjs/lib/viewerjs');
         // we assume the filter/viewerjs/lib/viewerjs directory will be four directories away from the initial public directory
-        $viewerjs_player_url->set_anchor('../../../..' . $file_url->out_as_local_url());
+
+        preg_match_all('/<a[^>]+href=([\'"])(?<href>.+?)\1[^>]*>/i', $urls[0], $res_arr);
+        $link = '';
+        if (!empty($res_arr)) {
+            $link = $res_arr['href'][0];
+        }
+        $localurl = substr($link, strlen($CFG->wwwroot));
+        // $viewerjs_player_url->set_anchor('../../../..' . $file_url->out_as_local_url());
+        $viewerjs_player_url->set_anchor('../../../../' . $localurl);
 
         if (!$width) {
             $width = '100%';

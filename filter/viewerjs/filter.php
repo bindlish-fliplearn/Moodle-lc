@@ -60,14 +60,15 @@ class filter_viewerjs extends moodle_text_filter {
         if (!$this->mediarenderer) {
             $this->mediarenderer = $PAGE->get_renderer('filter_viewerjs');
         }
-        $embedmarkers = $this->mediarenderer->get_embeddable_markers();
-
+        // $embedmarkers = $this->mediarenderer->get_embeddable_markers();
         // Looking for tags.
         $matches = preg_split('/(<[^>]*>)/i', $text, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 
         if (!$matches) {
             return $text;
         }
+        $embedmarkers .= 'pdf|odt|ods|odp';
+
 
         // Regex to find media extensions in an <a> tag.
         $re            = '~<a\s[^>]*href="([^"]*(?:' . $embedmarkers . ')[^"]*)"[^>]*>([^>]*)</a>~is';
@@ -120,6 +121,8 @@ class filter_viewerjs extends moodle_text_filter {
     private function callback(array $matches) {
         // Guard against runtime errors
         try {
+            global $CFG, $PAGE;
+            require_once($CFG->dirroot . '/filter/viewerjs/lib.php');
             // Get name
             $name = trim($matches[2]);
             if (empty($name) or strpos($name, 'http') === 0) {
@@ -127,8 +130,11 @@ class filter_viewerjs extends moodle_text_filter {
             }
 
             // Split provided URL into alternatives
-            $urls   = core_media::split_alternatives($matches[1], $width, $height);
-            $result = $this->mediarenderer->embed_alternatives($urls, $name, $width, $height);
+            $obj = new filter_viewerjs_media_player();
+            $url = array($matches[0]);
+            $result = $obj->embed($url);
+            // $urls   = core_media::split_alternatives($matches[1], $width, $height);
+            // $result = $this->mediarenderer->embed_alternatives($urls, $name, $width, $height);
 
             // If something was embedded, return it, otherwise return original
             if ($result !== '') {
