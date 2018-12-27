@@ -1,0 +1,10 @@
+{
+    "name": "moodle-mod_homework-homeworkbase",
+    "builds": {
+        "moodle-mod_homework-homeworkbase": {
+            "jsfiles": [
+                "homeworkbase.js"
+            ]
+        }
+    }
+}

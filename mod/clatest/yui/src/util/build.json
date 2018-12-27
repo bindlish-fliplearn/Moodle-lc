@@ -1,0 +1,21 @@
+{
+  "name": "moodle-mod_clatest-util",
+  "builds": {
+    "moodle-mod_clatest-util-base": {
+      "jsfiles": [
+        "base.js"
+      ]
+    },
+    "moodle-mod_clatest-util-slot": {
+      "jsfiles": [
+        "slot.js"
+      ]
+    }
+    ,
+    "moodle-mod_clatest-util-page": {
+      "jsfiles": [
+        "page.js"
+      ]
+    }
+  }
+}

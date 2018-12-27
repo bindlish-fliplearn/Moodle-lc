@@ -1,0 +1,10 @@
+{
+    "name": "moodle-mod_clatest-modform",
+    "builds": {
+        "moodle-mod_clatest-modform": {
+            "jsfiles": [
+                "modform.js"
+            ]
+        }
+    }
+}

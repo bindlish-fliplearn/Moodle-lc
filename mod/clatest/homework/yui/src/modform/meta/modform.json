@@ -1,0 +1,9 @@
+{
+    "moodle-mod_homework-modform": {
+        "requires": [
+            "base",
+            "node",
+            "event"
+        ]
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "moodle-mod_homework-toolboxes": {
+        "requires": [
+            "base",
+            "node",
+            "event",
+            "event-key",
+            "io",
+            "moodle-mod_homework-homeworkbase",
+            "moodle-mod_homework-util-slot",
+            "moodle-core-notification-ajaxexception"
+        ]
+    }
+}

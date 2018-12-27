@@ -1,0 +1,10 @@
+{
+    "name": "moodle-mod_homework-autosave",
+    "builds": {
+        "moodle-mod_homework-autosave": {
+            "jsfiles": [
+                "autosave.js"
+            ]
+        }
+    }
+}

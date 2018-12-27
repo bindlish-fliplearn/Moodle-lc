@@ -1,0 +1,9 @@
+{
+    "moodle-mod_pratest-modform": {
+        "requires": [
+            "base",
+            "node",
+            "event"
+        ]
+    }
+}

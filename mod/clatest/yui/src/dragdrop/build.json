@@ -1,0 +1,12 @@
+{
+    "name": "moodle-mod_clatest-dragdrop",
+    "builds": {
+        "moodle-mod_clatest-dragdrop": {
+            "jsfiles": [
+                "dragdrop.js",
+                "section.js",
+                "resource.js"
+            ]
+        }
+    }
+}

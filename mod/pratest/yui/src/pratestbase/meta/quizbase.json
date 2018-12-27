@@ -1,0 +1,8 @@
+{
+    "moodle-mod_pratest-pratestbase": {
+        "requires": [
+            "base",
+            "node"
+        ]
+    }
+}

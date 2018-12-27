@@ -1,0 +1,12 @@
+{
+    "name": "moodle-mod_clatest-toolboxes",
+    "builds": {
+        "moodle-mod_clatest-toolboxes": {
+            "jsfiles": [
+                "toolbox.js",
+                "resource.js",
+                "section.js"
+            ]
+        }
+    }
+}

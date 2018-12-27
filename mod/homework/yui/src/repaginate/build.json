@@ -1,0 +1,10 @@
+{
+    "name": "moodle-mod_homework-repaginate",
+    "builds": {
+        "moodle-mod_homework-repaginate": {
+            "jsfiles": [
+                "repaginate.js"
+            ]
+        }
+    }
+}

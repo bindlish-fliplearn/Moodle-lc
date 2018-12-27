@@ -1,0 +1,12 @@
+{
+    "name": "moodle-mod_homework-toolboxes",
+    "builds": {
+        "moodle-mod_homework-toolboxes": {
+            "jsfiles": [
+                "toolbox.js",
+                "resource.js",
+                "section.js"
+            ]
+        }
+    }
+}

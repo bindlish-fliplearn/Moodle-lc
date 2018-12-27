@@ -1,0 +1,8 @@
+{
+    "moodle-mod_homework-homeworkbase": {
+        "requires": [
+            "base",
+            "node"
+        ]
+    }
+}

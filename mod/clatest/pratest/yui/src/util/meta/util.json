@@ -1,0 +1,26 @@
+{
+  "moodle-mod_pratest-util": {
+    "requires": [
+        "node", "moodle-core-actionmenu"
+    ],
+    "use": [
+        "moodle-mod_pratest-util-base"
+    ],
+    "submodules": {
+        "moodle-mod_pratest-util-base": {
+        },
+        "moodle-mod_pratest-util-slot": {
+            "requires": [
+                "node",
+                "moodle-mod_pratest-util-base"
+            ]
+        },
+        "moodle-mod_pratest-util-page": {
+            "requires": [
+                "node",
+                "moodle-mod_pratest-util-base"
+            ]
+        }
+    }
+  }
+}

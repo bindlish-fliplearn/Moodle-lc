@@ -1,0 +1,21 @@
+{
+  "name": "moodle-mod_homework-util",
+  "builds": {
+    "moodle-mod_homework-util-base": {
+      "jsfiles": [
+        "base.js"
+      ]
+    },
+    "moodle-mod_homework-util-slot": {
+      "jsfiles": [
+        "slot.js"
+      ]
+    }
+    ,
+    "moodle-mod_homework-util-page": {
+      "jsfiles": [
+        "page.js"
+      ]
+    }
+  }
+}

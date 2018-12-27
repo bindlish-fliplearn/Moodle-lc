@@ -1,0 +1,10 @@
+{
+    "name": "moodle-mod_clatest-questionchooser",
+    "builds": {
+        "moodle-mod_clatest-questionchooser": {
+            "jsfiles": [
+                "questionchooser.js"
+            ]
+        }
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "moodle-mod_pratest-toolboxes": {
+        "requires": [
+            "base",
+            "node",
+            "event",
+            "event-key",
+            "io",
+            "moodle-mod_pratest-pratestbase",
+            "moodle-mod_pratest-util-slot",
+            "moodle-core-notification-ajaxexception"
+        ]
+    }
+}
