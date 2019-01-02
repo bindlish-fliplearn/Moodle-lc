@@ -27,7 +27,7 @@
             return messaging.getToken();
         }).then(function (token) {
             console.log('Firebase token: ', token);
-            var  BL_URL =  'https://stgbl.fliplearn.com';
+            var  BL_URL =  '';
             var  headers =  {
                     'Accept': 'application/json',
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -43,23 +43,34 @@
                     "osVersion": window.navigator.appVersion,
                     "osName": "web",
                     "serialNo": token,
-                    "arnToken": '',
+                    "arnToken": token,
                     "Imei": token,
                     "MacAddress": "",
                     "DeviceModel": "",
                     "domainName":domainName,
                 }
-            }
+            }         
             $.ajax({
-                    type: "POST",
-                    headers: headers,
-                    url: BL_URL+"/user/registerDevice",
-                    data: deviceInfo,
+                    type: "get",
+                    url: "/pushnotification/notificationConfig.php",
                     success: function(result){
-                        console.log('data')
-                        console.log(result);
+                                var jsonObj =  JSON.parse(result);
+                                if(jsonObj.error == ''){
+                                    BL_URL =  jsonObj.BL_URL ;
+                                    deviceInfo.device.actionedBy = jsonObj.uuid;
+                                    $.ajax({
+                                        type: "POST",
+                                        headers: headers,
+                                        url: BL_URL+"/user/registerDevice",
+                                        data: deviceInfo,
+                                        success: function(result){
+                                            console.log('data')
+                                            console.log(result);                            }
+                                    });
+                            }
                     }
                 });
+
             localStorage.setItem("WEB_FIREBASE_ARN_TOKEN", token);
         }).catch(function (err) {
             console.log('Permission denied', err);
