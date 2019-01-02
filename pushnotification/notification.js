@@ -31,8 +31,6 @@
             var  headers =  {
                     'Accept': 'application/json',
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'SupportedApiVersion': 1,
-                    'platform': 'web',
                 };
             var domainName = document.location.hostname;
             var deviceInfo = {
@@ -56,12 +54,12 @@
                     success: function(result){
                                 var jsonObj =  JSON.parse(result);
                                 if(jsonObj.error == ''){
-                                    BL_URL =  jsonObj.BL_URL ;
+                                    UMS_URL =  jsonObj.UMS_URL ;
                                     deviceInfo.device.actionedBy = jsonObj.uuid;
                                     $.ajax({
                                         type: "POST",
                                         headers: headers,
-                                        url: BL_URL+"/user/registerDevice",
+                                        url: UMS_URL+"/registerDevice",
                                         data: deviceInfo,
                                         success: function(result){
                                             console.log('data')
