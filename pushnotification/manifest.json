@@ -1,0 +1,11 @@
+{
+    "name": "Moodle platform",
+    "short_name": "Moodle Lite",
+    "start_url": "/",
+    "display": "standalone",
+    "orientation": "portrait-primary",
+    "background_color": "#603795",
+    "theme_color": "#603795",
+    "gcm_sender_id": "103953800507",
+    "prefer_related_applications": true
+}
