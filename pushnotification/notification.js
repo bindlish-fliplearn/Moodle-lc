@@ -54,12 +54,12 @@
                     success: function(result){
                                 var jsonObj =  JSON.parse(result);
                                 if(jsonObj.error == ''){
-                                    UMS_URL =  jsonObj.UMS_URL ;
+                                    BL_URL =  jsonObj.BL_URL ;
                                     deviceInfo.device.actionedBy = jsonObj.uuid;
                                     $.ajax({
                                         type: "POST",
                                         headers: headers,
-                                        url: UMS_URL+"/registerDevice",
+                                        url: BL_URL+"/user/registerDevice",
                                         data: deviceInfo,
                                         success: function(result){
                                             console.log('data')
