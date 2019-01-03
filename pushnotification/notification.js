@@ -13,12 +13,12 @@
         }    
         // Initialize Firebase
         var config = {
-            apiKey: "AIzaSyDKTB0oNvv_SjwcbsbVfKucLVBs0SuENv8",
-            authDomain: "moodle-app-80674.firebaseapp.com",
-            databaseURL: "https://moodle-app-80674.firebaseio.com",
-            projectId: "moodle-app-80674",
-            storageBucket: "moodle-app-80674.appspot.com",
-            messagingSenderId: "448137247676"
+            apiKey: "AIzaSyCbxoGEKR6q-lDg7p6VwRufgbx4z8Z-AAQ",
+            authDomain: "pwa-live.firebaseapp.com",
+            databaseURL: "https://pwa-live.firebaseio.com",
+            projectId: "pwa-live",
+            storageBucket: "pwa-live.appspot.com",
+            messagingSenderId: "855378505035"
         };
 
         firebase.initializeApp(config);
