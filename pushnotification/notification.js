@@ -62,14 +62,40 @@
                                         url: BL_URL+"/user/registerDevice",
                                         data: deviceInfo,
                                         success: function(result){
-                                            console.log('data')
-                                            console.log(result);                            }
+                                            var obj = JSON.parse(result);
+                                            if(obj.error == null){
+                                            var deviceCode = obj.device.deviceCode;
+                                            if(deviceCode){
+                                             $.ajax({
+                                                    type: "get",
+                                                    url:BL_URL+"/user/autologinByUuid/"+jsonObj.uuid+"?deviceCode="+deviceCode,
+                                                    success: function(res){
+                                                        console.log('res',res)
+                                                        var objRes = JSON.parse(res);
+                                                        var sessionToken = objRes.data.sessionToken;
+                                                        var uuid = objRes.data.uuid;
+                                                         var userDetails = {
+                                                                        "sessionToken": sessionToken,
+                                                                        "uuid": uuid,
+                                                                    }
+                                                              $.ajax({
+                                                                    type: "POST",
+                                                                    url: "/pushnotification/saveUserDetails.php",
+                                                                    data: userDetails,
+                                                                    success: function(response){
+                                                                        console.log(response);
+                                                                    }});
+                                                        localStorage.setItem("sessionToken", sessionToken);
+                                                        localStorage.setItem("uuid", uuid);
+                                                    }
+                                                });
+                                         }}                            
+                                        }
                                     });
                             }
                     }
                 });
-
-            localStorage.setItem("WEB_FIREBASE_ARN_TOKEN", token);
+        localStorage.setItem("WEB_FIREBASE_ARN_TOKEN", token);
         }).catch(function (err) {
             console.log('Permission denied', err);
         });
