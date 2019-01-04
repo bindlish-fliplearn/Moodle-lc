@@ -105,7 +105,7 @@ class filter_viewerjs_media_player extends core_media_player {
                                         fwrite($file,$cont);
                                         fclose($file);
                                     }
-                                    $src = "https://docs.google.com/gview?url=https://stgmoodlelcdata.fliplearn.com/$f1/$f2/$contenthash" . "fl.pptx&embedded=true";
+                                    $src = "https://docs.google.com/gview?url=" . PUBLIC_ACCESS_URL . "/$f1/$f2/$contenthash" . "fl.pptx&embedded=true";
                                 } else {
                                     if (!file_exists($CFG->dataroot . "/filedir/$f1/$f2/$contenthash" . 'fl.docx')) {
                                         $cont = $content = file_get_contents($CFG->dataroot . "/filedir/$f1/$f2/$contenthash");
@@ -113,7 +113,7 @@ class filter_viewerjs_media_player extends core_media_player {
                                         fwrite($file,$cont);
                                         fclose($file);
                                     }
-                                    $src = "https://docs.google.com/gview?url=https://stgmoodlelcdata.fliplearn.com/$f1/$f2/$contenthash" . "fl.docx&embedded=true";
+                                    $src = "https://docs.google.com/gview?url=" . PUBLIC_ACCESS_URL . "/$f1/$f2/$contenthash" . "fl.docx&embedded=true";
                                 }
                                 $output = html_writer::tag('iframe', '', array(
                                     'src'                   => $src,
