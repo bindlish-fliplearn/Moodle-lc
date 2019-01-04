@@ -67,7 +67,7 @@ class filter_viewerjs extends moodle_text_filter {
         if (!$matches) {
             return $text;
         }
-        $embedmarkers = 'pdf|odt|ods|odp|ppt|pptx';
+        $embedmarkers = 'pdf|odt|ods|odp|ppt|pptx|docx|doc';
 
 
         // Regex to find media extensions in an <a> tag.

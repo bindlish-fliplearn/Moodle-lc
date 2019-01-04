@@ -68,13 +68,13 @@ class filter_viewerjs_media_player extends core_media_player {
         }
 
         if (!$width) {
-            $width = '100%';
+            $width = '95%';
         }
         if (!$height) {
             $height = 500;
         }
 
-        if (strpos($link, '.pptx') !== false || strpos($link, '.ppt') !== false) {
+        if (strpos($link, '.pptx') !== false || strpos($link, '.ppt') !== false || strpos($link, '.docx') !== false || strpos($link, '.doc') !== false) {
             $varcon = substr($link, strlen($CFG->wwwroot . '/pluginfile.php?file=/'));
             $chunks = explode('/', $varcon);
 
@@ -97,15 +97,26 @@ class filter_viewerjs_media_player extends core_media_player {
                                 $f1 = substr($contenthash, 0, 2);
                                 $f2 = substr($contenthash, 2, 2);
 
-                                if (!file_exists($CFG->dataroot . "/filedir/$f1/$f2/$contenthash" . 'fl.pptx')) {
-                                    $cont = $content = file_get_contents($CFG->dataroot . "/filedir/$f1/$f2/$contenthash");
-                                    $file = fopen($CFG->dataroot . "/filedir/$f1/$f2/$contenthash" . 'fl.pptx', "w");
-                                    fwrite($file,$cont);
-                                    fclose($file);  
-
+                                $src = '';
+                                if (strpos($link, '.pptx') !== false || strpos($link, '.ppt') !== false) {
+                                    if (!file_exists($CFG->dataroot . "/filedir/$f1/$f2/$contenthash" . 'fl.pptx')) {
+                                        $cont = $content = file_get_contents($CFG->dataroot . "/filedir/$f1/$f2/$contenthash");
+                                        $file = fopen($CFG->dataroot . "/filedir/$f1/$f2/$contenthash" . 'fl.pptx', "w");
+                                        fwrite($file,$cont);
+                                        fclose($file);
+                                    }
+                                    $src = "https://docs.google.com/gview?url=http://flipmoodle.s3-ap-south-1.amazonaws.com/$f1/$f2/$contenthash" . "fl.pptx&embedded=true";
+                                } else {
+                                    if (!file_exists($CFG->dataroot . "/filedir/$f1/$f2/$contenthash" . 'fl.docx')) {
+                                        $cont = $content = file_get_contents($CFG->dataroot . "/filedir/$f1/$f2/$contenthash");
+                                        $file = fopen($CFG->dataroot . "/filedir/$f1/$f2/$contenthash" . 'fl.docx', "w");
+                                        fwrite($file,$cont);
+                                        fclose($file);
+                                    }
+                                    $src = "https://docs.google.com/gview?url=http://flipmoodle.s3-ap-south-1.amazonaws.com/$f1/$f2/$contenthash" . "fl.docx&embedded=true";
                                 }
                                 $output = html_writer::tag('iframe', '', array(
-                                    'src'                   => "https://view.officeapps.live.com/op/embed.aspx?src=https://stgmoodlelcdata.fliplearn.com/$f1/$f2/$contenthash" . "fl.pptx",
+                                    'src'                   => $src,
                                     'width'                 => $width,
                                     'height'                => $height,
                                     'webkitallowfullscreen' => 'webkitallowfullscreen',
