@@ -74,7 +74,6 @@ class media_primeplayer_plugin extends core_media_player {
                         $tokenValid = $result->status;
                     }
                 } 
-                $tokenValid = false;
                 if (!$tokenValid) {
                     $conn2 = new curl(array('cache'=>true, 'debug'=>false));
                     $api_path2 = UMS_URL . "/autologinByUuid/$userInfo->uuid";    
@@ -82,98 +81,96 @@ class media_primeplayer_plugin extends core_media_player {
                     $result2 = json_decode($content2);
                     if (isset($result2->data->sessionToken)) {
                         $SESSION->sessionToken = $result2->data->sessionToken;
-                    } else {
-                        return API_FAIL_MSG;
                     }
                 }
-            } else {
-                return USER_MAPPING_MISSING_MSG;
-            }
-            $conn3 = new curl(array('cache'=>true, 'debug'=>false));
-            $api_path3 = BL_URL . "/user/checkUserLicence/$userInfo->uuid?product=prime";
-            $content3 = $conn3->get($api_path3,'');
-            $result3 = json_decode($content3);
-            if (isset($result3->response)) {
-                foreach ($result3->response as $key => $value) {
-                    if (isset($value->status)) {
-                        $SESSION->isPrimeUser = $value->status;
-                    }
-                }
-            } else {
-                return API_FAIL_MSG;
-            }
-        }
-        if (!$SESSION->isPrimeUser) {
-            return UNSUBSCRIBE_MSG;
-        }
-
-        //Customise Code added to get prime resource CDN path based on resource Id
-        foreach ($urls as $key) {
-            $res_urls[] = urldecode($key->out(false));
-        }
-        if (!empty($res_urls)) {
-            foreach ($res_urls as $source) {
-                $chunks = array();
-                $chunks = array_reverse(explode('/', $source));
-
-                if (!empty($chunks)) {
-                    $filename = (isset($chunks[0]) && !empty($chunks[0])) ? $chunks[0] : '';
-                    $filearea = (isset($chunks[2]) && !empty($chunks[2])) ? $chunks[2] : '';
-                    $component = (isset($chunks[3]) && !empty($chunks[3])) ? $chunks[3] : '';
-                    $contextid = (isset($chunks[4]) && !empty($chunks[4])) ? $chunks[4] : '';
-                    $condition = array();
-                    if (!empty($filename) && !empty($filearea) && !empty($component) && !empty($contextid)) {
-                        $condition['filename'] = $filename;
-                        $condition['filearea'] = $filearea;
-                        $condition['component'] = $component;
-                        $condition['contextid'] = $contextid;
-                    }
-                    
-                    $fileData = $DB->get_record('files', $condition, '*');
-                    if (!empty($fileData)) {
-                        $parts = parse_url($fileData->source);
-                        parse_str($parts['query'], $query);
-                    }
-                    
-                    if (!empty($query['resourceId'])) {
-                        $res = explode('@@', $query['resourceId']);
-                        $resourceId = (isset($res[0]) && !empty($res[0])) ? $res[0] : '';
-                        $mediaType = (isset($res[1]) && !empty($res[1])) ? $res[1] : '';
-                        $isMedia = (isset($res[2]) && !empty($res[2])) ? $res[2] : '';
-                        $cType = (isset($res[3]) && !empty($res[3])) ? $res[3] : '';
-                        $conn = new curl(array('cache'=>true, 'debug'=>false));
-
-                        $api_path = PRIME_URL . "/resource/url?resourceId=$resourceId&product=prime&tagKey=null";
-                        $conn->setHeader(array(
-                        'loginId:' . $userInfo->login_id,
-                        'sessionToken:' . $SESSION->sessionToken,
-                        'SupportedApiVersion: 1',
-                        'platform: web',
-                        '3dSupport: 1',
-                        'Connection: keep-alive'));
-                        $content = $conn->get($api_path,'');
-                        $result = json_decode($content);
-
-                        if (empty($result->error) && !empty($result->response)) {
-                            $cdnPath = $result->response->cdnPath;
-                            $path = $cdnPath;
-
-                            if ($isMedia || $mediaType == 'MP4' || $mediaType == 'AVI' || $mediaType == 'FLV' || $cType == '3d') {
-                                $urls = array();
-                                $urls[] = new moodle_url($path);
-                                $options['originaltext'] = '<video autoplay="true"></video>';
-                            } else {
-                                $iFrame = "<iframe height='600' width='900' src='" . $path . "'></iframe>";
-                                return $iFrame;
-
-                            }
-                        } else {
-                            return UNSUBSCRIBE_MSG;
+                $conn3 = new curl(array('cache'=>true, 'debug'=>false));
+                $api_path3 = BL_URL . "/user/checkUserLicence/$userInfo->uuid?product=prime";
+                $content3 = $conn3->get($api_path3,'');
+                $result3 = json_decode($content3);
+                if (isset($result3->response)) {
+                    foreach ($result3->response as $key => $value) {
+                        if (isset($value->status)) {
+                            $SESSION->isPrimeUser = $value->status;
                         }
                     }
                 }
             }
         }
+        
+        //Customise Code added to get prime resource CDN path based on resource Id
+        if (isset($SESSION->isPrimeUser) && isset($SESSION->sessionToken)) {
+            foreach ($urls as $key) {
+                $res_urls[] = urldecode($key->out(false));
+            }
+            if (!empty($res_urls)) {
+                foreach ($res_urls as $source) {
+                    $chunks = array();
+                    $chunks = array_reverse(explode('/', $source));
+
+                    if (!empty($chunks)) {
+                        $filename = (isset($chunks[0]) && !empty($chunks[0])) ? $chunks[0] : '';
+                        $filearea = (isset($chunks[2]) && !empty($chunks[2])) ? $chunks[2] : '';
+                        $component = (isset($chunks[3]) && !empty($chunks[3])) ? $chunks[3] : '';
+                        $contextid = (isset($chunks[4]) && !empty($chunks[4])) ? $chunks[4] : '';
+                        $condition = array();
+                        if (!empty($filename) && !empty($filearea) && !empty($component) && !empty($contextid)) {
+                            $condition['filename'] = $filename;
+                            $condition['filearea'] = $filearea;
+                            $condition['component'] = $component;
+                            $condition['contextid'] = $contextid;
+                        }
+                        
+                        $fileData = $DB->get_record('files', $condition, '*');
+                        if (!empty($fileData)) {
+                            $parts = parse_url($fileData->source);
+                            parse_str($parts['query'], $query);
+                        }
+                        
+                        if (!empty($query['resourceId'])) {
+                            $res = explode('@@', $query['resourceId']);
+                            $resourceId = (isset($res[0]) && !empty($res[0])) ? $res[0] : '';
+                            $mediaType = (isset($res[1]) && !empty($res[1])) ? $res[1] : '';
+                            $isMedia = (isset($res[2]) && !empty($res[2])) ? $res[2] : '';
+                            $cType = (isset($res[3]) && !empty($res[3])) ? $res[3] : '';
+
+                            if (!$SESSION->isPrimeUser) {
+                                return UNSUBSCRIBE_MSG;
+                            }
+                            $conn = new curl(array('cache'=>true, 'debug'=>false));
+
+                            $api_path = PRIME_URL . "/resource/url?resourceId=$resourceId&product=prime&tagKey=null";
+                            $conn->setHeader(array(
+                            'loginId:' . $userInfo->login_id,
+                            'sessionToken:' . $SESSION->sessionToken,
+                            'SupportedApiVersion: 1',
+                            'platform: web',
+                            '3dSupport: 1',
+                            'Connection: keep-alive'));
+                            $content = $conn->get($api_path,'');
+                            $result = json_decode($content);
+
+                            if (empty($result->error) && !empty($result->response)) {
+                                $cdnPath = $result->response->cdnPath;
+                                $path = $cdnPath;
+
+                                if ($isMedia || $mediaType == 'MP4' || $mediaType == 'AVI' || $mediaType == 'FLV' || $cType == '3d') {
+                                    $urls = array();
+                                    $urls[] = new moodle_url($path);
+                                    $options['originaltext'] = '<video autoplay="true"></video>';
+                                } else {
+                                    $iFrame = "<iframe height='600' width='900' src='" . $path . "'></iframe>";
+                                    return $iFrame;
+
+                                }
+                            } else {
+                                return API_FAIL_MSG;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         // Determine the type of media tag.
         preg_match('/^<(video|audio|a)\b/i', $options[core_media_manager::OPTION_ORIGINAL_TEXT], $matches);
         $tagtype = $matches[1];
