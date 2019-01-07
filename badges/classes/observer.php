@@ -213,4 +213,87 @@ class core_badges_observer {
             }
         }
     }
+    
+    /**
+     * Triggered when 'course_completed' event is triggered.
+     *
+     * @param \core\event\course_completed $event
+     */
+    public static function course_created_push_notification(\core\event\course_created $event) {
+     /*echo "<pre>"; print_r($event); //die;
+      //Check prime license & session Token
+      global $SESSION, $USER, $DB, $CFG;
+      //print_r($USER->id);
+      
+      $userInfo = $DB->get_record('guru_user_mapping', array('user_id' => $USER->id), '*');
+      
+      $conn2 = new curl(array('cache'=>true, 'debug'=>false));
+      $api_path2 = UMS_URL . "/autologinByUuid/$userInfo->uuid";    
+      $content2 = $conn2->get($api_path2,'');
+      $result2 = json_decode($content2);
+      
+      if (isset($result2->data->sessionToken)) {
+          $SESSION->sessionToken = $result2->data->sessionToken;
+      } else {
+          return API_FAIL_MSG;
+      }
+                    
+      $api_path = UMS_URL . "/isLoginTokenValidForUserByUuid";
+//      $params = array('uuid' => $userInfo->uuid,
+//                      'sessionToken' => $SESSION->sessionToken
+//                  );
+      
+      
+      $serializeRequest = array('senderUuid'=>1234,
+                                        'schoolCode'=>$school_code,
+                                        'messageTitle'=>$messageTitle,
+                                        'messageText'=>strip_tags($messageText),
+                                        'uuidList'=>$uuidList,
+                                        'smsEnabled'=>false,
+                                        'emailEnabled'=>false,
+                                        'domainName'=>'stgmoodlelc.fliplearn.com'
+                                    );
+                        $serializeRequest =  json_encode($serializeRequest);
+                        $request =  array(
+                          'eventType' => $eventType,
+                          'eventDate' => $eventDate,
+                          'payload' => $serializeRequest
+                        ); 
+                        $params = json_encode($request);
+                      
+                        
+      $params_json = json_encode($params);
+      $conn->setHeader(array(
+          'Content-Type: application/json',
+          'Connection: keep-alive',
+          'Cache-Control: no-cache'));
+      $content = $conn->post($api_path,$params_json);
+      $result = json_decode($content);
+      if (isset($result->status)) {
+          $tokenValid = $result->status;
+      }*/
+    }
+    
+    public static function course_module_completion_updated_push_notification(\core\event\course_module_completion_updated $event) {
+      die("course_module_completion_updated_push_notification");
+    }
+    
+    public static function course_completed_push_notification(\core\event\course_completed $event) {
+      die("course_completed_push_notification");
+    }
+    
+     public static function post_created_push_notification(\core\event\course_updated $event) {
+      die("post_created_push_notification");
+    }
+    
+    public static function discussion_created_push_notification(\mod_forum\event\discussion_created $event) {
+      echo "<pre>";
+      print_r($event); 
+      die("discussion_created_push_notification1ddddddddd111111");
+    }
+    
+    public static function course_section_created_push_notification(\core\event\course_section_created $event) {
+     // die("course_section_created_push_notification");
+    }
+    
 }

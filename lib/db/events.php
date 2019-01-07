@@ -62,7 +62,26 @@ $observers = array(
         'eventname'   => '\core\event\cohort_member_added',
         'callback'    => 'core_badges_observer::cohort_criteria_review',
     ),
-
+    array(
+        'eventname'   => '\core\event\course_created',
+        'callback'    => 'core_badges_observer::course_created_push_notification',
+    ),
+    array(
+          'eventname'   => '\core\event\course_module_completion_updated',
+          'callback'    => 'core_badges_observer::course_module_completion_updated_push_notification',
+    ),
+   array(
+          'eventname'   => '\core\event\course_completed',
+          'callback'    => 'core_badges_observer::course_completed_push_notification',
+    ),
+  array(
+          'eventname'   => '\mod_forum\event\post_created',
+          'callback'    => 'core_badges_observer::post_created_push_notification',
+    ),
+  array(
+          'eventname'   => '\core\event\course_section_created',
+          'callback'    => 'core_badges_observer::course_section_created_push_notification',
+    ),
     // Competencies.
     array(
         'eventname'   => '\core\event\course_completed',
@@ -71,6 +90,10 @@ $observers = array(
     array(
         'eventname'   => '\core\event\course_module_completion_updated',
         'callback'    => 'core_competency\api::observe_course_module_completion_updated',
+    ),
+    array(
+          'eventname'   => '\mod_forum\event\discussion_created',
+          'callback'    => 'core_badges_observer::discussion_created_push_notification',
     ),
 );
 
