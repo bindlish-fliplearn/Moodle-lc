@@ -297,9 +297,11 @@
             $courseId = $discussionsData->course;
             $userid = $discussionsData->userid;
             $postId  = $discussionsData->firstpost;
+            $discussionId = $event->objectid;
             $contextlevel = CONTEXT_LEVEL;
+            $send_notification = SEND_NOTIFICATION;
             $check = $DB->get_record_sql('SELECT COUNT(id) AS count FROM {guru_notification_send} WHERE post_id = ?', array($postId));
-            if($check->count < 1){
+            if($check->count < 1 && $send_notification == true){
                     $sql = "SELECT mra.userid,gum.uuid as uuid,
                             gum.school_code AS school_code 
                             FROM {context} As mc 
@@ -319,6 +321,7 @@
                           $uuid = $value->uuid;
                           array_push($uuidList, $uuid);
                     }
+                  $clickUrl = BASE_URL.'/mod/forum/discuss.php?d='.$discussionId;
 
                     if(count($uuidList)>0){
                           $serializeRequest = array('senderUuid'=>1234,
@@ -328,7 +331,8 @@
                                               'uuidList'=>$uuidList,
                                               'smsEnabled'=>false,
                                               'emailEnabled'=>false,
-                                              'domainName'=>DOMAIN_NAME
+                                              'domainName'=>DOMAIN_NAME,
+                                              'clickUrl'=>$clickUrl
                                               );
 
                           $serializeRequest =  json_encode($serializeRequest);
