@@ -77,7 +77,7 @@ class repository_primecontent extends repository {
                 $tokenValid = false;
                 $conn = new curl(array('cache'=>true, 'debug'=>false));
                 if (isset($SESSION->sessionToken) && !empty($SESSION->sessionToken)) {
-                    $api_path = UMS_URL . "/isLoginTokenValidForUserByUuid";
+                    $api_path = BL_URL . "/user/isLoginTokenValidForUserByUuid";
                     // $api_path = "http://stgums.fliplearn.com/isLoginTokenValidForUserByUuid";    
                     $params = array('uuid' => $userInfo->uuid,
                                     'sessionToken' => $SESSION->sessionToken
@@ -86,7 +86,8 @@ class repository_primecontent extends repository {
                     $conn->setHeader(array(
                         'Content-Type: application/json',
                         'Connection: keep-alive',
-                        'Cache-Control: no-cache'));
+                        'Cache-Control: no-cache',
+                        'SupportedApiVersion: 1'));
                     $content = $conn->post($api_path,$params_json);
                     $result = json_decode($content);
                     if (isset($result->status)) {
@@ -95,7 +96,7 @@ class repository_primecontent extends repository {
                 } 
                 if (!$tokenValid) {
                     $conn2 = new curl(array('cache'=>true, 'debug'=>false));
-                    $api_path2 = UMS_URL . "/autologinByUuid/$userInfo->uuid";    
+                    $api_path2 = BL_URL . "/user/autologinByUuid/$userInfo->uuid";    
                     $content2 = $conn2->get($api_path2,'');
                     $result2 = json_decode($content2);
                     if (isset($result2->data->sessionToken)) {
