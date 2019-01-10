@@ -50,7 +50,7 @@ class filter_viewerjs_media_player extends core_media_player {
      * @return string HTML code for embed
      */
     public function embed($urls, $name = null, $width = false, $height = false, $options = false) {
-        global $CFG;
+        global $CFG, $DB;
         // don't expect alternative urls
         if (count($urls) !== 1) {
             return '';
@@ -59,22 +59,89 @@ class filter_viewerjs_media_player extends core_media_player {
         $file_url            = new moodle_url($urls[0]);
         $viewerjs_player_url = new moodle_url('/filter/viewerjs/lib/viewerjs');
         // we assume the filter/viewerjs/lib/viewerjs directory will be four directories away from the initial public directory
+        // $viewerjs_player_url->set_anchor('../../../..' . $file_url->out_as_local_url());
 
         preg_match_all('/<a[^>]+href=([\'"])(?<href>.+?)\1[^>]*>/i', $urls[0], $res_arr);
         $link = '';
         if (!empty($res_arr)) {
             $link = $res_arr['href'][0];
         }
-        $localurl = substr($link, strlen($CFG->wwwroot));
-        // $viewerjs_player_url->set_anchor('../../../..' . $file_url->out_as_local_url());
-        $viewerjs_player_url->set_anchor('../../../../' . $localurl);
 
         if (!$width) {
-            $width = '100%';
+            $width = '95%';
         }
         if (!$height) {
             $height = 500;
         }
+
+        if (strpos($link, '.pptx') !== false || strpos($link, '.ppt') !== false || strpos($link, '.docx') !== false || strpos($link, '.doc') !== false) {
+            $varcon = substr($link, strlen($CFG->wwwroot . '/pluginfile.php?file=/'));
+            $chunks = explode('/', $varcon);
+
+            if (!empty($chunks)) {
+                    $contextid = (isset($chunks[0]) && !empty($chunks[0])) ? $chunks[0] : '';
+                    $component = (isset($chunks[1]) && !empty($chunks[1])) ? $chunks[1] : '';
+                    $filearea = (isset($chunks[2]) && !empty($chunks[2])) ? $chunks[2] : '';
+                    $filename = (isset($chunks[4]) && !empty($chunks[4])) ? $chunks[4] : '';
+                    $condition = array();
+                    if (!empty($filename) && !empty($filearea) && !empty($component) && !empty($contextid)) {
+                        $condition['filename'] = $filename;
+                        $condition['filearea'] = $filearea;
+                        $condition['component'] = $component;
+                        $condition['contextid'] = $contextid;
+                    
+                        $fileData = $DB->get_record('files', $condition, '*');
+                        if (!empty($fileData)) {
+                            $contenthash = $fileData->contenthash;
+                            if (!empty($contenthash)) {
+                                $f1 = substr($contenthash, 0, 2);
+                                $f2 = substr($contenthash, 2, 2);
+
+                                $src = '';
+                                if (strpos($link, '.pptx') !== false || strpos($link, '.ppt') !== false) {
+                                    if (!file_exists($CFG->dataroot . "/filedir/$f1/$f2/$contenthash" . 'fl.pptx')) {
+                                        $cont = $content = file_get_contents($CFG->dataroot . "/filedir/$f1/$f2/$contenthash");
+                                        $file = fopen($CFG->dataroot . "/filedir/$f1/$f2/$contenthash" . 'fl.pptx', "w");
+                                        fwrite($file,$cont);
+                                        fclose($file);
+                                    }
+                                    $src = "https://docs.google.com/gview?url=" . PUBLIC_ACCESS_URL . "/$f1/$f2/$contenthash" . "fl.pptx&embedded=true";
+                                } else {
+                                    if (!file_exists($CFG->dataroot . "/filedir/$f1/$f2/$contenthash" . 'fl.docx')) {
+                                        $cont = $content = file_get_contents($CFG->dataroot . "/filedir/$f1/$f2/$contenthash");
+                                        $file = fopen($CFG->dataroot . "/filedir/$f1/$f2/$contenthash" . 'fl.docx', "w");
+                                        fwrite($file,$cont);
+                                        fclose($file);
+                                    }
+                                    $src = "https://docs.google.com/gview?url=" . PUBLIC_ACCESS_URL . "/$f1/$f2/$contenthash" . "fl.docx&embedded=true";
+                                }
+                                $output = html_writer::tag('iframe', '', array(
+                                    'src'                   => $src,
+                                    'width'                 => $width,
+                                    'height'                => $height,
+                                    'webkitallowfullscreen' => 'webkitallowfullscreen',
+                                    'mozallowfullscreen'    => 'mozallowfullscreen',
+                                    'allowfullscreen'       => 'allowfullscreen'
+                                ));
+
+                                return $output;                                  
+                            } else {
+                                return;
+                            }
+                        } else {
+                            return;
+                        }
+                    } else {
+                        return;
+                    }
+                    
+            }
+            
+        } else {
+            $localurl = substr($link, strlen($CFG->wwwroot));
+        }
+
+        $viewerjs_player_url->set_anchor('../../../../' . $localurl);
 
         $output = html_writer::tag('iframe', '', array(
             'src'                   => $viewerjs_player_url->out(),

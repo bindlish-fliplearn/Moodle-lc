@@ -21,6 +21,21 @@
             messagingSenderId: "855378505035"
         };
 
+           var deviceCode = localStorage.getItem("WEB_DEVICE_CODE");
+
+            if (deviceCode == undefined || deviceCode == null || deviceCode.length == 0) {
+                    var nav = window.navigator;
+                    var screen = window.screen;
+                    deviceCode = nav.mimeTypes.length;
+                    deviceCode += nav.userAgent.replace(/\D+/g, '');
+                    deviceCode += nav.plugins.length;
+                    deviceCode += screen.height || '';
+                    deviceCode += screen.width || '';
+                    deviceCode += screen.pixelDepth || '';
+                    localStorage.setItem("WEB_DEVICE_CODE", deviceCode);
+                }
+
+        console.log(deviceCode);
         firebase.initializeApp(config);
         const messaging = firebase.messaging();
         messaging.requestPermission().then(function () {
@@ -40,9 +55,9 @@
                     "platform": window.navigator.platform,
                     "osVersion": window.navigator.appVersion,
                     "osName": "web",
-                    "serialNo": token,
+                    "serialNo": deviceCode,
                     "arnToken": token,
-                    "Imei": token,
+                    "Imei": deviceCode,
                     "MacAddress": "",
                     "DeviceModel": "",
                     "domainName":domainName,

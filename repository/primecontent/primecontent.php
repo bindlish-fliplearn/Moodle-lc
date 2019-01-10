@@ -104,7 +104,7 @@ class primecontent {
                                             foreach ($values4 as $page) {
                                                 $thumbnail = '';
                                                 $title = $page->title;
-                                                $title .= '.mp4';
+                                                $title .= '.f4v';
                                                 
                                                 $isMedia = ($page->isMedia) ? 1 : 0;
                                                 $resourceType = ($page->resourceType) ? $page->resourceType : '';
@@ -129,7 +129,6 @@ class primecontent {
                             }
                         }
                     }
-                // print_r($files_array);die('qwe');
                     if (!empty($files_array)) {
                         return $files_array;
                     }
@@ -193,13 +192,13 @@ EOD;
                 foreach ($result->response as $page) {
                     $thumbnail = '';
                     $title = $page->topicName;
-                    $title .= '.mp4';
+                    $title .= '.f4v';
                     
                     $isMedia = ($page->isMedia) ? 1 : 0;
                     if (strpos($page->thumbnail, '?'))
-                        $thumbnail = $page->thumbnail . '&resourceId=' . $page->resourceLanguages[0]->resourceId . '@@' . $page->mediaType . '@@' . $isMedia . '@@' . $page->cType;
+                        $thumbnail = $page->thumbnail . '&resourceId=' . $page->resourceId . '@@' . $page->mediaType . '@@' . $isMedia . '@@' . $page->cType;
                     else
-                        $thumbnail = $page->thumbnail . '?resourceId=' . $page->resourceLanguages[0]->resourceId . '@@' . $page->mediaType . '@@' . $isMedia . '@@' . $page->cType;
+                        $thumbnail = $page->thumbnail . '?resourceId=' . $page->resourceId . '@@' . $page->mediaType . '@@' . $isMedia . '@@' . $page->cType;
                     $files_array[] = array(
                         'title'=>$title,         //chop off 'File:'
                         'thumbnail' => $page->thumbnail,
@@ -210,8 +209,6 @@ EOD;
                         // the accessible url of the file
                         // 'url'=>'https://media.fliplearn.com/fliplearnaes/_definst_/s3/b2ccontents/EOL/Contents/2014050700182179/2014050700182179.smil/playlist.m3u8?wowzatokenstarttime=1540787744&wowzatokenendtime=1543466144&wowzatokenhash=JhvSOfXy3_LPejvWRBmeDi_7FnZ39_sS_q3YL5jiRn4=',
                         'source' => $thumbnail,
-                        // 'resource_id' => $page->resourceLanguages[0]->resourceId,
-                        // 'url' => $page->resourceLanguages[0]->resourceId
                     );
                 }
             }
