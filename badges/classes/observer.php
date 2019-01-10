@@ -215,168 +215,168 @@
           }
       }
       
-      /**
-       * Triggered when 'course_completed' event is triggered.
-       *
-       * @param \core\event\course_completed $event
-       */
-      public static function course_created_push_notification(\core\event\course_created $event) {
-       /*echo "<pre>"; print_r($event); //die;
-        //Check prime license & session Token
-        global $SESSION, $USER, $DB, $CFG;
-        //print_r($USER->id);
+  //     /**
+  //      * Triggered when 'course_completed' event is triggered.
+  //      *
+  //      * @param \core\event\course_completed $event
+  //      */
+  //     public static function course_created_push_notification(\core\event\course_created $event) {
+  //      /*echo "<pre>"; print_r($event); //die;
+  //       //Check prime license & session Token
+  //       global $SESSION, $USER, $DB, $CFG;
+  //       //print_r($USER->id);
         
-        $userInfo = $DB->get_record('guru_user_mapping', array('user_id' => $USER->id), '*');
+  //       $userInfo = $DB->get_record('guru_user_mapping', array('user_id' => $USER->id), '*');
         
-        $conn2 = new curl(array('cache'=>true, 'debug'=>false));
-        $api_path2 = UMS_URL . "/autologinByUuid/$userInfo->uuid";    
-        $content2 = $conn2->get($api_path2,'');
-        $result2 = json_decode($content2);
+  //       $conn2 = new curl(array('cache'=>true, 'debug'=>false));
+  //       $api_path2 = UMS_URL . "/autologinByUuid/$userInfo->uuid";    
+  //       $content2 = $conn2->get($api_path2,'');
+  //       $result2 = json_decode($content2);
         
-        if (isset($result2->data->sessionToken)) {
-            $SESSION->sessionToken = $result2->data->sessionToken;
-        } else {
-            return API_FAIL_MSG;
-        }
+  //       if (isset($result2->data->sessionToken)) {
+  //           $SESSION->sessionToken = $result2->data->sessionToken;
+  //       } else {
+  //           return API_FAIL_MSG;
+  //       }
                       
-        $api_path = UMS_URL . "/isLoginTokenValidForUserByUuid";
-  //      $params = array('uuid' => $userInfo->uuid,
-  //                      'sessionToken' => $SESSION->sessionToken
-  //                  );
+  //       $api_path = UMS_URL . "/isLoginTokenValidForUserByUuid";
+  // //      $params = array('uuid' => $userInfo->uuid,
+  // //                      'sessionToken' => $SESSION->sessionToken
+  // //                  );
         
         
-        $serializeRequest = array('senderUuid'=>1234,
-                                          'schoolCode'=>$school_code,
-                                          'messageTitle'=>$messageTitle,
-                                          'messageText'=>strip_tags($messageText),
-                                          'uuidList'=>$uuidList,
-                                          'smsEnabled'=>false,
-                                          'emailEnabled'=>false,
-                                          'domainName'=>'stgmoodlelc.fliplearn.com'
-                                      );
-                          $serializeRequest =  json_encode($serializeRequest);
-                          $request =  array(
-                            'eventType' => $eventType,
-                            'eventDate' => $eventDate,
-                            'payload' => $serializeRequest
-                          ); 
-                          $params = json_encode($request);
+  //       $serializeRequest = array('senderUuid'=>1234,
+  //                                         'schoolCode'=>$school_code,
+  //                                         'messageTitle'=>$messageTitle,
+  //                                         'messageText'=>strip_tags($messageText),
+  //                                         'uuidList'=>$uuidList,
+  //                                         'smsEnabled'=>false,
+  //                                         'emailEnabled'=>false,
+  //                                         'domainName'=>'stgmoodlelc.fliplearn.com'
+  //                                     );
+  //                         $serializeRequest =  json_encode($serializeRequest);
+  //                         $request =  array(
+  //                           'eventType' => $eventType,
+  //                           'eventDate' => $eventDate,
+  //                           'payload' => $serializeRequest
+  //                         ); 
+  //                         $params = json_encode($request);
                         
                           
-        $params_json = json_encode($params);
-        $conn->setHeader(array(
-            'Content-Type: application/json',
-            'Connection: keep-alive',
-            'Cache-Control: no-cache'));
-        $content = $conn->post($api_path,$params_json);
-        $result = json_decode($content);
-        if (isset($result->status)) {
-            $tokenValid = $result->status;
-        }*/
-      }
+  //       $params_json = json_encode($params);
+  //       $conn->setHeader(array(
+  //           'Content-Type: application/json',
+  //           'Connection: keep-alive',
+  //           'Cache-Control: no-cache'));
+  //       $content = $conn->post($api_path,$params_json);
+  //       $result = json_decode($content);
+  //       if (isset($result->status)) {
+  //           $tokenValid = $result->status;
+  //       }*/
+  //     }
       
-      public static function course_module_completion_updated_push_notification(\core\event\course_module_completion_updated $event) {
-        die("course_module_completion_updated_push_notification");
-      }
+  //     public static function course_module_completion_updated_push_notification(\core\event\course_module_completion_updated $event) {
+  //       die("course_module_completion_updated_push_notification");
+  //     }
       
-      public static function course_completed_push_notification(\core\event\course_completed $event) {
-        die("course_completed_push_notification");
-      }
+  //     public static function course_completed_push_notification(\core\event\course_completed $event) {
+  //       die("course_completed_push_notification");
+  //     }
       
-       public static function post_created_push_notification(\core\event\course_updated $event) {
-        die("post_created_push_notification");
-      }
+  //      public static function post_created_push_notification(\core\event\course_updated $event) {
+  //       die("post_created_push_notification");
+  //     }
       
-      public static function discussion_created_push_notification(\mod_forum\event\discussion_created $event) {
-            global $DB, $CFG;
-            $discussionsData = $event->get_record_snapshot('forum_discussions', $event->objectid);
-            $eventDate = date("Y-m-d\TH:i:s.511\Z", $discussionsData->timemodified);
-            $eventType = GURU_ANNOUNCEMENT;
-            $messageTitle = $discussionsData->subject;
-            $messageText = $discussionsData->message;
-            $courseId = $discussionsData->course;
-            $userid = $discussionsData->userid;
-            $postId  = $discussionsData->firstpost;
-            $discussionId = $event->objectid;
-            $contextlevel = CONTEXT_LEVEL;
-            $send_notification = SEND_NOTIFICATION;
-            $check = $DB->get_record_sql('SELECT COUNT(id) AS count FROM {guru_notification_send} WHERE post_id = ?', array($postId));
-            if($check->count < 1 && $send_notification == true){
-                    $sql = "SELECT mra.userid,gum.uuid as uuid,
-                            gum.school_code AS school_code 
-                            FROM {context} As mc 
-                            INNER JOIN {role_assignments} AS mra 
-                            ON mc.id = mra.contextid 
-                            INNER JOIN  {guru_user_mapping} AS  gum 
-                            ON gum.user_id = mra.userid
-                            WHERE mra.userid != ?
-                            AND mc.instanceid = ? 
-                            AND mc.contextlevel = ? ";
-                    $result = $DB->get_records_sql($sql , array($userid,$courseId,$contextlevel));
+  //     public static function discussion_created_push_notification(\mod_forum\event\discussion_created $event) {
+  //           global $DB, $CFG;
+  //           $discussionsData = $event->get_record_snapshot('forum_discussions', $event->objectid);
+  //           $eventDate = date("Y-m-d\TH:i:s.511\Z", $discussionsData->timemodified);
+  //           $eventType = GURU_ANNOUNCEMENT;
+  //           $messageTitle = $discussionsData->subject;
+  //           $messageText = $discussionsData->message;
+  //           $courseId = $discussionsData->course;
+  //           $userid = $discussionsData->userid;
+  //           $postId  = $discussionsData->firstpost;
+  //           $discussionId = $event->objectid;
+  //           $contextlevel = CONTEXT_LEVEL;
+  //           $send_notification = SEND_NOTIFICATION;
+  //           $check = $DB->get_record_sql('SELECT COUNT(id) AS count FROM {guru_notification_send} WHERE post_id = ?', array($postId));
+  //           if($check->count < 1 && $send_notification == true){
+  //                   $sql = "SELECT mra.userid,gum.uuid as uuid,
+  //                           gum.school_code AS school_code 
+  //                           FROM {context} As mc 
+  //                           INNER JOIN {role_assignments} AS mra 
+  //                           ON mc.id = mra.contextid 
+  //                           INNER JOIN  {guru_user_mapping} AS  gum 
+  //                           ON gum.user_id = mra.userid
+  //                           WHERE mra.userid != ?
+  //                           AND mc.instanceid = ? 
+  //                           AND mc.contextlevel = ? ";
+  //                   $result = $DB->get_records_sql($sql , array($userid,$courseId,$contextlevel));
 
-                    $school_code = '';
-                    $uuidList = array();
-                    foreach($result as $value) {
-                          $school_code = $value->school_code;
-                          $uuid = $value->uuid;
-                          array_push($uuidList, $uuid);
-                    }
-                  $clickUrl = BASE_URL.'/mod/forum/discuss.php?d='.$discussionId;
+  //                   $school_code = '';
+  //                   $uuidList = array();
+  //                   foreach($result as $value) {
+  //                         $school_code = $value->school_code;
+  //                         $uuid = $value->uuid;
+  //                         array_push($uuidList, $uuid);
+  //                   }
+  //                 $clickUrl = BASE_URL.'/mod/forum/discuss.php?d='.$discussionId;
 
-                    if(count($uuidList)>0){
-                          $serializeRequest = array('senderUuid'=>1234,
-                                              'schoolCode'=>$school_code,
-                                              'messageTitle'=>$messageTitle,
-                                              'messageText'=>strip_tags($messageText),
-                                              'uuidList'=>$uuidList,
-                                              'smsEnabled'=>false,
-                                              'emailEnabled'=>false,
-                                              'domainName'=>DOMAIN_NAME,
-                                              'clickUrl'=>$clickUrl
-                                              );
+  //                   if(count($uuidList)>0){
+  //                         $serializeRequest = array('senderUuid'=>1234,
+  //                                             'schoolCode'=>$school_code,
+  //                                             'messageTitle'=>$messageTitle,
+  //                                             'messageText'=>strip_tags($messageText),
+  //                                             'uuidList'=>$uuidList,
+  //                                             'smsEnabled'=>false,
+  //                                             'emailEnabled'=>false,
+  //                                             'domainName'=>DOMAIN_NAME,
+  //                                             'clickUrl'=>$clickUrl
+  //                                             );
 
-                          $serializeRequest =  json_encode($serializeRequest);
-                          $request =  array(
-                                            'eventType' => $eventType,
-                                            'eventDate' => $eventDate,
-                                            'payload' => $serializeRequest
-                                            ); 
-                          $data_string = json_encode($request);
-                          $ch = curl_init(COMMUNICATION_API_URL);
-                          curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-                          curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
-                          curl_setopt($ch, CURLOPT_TIMEOUT, 3); //timeout in seconds
-                          curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-                          curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                          curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                          'Content-Type: application/json',
-                          'Content-Length: ' . strlen($data_string))
-                          );
-                          $result = curl_exec($ch);
-                         // print_r($result);die;
-                          $err = curl_errno($ch);
-                          if ($err) {
-                            print_r($err);
-                            //$this->doError(curl_errno($ch), curl_error($ch));
-                          }   
-                          try {
-                              $notificationObj = new stdClass();
-                              $notificationObj->course_id = $courseId;
-                              $notificationObj->post_id = $postId;
-                              $notificationObj->user_id = $userid;
-                              $id =  $DB->insert_record('guru_notification_send',$notificationObj , $returnid=true, $bulk=false) ;
-                              if($id){
-                                return true;
-                              }
-                          }
-                          catch(Exception $e) {
-                              echo 'Message: ' .$e->getMessage();
-                          }
-                    }
-            }
-      }
-      public static function course_section_created_push_notification(\core\event\course_section_created $event) {
-       // die("course_section_created_push_notification");
-      }
+  //                         $serializeRequest =  json_encode($serializeRequest);
+  //                         $request =  array(
+  //                                           'eventType' => $eventType,
+  //                                           'eventDate' => $eventDate,
+  //                                           'payload' => $serializeRequest
+  //                                           ); 
+  //                         $data_string = json_encode($request);
+  //                         $ch = curl_init(COMMUNICATION_API_URL);
+  //                         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+  //                         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
+  //                         curl_setopt($ch, CURLOPT_TIMEOUT, 3); //timeout in seconds
+  //                         curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+  //                         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  //                         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+  //                         'Content-Type: application/json',
+  //                         'Content-Length: ' . strlen($data_string))
+  //                         );
+  //                         $result = curl_exec($ch);
+  //                        // print_r($result);die;
+  //                         $err = curl_errno($ch);
+  //                         if ($err) {
+  //                           print_r($err);
+  //                           //$this->doError(curl_errno($ch), curl_error($ch));
+  //                         }   
+  //                         try {
+  //                             $notificationObj = new stdClass();
+  //                             $notificationObj->course_id = $courseId;
+  //                             $notificationObj->post_id = $postId;
+  //                             $notificationObj->user_id = $userid;
+  //                             $id =  $DB->insert_record('guru_notification_send',$notificationObj , $returnid=true, $bulk=false) ;
+  //                             if($id){
+  //                               return true;
+  //                             }
+  //                         }
+  //                         catch(Exception $e) {
+  //                             echo 'Message: ' .$e->getMessage();
+  //                         }
+  //                   }
+  //           }
+  //     }
+  //     public static function course_section_created_push_notification(\core\event\course_section_created $event) {
+  //      // die("course_section_created_push_notification");
+  //     }
       
   }
