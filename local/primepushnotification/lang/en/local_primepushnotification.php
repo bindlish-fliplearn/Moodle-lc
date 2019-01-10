@@ -24,4 +24,4 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-$string['pluginname'] = 'Notify Prime Push Notification';
+$string['pluginname'] = 'Prime Push Notification';
