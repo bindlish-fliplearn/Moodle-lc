@@ -42,6 +42,7 @@ class local_primepushnotification_observer {
      */
     public static function primepushnotification(\mod_forum\event\discussion_created $event) {
       global $DB, $CFG;
+      require_once($CFG->dirroot . '/local/primepushnotification/lib.php');
             $discussionsData = $event->get_record_snapshot('forum_discussions', $event->objectid);
             $eventDate = date("Y-m-d\TH:i:s.511\Z", $discussionsData->timemodified);
             $eventType = GURU_ANNOUNCEMENT;
