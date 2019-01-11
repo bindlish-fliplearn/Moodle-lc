@@ -35,13 +35,12 @@ defined('MOODLE_INTERNAL') || die();
  */
 class local_primepushnotification_observer {
     /**
-     * Event processor - user created
+     * Event processor - discussion created
      *
      * @param \mod_forum\event\discussion_created
      * @return bool
      */
     public static function primepushnotification(\mod_forum\event\discussion_created $event) {
-        global $DB, $CFG;
       global $DB, $CFG;
             $discussionsData = $event->get_record_snapshot('forum_discussions', $event->objectid);
             $eventDate = date("Y-m-d\TH:i:s.511\Z", $discussionsData->timemodified);
