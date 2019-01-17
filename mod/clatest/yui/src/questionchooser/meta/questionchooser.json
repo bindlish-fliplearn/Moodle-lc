@@ -1,9 +1,0 @@
-{
-    "moodle-mod_clatest-questionchooser": {
-        "requires": [
-            "moodle-core-chooserdialogue",
-            "moodle-mod_clatest-util",
-            "querystring-parse"
-        ]
-    }
-}

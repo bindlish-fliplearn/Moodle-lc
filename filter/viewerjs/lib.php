@@ -27,7 +27,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->libdir . '/medialib.php');
+// require_once($CFG->libdir . '/medialib.php');
 
 class filter_viewerjs_media_player extends core_media_player {
 

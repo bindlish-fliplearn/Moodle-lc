@@ -57,9 +57,9 @@ class filter_viewerjs extends moodle_text_filter {
             return $text;
         }
 
-        if (!$this->mediarenderer) {
-            $this->mediarenderer = $PAGE->get_renderer('filter_viewerjs');
-        }
+        // if (!$this->mediarenderer) {
+        //     $this->mediarenderer = $PAGE->get_renderer('filter_viewerjs');
+        // }
         // $embedmarkers = $this->mediarenderer->get_embeddable_markers();
         // Looking for tags.
         $matches = preg_split('/(<[^>]*>)/i', $text, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);

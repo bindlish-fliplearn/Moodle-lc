@@ -1,8 +1,0 @@
-{
-    "moodle-mod_clatest-clatestbase": {
-        "requires": [
-            "base",
-            "node"
-        ]
-    }
-}

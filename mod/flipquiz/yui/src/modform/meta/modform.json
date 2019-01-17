@@ -1,9 +1,0 @@
-{
-    "moodle-mod_flipquiz-modform": {
-        "requires": [
-            "base",
-            "node",
-            "event"
-        ]
-    }
-}

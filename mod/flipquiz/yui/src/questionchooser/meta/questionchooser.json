@@ -1,9 +1,0 @@
-{
-    "moodle-mod_flipquiz-questionchooser": {
-        "requires": [
-            "moodle-core-chooserdialogue",
-            "moodle-mod_flipquiz-util",
-            "querystring-parse"
-        ]
-    }
-}

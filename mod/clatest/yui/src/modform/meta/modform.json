@@ -1,9 +1,0 @@
-{
-    "moodle-mod_clatest-modform": {
-        "requires": [
-            "base",
-            "node",
-            "event"
-        ]
-    }
-}
