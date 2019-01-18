@@ -47,21 +47,45 @@ class primecontent {
     $result3 = json_decode($content3);
     $keyword = new stdClass();
     $keyword->label = get_string('keyword', 'repository_primecontent') . ': ';
-    $keyword->id = 'input_text_keyword';
+    $keyword->id = 'primecontent_class';
     $keyword->type = 'select';
-    $keyword->name = 'primecontent_subject';
-    $keyword->value = '';
+    $keyword->name = 'primecontent_class';
+    foreach ($result3->response as $result) {
+      if(!empty($result->classCode)) {
+        $classList[] = array(
+          'value' => $result->classCode,
+          'label' => $result->className
+        );
+      }
+    }
+    $selectClassList[] = array(
+          'value' => '',
+          'label' => 'Select class'
+        );
+    $keyword->options = array_merge($selectClassList, $classList);
     foreach ($result3->response as $result) {
       foreach ($result->subjects as $subject) {
-        $classList[] = array(
+        $subjectList[] = array(
           'value' => $subject->subjectId,
           'label' => $result->className . ' ' . $subject->subjectName
         );
       }
+      $classSubjectList[$result->classCode] = $subjectList;
     }
-    $keyword->options = $classList;
+    $selectSubjectList[] = array(
+          'value' => '',
+          'label' => 'Select subject'
+        );
+    $classSubject = array(
+        'label' => get_string('keyword', 'repository_primecontent').': ',
+        'type' => 'select',
+        'name' => 'primecontent_subject',
+        'id' => 'primecontent_subject',
+        'options' => $selectSubjectList,
+        'value' => '',
+    );
     $form = array();
-    $form['login'] = array($keyword);
+    $form['login'] = array($keyword, (object) $classSubject);
     $form['nologin'] = true;
     $form['norefresh'] = true;
     $form['nosearch'] = true;
