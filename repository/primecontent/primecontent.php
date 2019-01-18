@@ -41,6 +41,11 @@ class primecontent {
   }
 
   public function displaySearchForm() {
+    global $DB;
+    //Extract course & section form URL
+    $classId = "";
+//    $subjectId = "";
+    
     $curl = new curl(array('cache' => false, 'debug' => false));
     $classURL = PRIME_URL . "/v1/class?boardCode=cbse";
     $content3 = $curl->get($classURL, '');
@@ -51,38 +56,55 @@ class primecontent {
     $keyword->type = 'select';
     $keyword->name = 'primecontent_class';
     foreach ($result3->response as $result) {
-      if(!empty($result->classCode)) {
-        $classList[] = array(
-          'value' => $result->classCode,
-          'label' => $result->className
-        );
+      if (!empty($result->classCode)) {
+        if ($classId == $result->classCode) {
+          $classList[] = array(
+            'value' => $result->classCode,
+            'label' => $result->className,
+            'selected' => true
+          );
+        } else {
+          $classList[] = array(
+            'value' => $result->classCode,
+            'label' => $result->className
+          );
+        }
       }
     }
     $selectClassList[] = array(
-          'value' => '',
-          'label' => 'Select class'
-        );
+      'value' => '',
+      'label' => 'Select class'
+    );
     $keyword->options = array_merge($selectClassList, $classList);
-    foreach ($result3->response as $result) {
-      foreach ($result->subjects as $subject) {
-        $subjectList[] = array(
-          'value' => $subject->subjectId,
-          'label' => $result->className . ' ' . $subject->subjectName
-        );
-      }
-      $classSubjectList[$result->classCode] = $subjectList;
-    }
+
+    //Will use when filepicker.js issue will resolve.
+//    foreach ($result3->response as $result) {
+//     foreach ($result->subjects as $subject) {
+//      if($subjectId == $subject->subjectId) {
+//          $subjectList[$result->classCode][] = array(
+//            'value' => $subject->subjectId,
+//            'label' => $subject->subjectName,
+//            'selected' => true
+//          );
+//        } else {
+//          $subjectList[$result->classCode][] = array(
+//            'value' => $subject->subjectId,
+//            'label' => $subject->subjectName
+//          );
+//        }
+//      }
+//    }
     $selectSubjectList[] = array(
-          'value' => '',
-          'label' => 'Select subject'
-        );
+      'value' => '',
+      'label' => 'Select subject'
+    );
     $classSubject = array(
-        'label' => get_string('keyword', 'repository_primecontent').': ',
-        'type' => 'select',
-        'name' => 'primecontent_subject',
-        'id' => 'primecontent_subject',
-        'options' => $selectSubjectList,
-        'value' => '',
+      'label' => get_string('keyword', 'repository_primecontent') . ': ',
+      'type' => 'select',
+      'name' => 'primecontent_subject',
+      'id' => 'primecontent_subject',
+      'options' => $selectSubjectList,
+      'value' => '',
     );
     $form = array();
     $form['login'] = array($keyword, (object) $classSubject);
@@ -93,46 +115,63 @@ class primecontent {
     return $form;
   }
   
+  public function getCourseMapping() {
+    $query = array();
+    $classId = "";
+    $subjectId = "";
+    $current_link = $_SERVER[HTTP_REFERER];
+    $parts = parse_url($current_link);
+    parse_str($parts['query'], $query);
+    if (!empty($query)) {
+      $courseId = $query['course'];
+      $course_map = $DB->get_record('guru_prime_mapping', array('course_id' => $courseId), '*');
+      if (!empty($course_map)) {
+        $classId = $course_map->class_level_id;
+        $subjectId = $course_map->subject_id;
+      }
+    }
+    return array('classId' => $classId, 'subjectId' => $subjectId);
+  }
+
   public function getPrimContentBySubjectId($primeSubject, $search = null) {
     $files_array = array();
     if (!empty($primeSubject)) {
-        $options = 'subjectId=' . $primeSubject;
-        if(!empty($search)) {
-          $options .= '&searchKey='.$search;
-        }
-        $options .= '&allContent=true';
-        $api_path = PRIME_URL . "/v1/getAllResource?$options";
-        $content = $this->_conn->get($api_path, '');
-        $result = json_decode($content);
-        if (is_array($result->response) && !empty($result->response)) {
-          foreach ($result->response as $key1 => $values1) {
-            foreach ($values1 as $key2 => $values2) {
-              if ($key2 == 'topics') {
-                foreach ($values2 as $key3 => $values3) {
-                  foreach ($values3 as $key4 => $values4) {
-                    if ($key4 == 'resources') {
-                      foreach ($values4 as $page) {
-                        $thumbnail = '';
-                        $title = $page->title;
-                        $title .= '.f4v';
+      $options = 'subjectId=' . $primeSubject;
+      if (!empty($search)) {
+        $options .= '&searchKey=' . $search;
+      }
+      $options .= '&allContent=true';
+      $api_path = PRIME_URL . "/v1/getAllResource?$options";
+      $content = $this->_conn->get($api_path, '');
+      $result = json_decode($content);
+      if (is_array($result->response) && !empty($result->response)) {
+        foreach ($result->response as $key1 => $values1) {
+          foreach ($values1 as $key2 => $values2) {
+            if ($key2 == 'topics') {
+              foreach ($values2 as $key3 => $values3) {
+                foreach ($values3 as $key4 => $values4) {
+                  if ($key4 == 'resources') {
+                    foreach ($values4 as $page) {
+                      $thumbnail = '';
+                      $title = $page->title;
+                      $title .= '.f4v';
 
-                        $isMedia = ($page->isMedia) ? 1 : 0;
-                        $resourceType = ($page->resourceType) ? $page->resourceType : '';
-                        $cType = ($page->cType) ? $page->cType : '';
-                        if (strpos($page->thumbnail, '?'))
-                          $thumbnail = $page->thumbnail . '&resourceId=' . $page->id . '@@' . $resourceType . '@@' . $isMedia . '@@' . $cType;
-                        else
-                          $thumbnail = $page->thumbnail . '?resourceId=' . $page->id . '@@' . $resourceType . '@@' . $isMedia . '@@' . $cType;
-                        $files_array[] = array(
-                          'title' => $title,
-                          'thumbnail' => $page->thumbnail,
-                          'thumbnail_width' => PRIMECONTENT_THUMB_SIZE,
-                          'thumbnail_height' => PRIMECONTENT_THUMB_SIZE,
-                          'license' => 'cc-sa',
-                          'icon' => $page->thumbnail,
-                          'source' => $thumbnail,
-                        );
-                      }
+                      $isMedia = ($page->isMedia) ? 1 : 0;
+                      $resourceType = ($page->resourceType) ? $page->resourceType : '';
+                      $cType = ($page->cType) ? $page->cType : '';
+                      if (strpos($page->thumbnail, '?'))
+                        $thumbnail = $page->thumbnail . '&resourceId=' . $page->id . '@@' . $resourceType . '@@' . $isMedia . '@@' . $cType;
+                      else
+                        $thumbnail = $page->thumbnail . '?resourceId=' . $page->id . '@@' . $resourceType . '@@' . $isMedia . '@@' . $cType;
+                      $files_array[] = array(
+                        'title' => $title,
+                        'thumbnail' => $page->thumbnail,
+                        'thumbnail_width' => PRIMECONTENT_THUMB_SIZE,
+                        'thumbnail_height' => PRIMECONTENT_THUMB_SIZE,
+                        'license' => 'cc-sa',
+                        'icon' => $page->thumbnail,
+                        'source' => $thumbnail,
+                      );
                     }
                   }
                 }
@@ -141,7 +180,8 @@ class primecontent {
           }
         }
       }
-      return $files_array;
+    }
+    return $files_array;
   }
 
   public function login() {
@@ -149,11 +189,11 @@ class primecontent {
     $respo = FALSE;
     $userInfo = $DB->get_record('guru_user_mapping', array('user_id' => $USER->id), '*');
     if (isset($userInfo->uuid) && !empty($userInfo->uuid)) {
-      if(isset($SESSION->uuid) && !empty($SESSION->uuid) && isset($SESSION->sessionToken) && !empty($SESSION->sessionToken)) {
+      if (isset($SESSION->uuid) && !empty($SESSION->uuid) && isset($SESSION->sessionToken) && !empty($SESSION->sessionToken)) {
         $uuid = $SESSION->uuid;
         $sessionToken = $SESSION->sessionToken;
         $checkSession = $this->checkSesstionToken($uuid, $sessionToken);
-        if(!$checkSession) {
+        if (!$checkSession) {
           print_error(UNSUBSCRIBE_MSG);
           return;
         }
@@ -192,9 +232,9 @@ class primecontent {
     if (isset($result->status)) {
       $tokenValid = $result->status;
     }
-    return $tokenValid;;
+    return $tokenValid;
   }
-  
+
   public function checkLicence($uuid) {
     global $SESSION;
     $respo = FALSE;
