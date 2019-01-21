@@ -65,7 +65,12 @@ class local_primepushnotification_observer {
                             ON gum.user_id = mra.userid
                             WHERE mra.userid != ?
                             AND mc.instanceid = ? 
-                            AND mc.contextlevel = ? ";
+                            AND mc.contextlevel = ?
+                            AND mra.userid 
+                            iN(SELECT ue.userid FROM mdl_enrol 
+                            AS me INNER JOIN mdl_user_enrolments 
+                            AS ue ON me.id = ue.enrolid 
+                            WHERE me.courseid = $courseId AND ue.status = 0)";
                     $result = $DB->get_records_sql($sql , array($userid,$courseId,$contextlevel));
                     $school_code = '';
                     $uuidList = array();
