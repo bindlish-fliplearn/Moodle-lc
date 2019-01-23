@@ -56,16 +56,16 @@ class primecontent {
     $keyword->type = 'select';
     $keyword->name = 'primecontent_class';
     foreach ($result3->response as $result) {
-      if (!empty($result->classCode)) {
-        if ($classId == $result->classCode) {
+      if (!empty($result->classId)) {
+        if ($classId == $result->classId) {
           $classList[] = array(
-            'value' => $result->classCode,
+            'value' => $result->classId,
             'label' => $result->className,
             'selected' => true
           );
         } else {
           $classList[] = array(
-            'value' => $result->classCode,
+            'value' => $result->classId,
             'label' => $result->className
           );
         }
@@ -133,14 +133,19 @@ class primecontent {
     return array('classId' => $classId, 'subjectId' => $subjectId);
   }
 
-  public function getPrimContentBySubjectId($primeSubject, $search = null) {
+  public function getPrimContentBySubjectId($primeClass, $primeSubject, $search = null) {
     $files_array = array();
-    if (!empty($primeSubject)) {
-      $options = 'subjectId=' . $primeSubject;
-      if (!empty($search)) {
-        $options .= '&searchKey=' . $search;
+    if (!empty($primeClass)) {
+      if(!empty($primeClass)) {
+        $options = 'classId='.$primeClass;
       }
-      $options .= '&allContent=true';
+      if(!empty($primeSubject)) {
+        $options .= '&subjectId=' . $primeSubject;
+      }
+      if (!empty($search)) {
+        $options .= '&searchKey=' . urlencode($search);
+      }
+      $options .= '&pageSize=100';
       $api_path = PRIME_URL . "/v1/getAllResource?$options";
       $content = $this->_conn->get($api_path, '');
       $result = json_decode($content);

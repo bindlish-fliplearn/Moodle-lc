@@ -45,7 +45,7 @@ class repository_primecontent extends repository {
     if ($list['page'] < 1) {
       $list['page'] = 1;
     }
-    
+    $primecontent_class = optional_param('primecontent_class', '', PARAM_RAW);
     $primecontent_subject = optional_param('primecontent_subject', '', PARAM_RAW);
     
     $primecontent = new primecontent;
@@ -54,14 +54,17 @@ class repository_primecontent extends repository {
       $uuid = $SESSION->uuid;
       $licence = $primecontent->checkLicence($uuid);
       if($licence) {
-        if(empty($primecontent_subject)) {
+        if(empty($primecontent_class)) {
           $form = $primecontent->displaySearchForm();
           return $form;
         } else {
+          if((!isset($SESSION->classId) && empty($SESSION->classId)) || $SESSION->classId != $primecontent_class) {
+            $SESSION->classId = $primecontent_class;
+          }
           if((!isset($SESSION->subjectId) && empty($SESSION->subjectId)) || $SESSION->subjectId != $primecontent_subject) {
             $SESSION->subjectId = $primecontent_subject;
           }
-          $data = $primecontent->getPrimContentBySubjectId($SESSION->subjectId);
+          $data = $primecontent->getPrimContentBySubjectId($SESSION->classId, $SESSION->subjectId);
           if(empty($data)) {
             print_error("Content not found.");
             return;
@@ -109,7 +112,7 @@ class repository_primecontent extends repository {
       $uuid = $SESSION->uuid;
       $licence = $primecontent->checkLicence($uuid);
       if($licence) {
-        $data = $primecontent->getPrimContentBySubjectId($SESSION->subjectId, $search_text);
+        $data = $primecontent->getPrimContentBySubjectId($SESSION->classId, $SESSION->subjectId, $search_text);
         if(empty($data)) {
           print_error("Content not found.");
           return;
