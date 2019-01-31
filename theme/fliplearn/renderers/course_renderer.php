@@ -1,7 +1,6 @@
 <?php
 
 defined('MOODLE_INTERNAL') || die();
-
 require_once($CFG->dirroot . "/course/renderer.php");
 
 class theme_fliplearn_core_course_renderer extends core_course_renderer {
@@ -14,6 +13,8 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
      * @param string $additionalclasses
      * @return string
      */
+   
+
     protected function coursecat_coursebox(coursecat_helper $chelper, $course, $additionalclasses = '') {
         global $CFG, $OUTPUT, $PAGE;
         $type = theme_adaptable_get_setting('frontpagerenderer');
@@ -457,6 +458,7 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
      * @return string
      */
     public function course_section_cm_name(cm_info $mod, $displayoptions = array()) {
+        global $DB;
 //      die("kkkkkkk");
 //      
 
@@ -477,6 +479,15 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
         if (!$url) {
             return $output;
         }
+         $course_module_id  = $mod->id;
+        $result =  $DB->get_record_sql('SELECT source FROM {files} WHERE id  = ?', array($course_module_id));
+        $thumbUrl = '';
+        if($result){
+           $thumbUrl = $result->source; 
+        }
+        
+      //  echo "<pre>";
+       // print_r($mod->course);die;
 
         // Accessibility: for files get description via icon, this is very ugly hack!
         $instancename = $mod->get_formatted_name();
@@ -537,7 +548,7 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
         // only need to provide one SVG, see MDL-47082. (Used from snap theme).
         $imageurl = \preg_replace('/-\d\d\d?$/', '', $mod->get_icon_url());
 
-        $activitylink = html_writer::empty_tag('img', array('src' => "https://d1l59jsi25mzk9.cloudfront.net/apps3/build/images/inner-logo.png", //$imageurl,
+        $activitylink = html_writer::empty_tag('img', array('src' =>$thumbUrl, //$imageurl,
                 'class' => 'iconlarge activityicon', 'alt' => ' ', 'role' => 'presentation')) . $accesstext .
                 html_writer::tag('span', $instancename . $altname, array('class' => 'instancename'));
 
