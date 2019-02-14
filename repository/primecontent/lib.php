@@ -38,8 +38,22 @@ require_once(__DIR__ . '/primecontent.php');
 class repository_primecontent extends repository {
   
   public function get_listing($path = '', $page = '') {
+    $sessKey =  sesskey();
+    $client_id   = optional_param('client_id', '', PARAM_RAW);    // client ID
+    $itemid      = optional_param('itemid', '',        PARAM_INT);
+    $param = array('sesskey' => $sessKey, 'client_id' => $client_id, 'itemid' => $itemid);
+    $pluginserviceurl = new moodle_url('/repository/primecontent/searchForm.php');
+    return array(
+            'nologin' => true,
+            'norefresh' => true,
+            'nosearch' => true,
+            'object' => array(
+                'type' => 'text/html',
+                'src' => $pluginserviceurl->out() . "?sesskey=" . $sessKey . "&itemid=" . $itemid . "&client_id=" . $client_id
+            )
+        );
     global $SESSION;
-
+    
     $list = array();
     $list['page'] = (int) $page;
     if ($list['page'] < 1) {
