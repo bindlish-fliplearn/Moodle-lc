@@ -41,7 +41,7 @@ class repository_primecontent extends repository {
     $sessKey =  sesskey();
     $client_id   = optional_param('client_id', '', PARAM_RAW);    // client ID
     $itemid      = optional_param('itemid', '',        PARAM_INT);
-    $param = array('sesskey' => $sessKey, 'client_id' => $client_id, 'itemid' => $itemid);
+    $ctx_id = optional_param('ctx_id', '', PARAM_RAW);
     $pluginserviceurl = new moodle_url('/repository/primecontent/searchForm.php');
     return array(
             'nologin' => true,
@@ -49,7 +49,7 @@ class repository_primecontent extends repository {
             'nosearch' => true,
             'object' => array(
                 'type' => 'text/html',
-                'src' => $pluginserviceurl->out() . "?sesskey=" . $sessKey . "&itemid=" . $itemid . "&client_id=" . $client_id
+                'src' => $pluginserviceurl->out() . "?sesskey=" . $sessKey . "&itemid=" . $itemid . "&client_id=" . $client_id."&ctx_id=".$ctx_id
             )
         );
     global $SESSION;
@@ -101,7 +101,7 @@ class repository_primecontent extends repository {
   // if check_login returns false,
   // this function will be called to print a login form.
   public function print_login() {
-    $this->get_listing();
+    return true;
   }
 
   //search
@@ -112,37 +112,7 @@ class repository_primecontent extends repository {
   }
 
   public function search($search_text, $page = 0) {
-    global $SESSION;
-    
-    $list = array();
-    $list['page'] = (int) $page;
-    if ($list['page'] < 1) {
-      $list['page'] = 1;
-    }
-    
-    $primecontent = new primecontent;
-    $checkLogin = $primecontent->login();
-    if($checkLogin) {
-      $uuid = $SESSION->uuid;
-      $licence = $primecontent->checkLicence($uuid);
-      if($licence) {
-        $data = $primecontent->getPrimContentBySubjectId($SESSION->classId, $SESSION->subjectId, $search_text);
-        if(empty($data)) {
-          print_error("Content not found.");
-          return;
-        }
-      } else {
-        print_error("User licence is not valid.");
-        return;
-      }
-    } else {
-      print_error("User session is not valid.");
-      return;
-    }
-    $list['list'] = $data;
-    $list['norefresh'] = true;
-    $list['nologin'] = true;
-    return $list;
+    return true;
   }
 
   public function supported_returntypes() {
