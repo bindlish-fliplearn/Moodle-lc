@@ -6,34 +6,43 @@ var currentDate = d.getFullYear() + '/' +
         (d.getDate() < 10 ? '0' : '') + (d.getDate());
 
 function getClassList() {
-    $.ajax({
-        type: "GET",
-        url: primeUrl + "/v1/class?boardCode=cbse",
-        success: function (data) {
-            var objRes = JSON.parse(data);
-            var classList = {};
-            $("#primecontent_class").html("");
-            $("#primecontent_class").append("<option value=''>Select Class</option>");
-            $.each(objRes.response, function (classIndex, classValue) {
-                var subjectList = {};
-                $.each(classValue.subjects, function (subjectIndex, subjectValue) {
-                    subjectList[subjectIndex] = {
-                        subjectName: subjectValue.subjectName,
-                        subjectCode: subjectValue.subjectCode
+    var classSubjectList = JSON.parse(window.localStorage.getItem('classSubject'));
+    if(classSubjectList == "") {
+        $.ajax({
+            type: "GET",
+            url: primeUrl + "/v1/class?boardCode=cbse",
+            success: function (data) {
+                var objRes = JSON.parse(data);
+                var classList = {};
+                $("#primecontent_class").html("");
+                $("#primecontent_class").append("<option value=''>Select Class</option>");
+                $.each(objRes.response, function (classIndex, classValue) {
+                    var subjectList = {};
+                    $.each(classValue.subjects, function (subjectIndex, subjectValue) {
+                        subjectList[subjectIndex] = {
+                            subjectName: subjectValue.subjectName,
+                            subjectCode: subjectValue.subjectCode
+                        };
+                    });
+                    classList[classValue.classCode] = {
+                        classCode: classValue.classCode,
+                        className: classValue.className,
+                        classId: classValue.classId,
+                        subjectList: JSON.stringify(subjectList)
                     };
+                    $("#primecontent_class").append("<option value='" + classValue.classCode + "'>" + classValue.className + "</option>");
                 });
-                classList[classValue.classCode] = {
-                    classCode: classValue.classCode,
-                    className: classValue.className,
-                    classId: classValue.classId,
-                    subjectList: JSON.stringify(subjectList)
-                };
-                $("#primecontent_class").append("<option value='" + classValue.classCode + "'>" + classValue.className + "</option>");
-            });
-            window.localStorage.setItem('classSubjectDate', currentDate);
-            window.localStorage.setItem('classSubject', JSON.stringify(classList));
-        }
-    });
+                window.localStorage.setItem('classSubjectDate', currentDate);
+                window.localStorage.setItem('classSubject', JSON.stringify(classList));
+            }
+        });
+    } else {
+        $("#primecontent_class").html("");
+        $("#primecontent_class").append("<option value=''>Select Class</option>");
+        $.each(classSubjectList.response, function (classIndex, classValue) {
+            $("#primecontent_class").append("<option value='" + classValue.classCode + "'>" + classValue.className + "</option>");
+        });
+    }
 }
 
 //Call Class Subject APi.
