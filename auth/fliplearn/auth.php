@@ -46,7 +46,7 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
     
   }
 
-  public function complete_login(core\oauth2\client $client, $redirecturl) {
+  public function complete_login(core\oauth2\client $client, $redirecturl, $cmid) {
     global $CFG, $SESSION, $PAGE;
 
     $userinfo = $this->get_userinfo($client);
@@ -262,7 +262,11 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
     // method. Since we now ALWAYS link a login - if we get to here we can directly allow the user in.
     $user = (object) $userinfo;
     complete_user_login($user);
-    redirect($redirecturl);
+    if (!empty($cmid)) {
+      redirect(new moodle_url('/mod/quiz/view.php?id=' . $cmid));
+    } else {
+      redirect($redirecturl);
+    }
   }
 
   /**

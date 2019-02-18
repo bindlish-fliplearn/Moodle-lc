@@ -20,6 +20,8 @@ $state = required_param('state', PARAM_LOCALURL);
 
 $id = required_param('id', PARAM_RAW);
 
+$cmid = optional_param('cmid', PARAM_RAW);
+
 $redirecturl = new moodle_url($state);
 $params = $redirecturl->params();
 
@@ -29,6 +31,7 @@ $params['sesskey'] = $USER->sesskey;
 $redirecturl->param('oauth2code', $code);
 $redirecturl->param('sesskey', $params['sesskey']);
 $redirecturl->param('id', $id);
+$redirecturl->param('cmid', $cmid);
 //print_r($redirecturl); die;
 
 if (isset($params['sesskey']) and confirm_sesskey($params['sesskey'])) {
