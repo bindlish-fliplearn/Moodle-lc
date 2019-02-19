@@ -20,7 +20,7 @@ $state = required_param('state', PARAM_LOCALURL);
 
 $id = required_param('id', PARAM_RAW);
 
-$cmid = optional_param('cmid', PARAM_RAW);
+$cmid = optional_param('cmid', '', PARAM_RAW);
 
 $redirecturl = new moodle_url($state);
 $params = $redirecturl->params();
