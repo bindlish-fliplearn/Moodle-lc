@@ -7,7 +7,7 @@ var currentDate = d.getFullYear() + '/' +
 
 function getClassList() {
     var classSubjectList = JSON.parse(window.localStorage.getItem('classSubject'));
-    if(classSubjectList == "") {
+    if(classSubjectList == null) {
         $.ajax({
             type: "GET",
             url: primeUrl + "/v1/class?boardCode=cbse",
@@ -39,7 +39,7 @@ function getClassList() {
     } else {
         $("#primecontent_class").html("");
         $("#primecontent_class").append("<option value=''>Select Class</option>");
-        $.each(classSubjectList.response, function (classIndex, classValue) {
+        $.each(classSubjectList, function (classIndex, classValue) {
             $("#primecontent_class").append("<option value='" + classValue.classCode + "'>" + classValue.className + "</option>");
         });
     }
@@ -75,7 +75,7 @@ $('document,body').on('click', '#classSubjectButton', function () {
 });
 
 function showLoading() {
-    $('#search_class_subject').html('<div class="fp-content-center"><img class="icon " alt="" src="http://localhost/flip-moodle-lc/theme/image.php?theme=adaptable&amp;component=core&amp;rev=1549869974&amp;image=i%2Floading_small"></div>');
+    $('#search_class_subject').html('<div class="fp-content-center"><img class="icon " alt="" src="'+baseUrl+'/theme/image.php?theme=adaptable&amp;component=core&amp;rev=1549869974&amp;image=i%2Floading_small"></div>');
 }
 
 
@@ -163,8 +163,63 @@ function draftFile() {
         type: "POST",
         data: download,
         url: baseUrl + "/repository/draftfiles_ajax.php?action=list",
-        success: function (date) {
-            console.log(date);
+        success: function (data) {
+            console.log("sdsd");
+            $('.moodle-dialogue-lightbox').hide();
+            $('.moodle-dialogue').addClass("moodle-dialogue-hidden");
+            console.log("sdsd");
         }
     });
+}
+
+function preview(resourceId) {
+    $('#player_div').show();
+    $('#resource_div').hide();
+    $('#add_resource').attr('onClick', 'downloadFile('+resourceId+');');
+    var cType = $('#resource_cType_'+resourceId).val();
+    var headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'loginId': 'vinay2.admin',
+        'profileCode': '5800667696',
+        'sessionToken': '5geO3FuaOCa4QIxkSeZ6ssTT5',
+        '3dSupport': 1,
+        'platform': 'web'
+    };
+    $.ajax({
+        type: "GET",
+        headers:headers,
+        url: primeUrl + "/resource/url?product=prime&tagKey=null&ncertEbookEnable=1&resourceId="+resourceId,
+        success: function (data) {
+            var resourse = JSON.parse(data);
+            console.log(resourse);
+            $('.moodle-dialogue-lightbox').hide();
+            $('.moodle-dialogue').hide();
+            console.log(cType);
+            if(cType == "MP4" || cType == "AVI" || cType == "FLV" || cType == "3d" || cType == "VDOEN") {
+            var playerInstance = jwplayer("player");
+                playerInstance.setup({
+                    width: '620',
+                    height: '430',
+                    bufferlength: '1',
+                    controlbar: 'none',
+                    stretching: 'uniform',
+                    autostart: 'true',
+                    primary: 'flash',
+                    hlshtml: true,
+                    file: resourse.response.cdnPath,
+                    defaultBandwidthEstimate : 240000
+                });
+            } else {
+                var iframe = "<iframe height='430' width='620' src='"+resourse.response.cdnPath+"'></iframe>";
+                $('#player').html(iframe);
+            }
+        }
+    });
+}
+
+function closePopup() {
+    $('#resource_div').show();
+    $('#player_div').hide();
+    $('#player').html('');
 }

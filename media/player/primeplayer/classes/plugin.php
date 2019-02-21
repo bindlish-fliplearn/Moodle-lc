@@ -125,7 +125,7 @@ class media_primeplayer_plugin extends core_media_player {
                             $parts = parse_url($fileData->source);
                             parse_str($parts['query'], $query);
                         }
-                        
+
                         if (!empty($query['resourceId'])) {
                             $res = explode('@@', $query['resourceId']);
                             $resourceId = (isset($res[0]) && !empty($res[0])) ? $res[0] : '';
@@ -152,7 +152,7 @@ class media_primeplayer_plugin extends core_media_player {
                             if (empty($result->error) && !empty($result->response)) {
                                 $cdnPath = $result->response->cdnPath;
                                 $path = $cdnPath;
-
+                                
                                 if ($isMedia || $mediaType == 'MP4' || $mediaType == 'AVI' || $mediaType == 'FLV' || $cType == '3d') {
                                     $urls = array();
                                     $urls[] = new moodle_url($path);
