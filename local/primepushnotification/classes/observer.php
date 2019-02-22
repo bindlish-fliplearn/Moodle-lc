@@ -24,7 +24,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-
+require_once($CFG->dirroot . '/local/primepushnotification/lib.php');
 /**
  * Email signup notification event observers.
  *
@@ -42,7 +42,6 @@ class local_primepushnotification_observer {
      */
     public static function primepushnotification(\mod_forum\event\discussion_created $event) {
       global $DB, $CFG;
-      require_once($CFG->dirroot . '/local/primepushnotification/lib.php');
             $discussionsData = $event->get_record_snapshot('forum_discussions', $event->objectid);
             $eventDate = date("Y-m-d\TH:i:s.511\Z", $discussionsData->timemodified);
             $eventType = GURU_ANNOUNCEMENT;
@@ -121,4 +120,54 @@ class local_primepushnotification_observer {
             }
 
     }
+    public static function attempt_question(\mod_quiz\event\attempt_submitted $event) {
+                global $DB, $CFG;
+                $quiz = $event->get_record_snapshot('quiz_attempts', $event->objectid);
+                $cmid = $event->contextinstanceid;
+                $quizId = $quiz->quiz;
+                $totalSql = "SELECT count('qs.id') 
+                              as totalQuestion FROM  {quiz_slots} as qs 
+                              where qs.quizid = ?";
+
+                $totalres = $DB->get_record_sql($totalSql, array($quizId));
+                $totalQuestion = $totalres->totalquestion;
+
+                $user_id = $event->userid;
+                $userSql = "SELECT uuid FROM {guru_user_mapping} 
+                            WHERE user_id =?";
+                
+                $userRes = $DB->get_record_sql($userSql, array($user_id));
+                $uuid = $userRes->uuid;
+
+                $quizAttemptSql = "SELECT sum(case 
+                                    when qas.state='gradedwrong' 
+                                    then 1 else 0 end) as wrongAns,
+                                    sum(case when qas.state ='gradedright' 
+                                    then 1 else 0 end) as rightAns 
+                                    FROM {quiz_attempts} as qa 
+                                    JOIN {question_attempts} as qua 
+                                    on qua.questionusageid = qa.uniqueid 
+                                    join {question_attempt_steps} As qas 
+                                    ON qas.questionattemptid = qua.id AND 
+                                    qas.sequencenumber = 2
+                                    WHERE qa.userid = ?  and quiz = ? 
+                                    AND responsesummary != ?";
+                                    
+                $quizRes = $DB->get_record_sql($quizAttemptSql, array($user_id,$quizId,'null'));
+                if($quizRes){
+                          $rightAns = $quizRes->rightans;
+                          $wrongAns = $quizRes->wrongans;
+                          $attemptedQuestions = $rightAns+$wrongAns;
+                          $timeTaken = 2000;
+                          $serverurl = PQUIZ_URL.'/quiz/updateUserAssessmentLevel';
+                          $params = array('uuid'=>$uuid, 'quizId'=> $cmid,
+                          'totalQuestions'=>$totalQuestion,
+                          'attemptedQuestions'=>$attemptedQuestions,
+                          'correctAnswers'=>$rightAns,'wrongAnswers'=> $wrongAns,
+                          'timeTaken'=>$timeTaken);
+                          $data_string = json_encode($params);
+                          $result = curlPost($data_string, $serverurl);     
+                          return $responseData = json_decode($result);     
+                }
+  }
 }
