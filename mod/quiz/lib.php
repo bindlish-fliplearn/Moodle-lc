@@ -1833,27 +1833,43 @@ function quiz_extend_settings_navigation($settings, $quiznode) {
         $beforekey = $keys[$i + 1];
     }
 
-    if (has_capability('mod/quiz:manageoverrides', $PAGE->cm->context)) {
-        $url = new moodle_url('/mod/quiz/overrides.php', array('cmid'=>$PAGE->cm->id));
-        $node = navigation_node::create(get_string('groupoverrides', 'quiz'),
-                new moodle_url($url, array('mode'=>'group')),
-                navigation_node::TYPE_SETTING, null, 'mod_quiz_groupoverrides');
-        $quiznode->add_node($node, $beforekey);
+    if(is_siteadmin())
+    {
+        if (has_capability('mod/quiz:manageoverrides', $PAGE->cm->context)) {
+            $url = new moodle_url('/mod/quiz/overrides.php', array('cmid'=>$PAGE->cm->id));
+            $node = navigation_node::create(get_string('groupoverrides', 'quiz'),
+                    new moodle_url($url, array('mode'=>'group')),
+                    navigation_node::TYPE_SETTING, null, 'mod_quiz_groupoverrides');
+            $quiznode->add_node($node, $beforekey);
 
-        $node = navigation_node::create(get_string('useroverrides', 'quiz'),
-                new moodle_url($url, array('mode'=>'user')),
-                navigation_node::TYPE_SETTING, null, 'mod_quiz_useroverrides');
-        $quiznode->add_node($node, $beforekey);
+            $node = navigation_node::create(get_string('useroverrides', 'quiz'),
+                    new moodle_url($url, array('mode'=>'user')),
+                    navigation_node::TYPE_SETTING, null, 'mod_quiz_useroverrides');
+            $quiznode->add_node($node, $beforekey);
+        }
     }
 
-    if (has_capability('mod/quiz:manage', $PAGE->cm->context)) {
-        $node = navigation_node::create(get_string('editquiz', 'quiz'),
+
+    if(is_siteadmin()){
+        if (has_capability('mod/quiz:manage', $PAGE->cm->context)) {
+            $node = navigation_node::create(get_string('editquiz', 'quiz'),
+                    new moodle_url('/mod/quiz/edit.php', array('cmid'=>$PAGE->cm->id)),
+                    navigation_node::TYPE_SETTING, null, 'mod_quiz_edit',
+                    new pix_icon('t/edit', ''));
+            $quiznode->add_node($node, $beforekey);
+        }
+    }else {
+
+           if (has_capability('mod/quiz:manage', $PAGE->cm->context)) {
+        $node = navigation_node::create('Edit questions',
                 new moodle_url('/mod/quiz/edit.php', array('cmid'=>$PAGE->cm->id)),
                 navigation_node::TYPE_SETTING, null, 'mod_quiz_edit',
                 new pix_icon('t/edit', ''));
         $quiznode->add_node($node, $beforekey);
     }
 
+    }
+     if(is_siteadmin()){
     if (has_capability('mod/quiz:preview', $PAGE->cm->context)) {
         $url = new moodle_url('/mod/quiz/startattempt.php',
                 array('cmid'=>$PAGE->cm->id, 'sesskey'=>sesskey()));
@@ -1861,8 +1877,18 @@ function quiz_extend_settings_navigation($settings, $quiznode) {
                 navigation_node::TYPE_SETTING, null, 'mod_quiz_preview',
                 new pix_icon('i/preview', ''));
         $quiznode->add_node($node, $beforekey);
+    }}else {
+         if (has_capability('mod/quiz:preview', $PAGE->cm->context)) {
+        $url = new moodle_url('/mod/quiz/startattempt.php',
+                array('cmid'=>$PAGE->cm->id, 'sesskey'=>sesskey()));
+        $node = navigation_node::create('Preview for Students', $url,
+                navigation_node::TYPE_SETTING, null, 'mod_quiz_preview',
+                new pix_icon('i/preview', ''));
+        $quiznode->add_node($node, $beforekey);
     }
 
+    }
+ if(is_siteadmin()){
     if (has_any_capability(array('mod/quiz:viewreports', 'mod/quiz:grade'), $PAGE->cm->context)) {
         require_once($CFG->dirroot . '/mod/quiz/report/reportlib.php');
         $reportlist = quiz_report_list($PAGE->cm->context);
@@ -1881,6 +1907,7 @@ function quiz_extend_settings_navigation($settings, $quiznode) {
                     null, 'quiz_report_' . $report, new pix_icon('i/item', '')));
         }
     }
+}
 
     question_extend_settings_navigation($quiznode, $PAGE->cm->context)->trim_if_empty();
 }
