@@ -80,6 +80,7 @@ function showLoading() {
 
 
 function getChapter(chapterId) {
+    $('#loding_'+chapterId).show();
     var html = "";
     var headers = {
         'Accept': 'application/json',
@@ -95,6 +96,7 @@ function getChapter(chapterId) {
         headers: headers,
         url: primeUrl + "/v1/chapterTopics?chapterId=" + chapterId + "&ncertEbookEnable=1",
         success: function (chapterTopics) {
+            $('#loding_'+chapterId).hide();
             var chapterTopic = JSON.parse(chapterTopics);
             if (chapterTopic.response != "") {
                 $.each(chapterTopic.response.topics, function (topicId, topicValue) {
@@ -164,10 +166,8 @@ function draftFile() {
         data: download,
         url: baseUrl + "/repository/draftfiles_ajax.php?action=list",
         success: function (data) {
-            console.log("sdsd");
-            $('.moodle-dialogue-lightbox').hide();
-            $('.moodle-dialogue').addClass("moodle-dialogue-hidden");
-            console.log("sdsd");
+            parent.hidePopup();
+            parent.addFile();
         }
     });
 }

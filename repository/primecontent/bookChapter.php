@@ -22,7 +22,10 @@ $result3 = json_decode($content3, true);
   <div id='book_id_<?php echo $books['bookId']; ?>'>
       <div class='book_label'><?php echo $books['bookName']; ?></div>
       <?php foreach ($books['chapters'] as $chapters) { ?>
-        <div class='chapter_label' onClick='getChapter(<?php echo $chapters['chapterId']; ?>)'><?php echo $chapters['chapterName']; ?></div>
+        <div class='chapter_label' onClick='getChapter(<?php echo $chapters['chapterId']; ?>)'>
+          <?php echo $chapters['chapterName']; ?>
+          <img class="icon" style="float:right; display: none" id="loding_<?php echo $chapters['chapterId']; ?>" alt="" src="<?php echo $CFG->wwwroot; ?>/theme/image.php?theme=adaptable&amp;component=core&amp;rev=1549869974&amp;image=i%2Floading_small">
+        </div>
         <div id='chapter_id_<?php echo $chapters['chapterCode']; ?>'></div>
       <?php } ?>
   </div>
