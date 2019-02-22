@@ -123,6 +123,7 @@ class local_primepushnotification_observer {
     public static function attempt_question(\mod_quiz\event\attempt_submitted $event) {
                 global $DB, $CFG;
                 $quiz = $event->get_record_snapshot('quiz_attempts', $event->objectid);
+
                 $cmid = $event->contextinstanceid;
                 $quizId = $quiz->quiz;
                 $totalSql = "SELECT count('qs.id') 
@@ -139,7 +140,12 @@ class local_primepushnotification_observer {
                 $userRes = $DB->get_record_sql($userSql, array($user_id));
                 $uuid = $userRes->uuid;
 
-                $quizAttemptSql = "SELECT sum(case 
+                $attemptSQl = "SELECT max(iqa.uniqueid) AS uniqueid FROM {quiz_attempts} AS iqa WHERE iqa.userid = ? AND iqa.quiz = ? AND iqa.state = ?"; 
+                $attRes = $DB->get_record_sql($attemptSQl, array($user_id,$quizId,'finished'));
+                 $uniqueid = $attRes->uniqueid;
+
+                $quizAttemptSql = "SELECT (qa.timefinish-qa.timestart) 
+                                    AS timetaken, sum(case 
                                     when qas.state='gradedwrong' 
                                     then 1 else 0 end) as wrongAns,
                                     sum(case when qas.state ='gradedright' 
@@ -148,17 +154,20 @@ class local_primepushnotification_observer {
                                     JOIN {question_attempts} as qua 
                                     on qua.questionusageid = qa.uniqueid 
                                     join {question_attempt_steps} As qas 
-                                    ON qas.questionattemptid = qua.id AND 
-                                    qas.sequencenumber = 2
-                                    WHERE qa.userid = ?  and quiz = ? 
-                                    AND responsesummary != ?";
-                                    
-                $quizRes = $DB->get_record_sql($quizAttemptSql, array($user_id,$quizId,'null'));
+                                    ON qas.questionattemptid = qua.id 
+                                    WHERE  qua.questionusageid = ? 
+                                    AND qas.sequencenumber = ? 
+                                    AND  qa.userid = ?  
+                                    AND qa.quiz = ? 
+                                    AND qua.responsesummary != ?";
+
+                $quizRes = $DB->get_record_sql($quizAttemptSql, array($uniqueid,2,$user_id,$quizId,'null'));
+
                 if($quizRes){
                           $rightAns = $quizRes->rightans;
                           $wrongAns = $quizRes->wrongans;
                           $attemptedQuestions = $rightAns+$wrongAns;
-                          $timeTaken = 2000;
+                          $timeTaken = $quizRes->timetaken;
                           $serverurl = PQUIZ_URL.'/quiz/updateUserAssessmentLevel';
                           $params = array('uuid'=>$uuid, 'quizId'=> $cmid,
                           'totalQuestions'=>$totalQuestion,
@@ -166,6 +175,9 @@ class local_primepushnotification_observer {
                           'correctAnswers'=>$rightAns,'wrongAnswers'=> $wrongAns,
                           'timeTaken'=>$timeTaken);
                           $data_string = json_encode($params);
+                          // $myfile = fopen($CFG->dirroot . '/local/primepushnotification/classes/log.text', "w") or die("Unable to open file!");
+                          
+                          // fwrite($myfile, $data_string);
                           $result = curlPost($data_string, $serverurl);     
                           return $responseData = json_decode($result);     
                 }
