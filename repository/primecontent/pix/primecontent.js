@@ -147,7 +147,6 @@ function downloadFile(resourceId) {
         data: download,
         url: baseUrl + "/repository/repository_ajax.php?action=download",
         success: function (data) {
-            console.log(data);
             draftFile();
         }
     });
@@ -165,10 +164,9 @@ function draftFile() {
         type: "POST",
         data: download,
         url: baseUrl + "/repository/draftfiles_ajax.php?action=list",
-        success: function (data) {
-            var draftResp = JSON.parse(data);
-            var title = draftResp.file;
-            var icon = draftResp.icon;
+        success: function (draftResp) {
+            var title = draftResp.list[0].filename;
+            var icon = draftResp.list[0].thumbnail;
             parent.hidePopup();
             parent.addFile(title, icon);
         }
