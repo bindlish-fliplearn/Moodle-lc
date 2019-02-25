@@ -166,8 +166,11 @@ function draftFile() {
         data: download,
         url: baseUrl + "/repository/draftfiles_ajax.php?action=list",
         success: function (data) {
+            var draftResp = JSON.parse(data);
+            var title = draftResp.file;
+            var icon = draftResp.icon;
             parent.hidePopup();
-            parent.addFile();
+            parent.addFile(title, icon);
         }
     });
 }
