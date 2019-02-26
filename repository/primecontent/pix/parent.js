@@ -1,7 +1,8 @@
 
 function hidePopup() {
-    $('.moodle-dialogue-lightbox').hide();
+    $('.moodle-dialogue-lightbox').hide();  
     $('.moodle-dialogue').addClass("moodle-dialogue-hidden");
+    $('#page-mod-resource-mod').removeClass("lockscroll");
 }
 
 function addFile(title, icon) {
