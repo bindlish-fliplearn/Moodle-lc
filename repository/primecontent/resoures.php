@@ -5,8 +5,13 @@ require_once($CFG->libdir . '/../repository/lib.php');
 //$source = "https://dwq2qrehawfaj.cloudfront.net/EOL/Contents/2014050700179120/thumbnail.jpg?resourceId=8658@@MP4@@1@@VDOEN";
 $sourcekey = sha1($source . repository::get_secret_key() . sesskey());
 $topicId = optional_param('topicId', '', PARAM_RAW);
+$tagKey = optional_param('tagKey', '', PARAM_RAW);
 $curl = new curl(array('cache' => false, 'debug' => false));
-$url = PRIME_URL . "/v1/topic?ncertEbookEnable=1&boardCode=CBSE&topicId=".$topicId;
+$urlTag = "";
+if(!empty($tagKey)) {
+  $urlTag = "&tagKey=".$tagKey;
+}
+$url = PRIME_URL . "/v1/topic?ncertEbookEnable=1&boardCode=CBSE&topicId=".$topicId.$urlTag;
 $header = array(
   'Accept: application/json',
   'Content-Type: application/x-www-form-urlencoded',
