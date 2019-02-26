@@ -42,6 +42,7 @@ class local_primepushnotification_observer {
      */
     public static function primepushnotification(\mod_forum\event\discussion_created $event) {
       global $DB, $CFG;
+      require_once($CFG->dirroot . '/local/primepushnotification/lib.php');
             $discussionsData = $event->get_record_snapshot('forum_discussions', $event->objectid);
             $eventDate = date("Y-m-d\TH:i:s.511\Z", $discussionsData->timemodified);
             $eventType = GURU_ANNOUNCEMENT;
@@ -64,9 +65,13 @@ class local_primepushnotification_observer {
                             ON gum.user_id = mra.userid
                             WHERE mra.userid != ?
                             AND mc.instanceid = ? 
-                            AND mc.contextlevel = ? ";
+                            AND mc.contextlevel = ?
+                            AND mra.userid 
+                            iN(SELECT ue.userid FROM mdl_enrol 
+                            AS me INNER JOIN mdl_user_enrolments 
+                            AS ue ON me.id = ue.enrolid 
+                            WHERE me.courseid = $courseId AND ue.status = 0)";
                     $result = $DB->get_records_sql($sql , array($userid,$courseId,$contextlevel));
-
                     $school_code = '';
                     $uuidList = array();
                     foreach($result as $value) {
@@ -75,7 +80,6 @@ class local_primepushnotification_observer {
                           array_push($uuidList, $uuid);
                     }
                   $clickUrl = BASE_URL.'/mod/forum/discuss.php?d='.$discussionId;
-
                     if(count($uuidList)>0){
                           $serializeRequest = array('senderUuid'=>1234,
                                               'schoolCode'=>$school_code,
@@ -94,24 +98,12 @@ class local_primepushnotification_observer {
                                             'eventDate' => $eventDate,
                                             'payload' => $serializeRequest
                                             ); 
-                          $data_string = json_encode($request);
-                          $ch = curl_init(COMMUNICATION_API_URL);
-                          curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-                          curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
-                          curl_setopt($ch, CURLOPT_TIMEOUT, 3); //timeout in seconds
-                          curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-                          curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                          curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                          'Content-Type: application/json',
-                          'Content-Length: ' . strlen($data_string))
-                          );
-                          $result = curl_exec($ch);
-                          
-                          $err = curl_errno($ch);
-                          if ($err) {
-                          	echo  $err;
-                           // $this->doError(curl_errno($ch), curl_error($ch));
-                          }   
+                         $data_string = json_encode($request);
+                         $result = curlPost($data_string, COMMUNICATION_API_URL);
+                         $responseData = json_decode($result);
+                         if($responseData->error !=null){
+                         	echo $responseData->error;
+                         }
                           try {
                               $notificationObj = new stdClass();
                               $notificationObj->course_id = $courseId;
