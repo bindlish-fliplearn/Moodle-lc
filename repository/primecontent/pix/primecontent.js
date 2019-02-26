@@ -101,6 +101,11 @@ function getChapter(chapterId) {
             if (chapterTopic.response != "") {
                 $.each(chapterTopic.response.topics, function (topicId, topicValue) {
                     html += "<div id='topic_id_" + topicValue.topicId + "'>";
+                    if(topicValue.tag == null) {
+                      html += "<input type='hidden' id='tag_" + topicValue.topicId + "' value='' />";  
+                    } else {
+                      html += "<input type='hidden' id='tag_" + topicValue.topicId + "' value='"+topicValue.tag.tagKey+"' />";  
+                    }
                     html += "<div class='topic_label' onClick='getTopic(" + topicValue.topicId + ")'>" + topicValue.topicName + "</div>";
                     html += "</div>";
                 });
@@ -111,10 +116,12 @@ function getChapter(chapterId) {
 }
 
 function getTopic(topicId) {
+    var tag = "";
+    tag = $('#tag_'+topicId).val();
     showLoading();
     $.ajax({
         type: "GET",
-        url: baseUrl + "/repository/primecontent/resoures.php?sesskey=" + sesskey + "&itemid=" + itemid + "&client_id=" + client_id + "&topicId=" + topicId,
+        url: baseUrl + "/repository/primecontent/resoures.php?sesskey=" + sesskey + "&itemid=" + itemid + "&client_id=" + client_id + "&topicId=" + topicId + "&tagKey="+tag,
         success: function (chapterTopics) {
             $("#search_class_subject").html(chapterTopics);
         },
