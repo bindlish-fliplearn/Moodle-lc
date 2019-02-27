@@ -33,7 +33,12 @@ $result3 = json_decode($content3, true);
       $mediaType = $resources['mediaType'];
       $isMedia = $resources['isMedia'];
       $cType = $resources['cType'];
-      $source = $resources['thumbNail'] . "?resourceId=" . $resources['resourceId'] . "@@".$mediaType."@@".$isMedia."@@".$cType;
+      if(strpos($resources['thumbNail'], '?')) {
+        $source = $resources['thumbNail'] . "&resourceId=" . $resources['resourceId'] . "@@".$mediaType."@@".$isMedia."@@".$cType;
+      } else {
+        $source = $resources['thumbNail'] . "?resourceId=" . $resources['resourceId'] . "@@".$mediaType."@@".$isMedia."@@".$cType;
+      }
+      
       $sourcekey = sha1($source . repository::get_secret_key() . sesskey());
       ?>
       <input type='hidden' id='resource_source_<?php echo $resources['resourceId'] ?>' value='<?php echo $source ?>'>
