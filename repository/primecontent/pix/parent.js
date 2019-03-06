@@ -30,8 +30,12 @@ function addFile(title, icon) {
 
 setTimeout(function(){
     $(document).ready(function(){
+
         jQuery(document).on("click", '.confirmation-buttons .btn-primary', function(event) {
-                JSReceiver.showToast();
+                  // console.log( window.responseId );
+                  //  alert('ddddddddddd');
+                  //   alert(responseId);
+                //JSReceiver.showToast();
             });
     });
 }, 1000);

@@ -125,6 +125,7 @@ class local_primepushnotification_observer {
                 $quiz = $event->get_record_snapshot('quiz_attempts', $event->objectid);
 
                 $cmid = $event->contextinstanceid;
+                $reviewUrl = $CFG->wwwroot . '/mod/quiz/review.php?attempt=' .$quiz->id. '&cmid=' .$cmid;
                 $quizId = $quiz->quiz;
                 $totalSql = "SELECT count('qs.id') 
                               as totalQuestion FROM  {quiz_slots} as qs 
@@ -173,13 +174,23 @@ class local_primepushnotification_observer {
                           'totalQuestions'=>$totalQuestion,
                           'attemptedQuestions'=>$attemptedQuestions,
                           'correctAnswers'=>$rightAns,'wrongAnswers'=> $wrongAns,
-                          'timeTaken'=>$timeTaken);
+                          'timeTaken'=>$timeTaken,
+                          'reviewUrl'=>$reviewUrl);
                           $data_string = json_encode($params);
                           // $myfile = fopen($CFG->dirroot . '/local/primepushnotification/classes/log.text', "w") or die("Unable to open file!");
                           
                           // fwrite($myfile, $data_string);
-                          $result = curlPost($data_string, $serverurl);     
-                          return $responseData = json_decode($result);     
+                          $result = curlPost($data_string, $serverurl);
+                          $responseData = json_decode($result);
+                          $outPutdata = json_decode($responseData->data);
+                          $attemptId = 12;
+                          ?>
+                          <script type="text/javascript">
+                          var attemptId = "<?php echo $attemptId; ?>";
+                            JSReceiver.showToast(attemptId);
+                          </script>
+                          <?php 
+                        return $responseData;   
                 }
   }
 }
