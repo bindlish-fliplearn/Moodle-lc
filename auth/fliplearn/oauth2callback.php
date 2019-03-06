@@ -26,7 +26,11 @@ $redirecturl = new moodle_url($state);
 $params = $redirecturl->params();
 
 global $USER;
-$params['sesskey'] = $USER->sesskey;
+if (!isset($USER->sesskey) || empty($USER->sesskey)) {
+  $params['sesskey'] = sesskey();
+} else {
+  $params['sesskey'] = $USER->sesskey;
+}
 
 $redirecturl->param('oauth2code', $code);
 $redirecturl->param('sesskey', $params['sesskey']);
