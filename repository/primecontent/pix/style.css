@@ -1,0 +1,82 @@
+.file-picker .fp-content {
+    background: #fff;
+    clear: none;
+    overflow: auto;
+    height: 452px;
+}
+.fp-login-form {
+    height: 100%;
+    width: 100%;
+    display: table;
+}
+.fp-content-center {
+    height: 100%;
+    width: 100%;
+    display: table-cell;
+    vertical-align: middle;
+}
+.fp-formset {
+    max-width: 500px;
+    padding: 10px;
+}
+.form-horizontal .control-group {
+    margin-bottom: 20px;
+}
+.book_label {
+    background-color: orange;
+    padding: 5px 10px;
+    color: #FFFFFF;
+    font-weight: bold;
+    border-radius: 5px;
+}
+.chapter_label {
+    padding: 5px 10px;
+    border-bottom: #c6d8e4 1px solid;
+    cursor: pointer;
+}
+.chapter_label:hover {
+    background-color: #c6d8e4;
+}
+.topic_label {
+    padding: 5px 30px;
+    cursor: pointer;
+    border: 1px #FFFFFF solid;
+    border-radius: 5px;
+}
+.topic_label:hover {
+    border: 1px rgb(250, 151, 33) solid;
+}
+.resource_box {
+    width: 45%;
+    float: left;
+    min-height: 82px;
+    border: #c6d8e4 1px solid;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 5px;
+}
+.resource_img {
+    width: 80px;
+    height: 80px;
+    overflow: hidden;
+    float: left;
+    background: rgb(250, 151, 33);
+}
+.resource_label {
+    float: left;
+    line-height: 80px;
+    padding: 0px 10px;
+    width: 62%;
+    max-height: 80px;
+    overflow: hidden;
+}
+#container_object {
+    overflow: hidden;
+    display: block;
+}
+.player_div {
+    position: absolute; 
+    width: 100%;
+    height: 100%; 
+    display: none;
+}
