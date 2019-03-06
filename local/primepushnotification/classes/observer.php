@@ -183,14 +183,9 @@ class local_primepushnotification_observer {
                           $result = curlPost($data_string, $serverurl);
                           $responseData = json_decode($result);
                           $outPutdata = json_decode($responseData->data);
-                          $attemptId = 12;
-                          ?>
-                          <script type="text/javascript">
-                          var attemptId = "<?php echo $attemptId; ?>";
-                            JSReceiver.showToast(attemptId);
-                          </script>
-                          <?php 
-                        return $responseData;   
+                          $attemptId = 13;
+                          setcookie("attemptId",$attemptId);
+                         return $responseData; 
                 }
   }
 }
