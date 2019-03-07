@@ -263,6 +263,17 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
     $user = (object) $userinfo;
     complete_user_login($user);
     if (!empty($cmid)) {
+      global $DB;
+      $courseSql = "SELECT course FROM {course_modules} 
+                            WHERE id =?";
+      $courseRes = $DB->get_record_sql($courseSql, array($cmid));
+      $courseId = $courseRes->course;
+      $userId = $user->id;
+      $roleId = 5;
+ if (!enrol_try_internal_enrol($courseId, $userId, $roleId, time())) {
+            // There's a problem.
+            throw new moodle_exception('unabletoenrolerrormessage', 'langsourcefile');
+        }
       redirect(new moodle_url('/mod/quiz/view.php?id=' . $cmid));
     } else {
       redirect($redirecturl);
