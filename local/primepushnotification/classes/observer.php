@@ -183,7 +183,7 @@ class local_primepushnotification_observer {
                           $result = curlPost($data_string, $serverurl);
                           $responseData = json_decode($result);
                           $outPutdata = json_decode($responseData->data);
-                          $attemptId = 13;
+                          $attemptId = $outPutdata->attemptId;
                           setcookie("attemptId",$attemptId);
                          return $responseData; 
                 }
