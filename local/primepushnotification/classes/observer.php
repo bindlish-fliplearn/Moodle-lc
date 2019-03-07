@@ -169,7 +169,7 @@ class local_primepushnotification_observer {
                           $wrongAns = $quizRes->wrongans;
                           $attemptedQuestions = $rightAns+$wrongAns;
                           $timeTaken = $quizRes->timetaken;
-                          $serverurl = PQUIZ_URL.'/quiz/updateUserAssessmentLevel';
+                          $serverurl = PRIME_URL.'/quiz/updateUserAssessmentLevel';
                           $params = array('uuid'=>$uuid, 'quizId'=> $cmid,
                           'totalQuestions'=>$totalQuestion,
                           'attemptedQuestions'=>$attemptedQuestions,
