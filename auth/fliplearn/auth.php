@@ -46,7 +46,7 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
     
   }
 
-  public function complete_login(core\oauth2\client $client, $redirecturl, $cmid) {
+  public function complete_login(core\oauth2\client $client, $redirecturl, $cmid, $attemptId) {
     global $CFG, $SESSION, $PAGE;
 
    $userMappingData = $userinfo = $this->get_userinfo($client);
@@ -263,20 +263,20 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
     $uuid = $userMappingData['uuid'];
     $userMappingSql = "SELECT user_id FROM {guru_user_mapping} 
                             WHERE uuid =?";
-      $userMapping = $DB->get_record_sql($userMappingSql, array($uuid));
-   if (empty($userMapping)) {
-          $email = $userMappingData['email']?$userMappingData['email']:$userMappingData['uuid'].'@fliplearn.com';
-           $userObj = new stdClass();
-                                $userObj->user_id = $userinfo['id'];
-                                $userObj->uuid  = $uuid;
-                                $userObj->firstname = $userMappingData['name'];
-                                $userObj->email = $email;
-                                $userObj->school_code = '';
-                                $userObj->role = '';
-                                $userObj->is_enrolled = 0; 
-                                $userObj->ayid = 0;
-        $id =  $DB->insert_record('guru_user_mapping',$userObj , $returnid=true, $bulk=false) ;
-      }
+    $userMapping = $DB->get_record_sql($userMappingSql, array($uuid));
+    if (empty($userMapping)) {
+      $email = $userMappingData['email']?$userMappingData['email']:$userMappingData['uuid'].'@fliplearn.com';
+      $userObj = new stdClass();
+      $userObj->user_id = $userinfo['id'];
+      $userObj->uuid  = $uuid;
+      $userObj->firstname = $userMappingData['name'];
+      $userObj->email = $email;
+      $userObj->school_code = '';
+      $userObj->role = '';
+      $userObj->is_enrolled = 0; 
+      $userObj->ayid = 0;
+      $id =  $DB->insert_record('guru_user_mapping',$userObj , $returnid=true, $bulk=false) ;
+    }
 
     // We used to call authenticate_user - but that won't work if the current user has a different default authentication
     // method. Since we now ALWAYS link a login - if we get to here we can directly allow the user in.
@@ -291,12 +291,19 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
       $courseId = $courseRes->course;
       $userId = $user->id;
       $roleId = 5;
+      
+      //Check if user is enrolled in the course. If not, enrol it in the given course
       if(!enrol_try_internal_enrol($courseId, $userId, $roleId, time())) {
-            // There's a problem.
-            throw new moodle_exception('unabletoenrolerrormessage', 'langsourcefile');
-        }
-      redirect(new moodle_url('/mod/quiz/view.php?id=' . $cmid));
-      }else {
+        // There's a problem.
+        throw new moodle_exception('unabletoenrolerrormessage', 'langsourcefile');
+      }
+      
+      if (empty($attemptId)) {
+        redirect(new moodle_url('/mod/quiz/view.php?id=' . $cmid));
+      } else {
+        redirect(new moodle_url('/mod/quiz/review.php?attempt=' . $attemptId . '&cmid=' . $cmid));
+      }
+    } else {
       redirect($redirecturl);
     }
   }
