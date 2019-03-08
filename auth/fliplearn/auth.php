@@ -239,7 +239,7 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
           $newuser = \auth_oauth2\api::create_new_confirmed_account($userinfo, $issuer);
                     
           // Save UUID of user.
-          if (!empty($userinfo['uuid'])) {
+          /*if (!empty($userinfo['uuid'])) {
             $field = $DB->get_record_sql('SELECT * FROM {user_info_field} WHERE name = ?', 
                          array('UUID'));          
             if (!empty($field) && isset($field->id)) {
@@ -250,7 +250,7 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
               $record->dataformat = '0';
               $DB->insert_record('user_info_data', $record);
             }
-          }
+          }*/
           
           $userinfo = get_complete_user_data('id', $newuser->id);
 
@@ -265,11 +265,11 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
                             WHERE uuid =?";
     $userMapping = $DB->get_record_sql($userMappingSql, array($uuid));
     if (empty($userMapping)) {
-      $email = $userMappingData['email']?$userMappingData['email']:$userMappingData['uuid'].'@fliplearn.com';
+      $email = $userMappingData['flipuser_email']?$userMappingData['flipuser_email']:$userMappingData['flipuser_uuid'].'@fliplearn.com';
       $userObj = new stdClass();
-      $userObj->user_id = $userinfo['id'];
+      $userObj->user_id = $userinfo->id;
       $userObj->uuid  = $uuid;
-      $userObj->firstname = $userMappingData['name'];
+      $userObj->firstname = $userMappingData['flipuser_name'];
       $userObj->email = $email;
       $userObj->school_code = '';
       $userObj->role = '';
@@ -378,14 +378,28 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
       }
     }
 
+    $firstname = 'null';
+    $lastname = 'null';
+    if (!empty($userinfo->name)) {
+      $arr = explode(" ",$userinfo->name);
+      if (count($arr) > 1) {
+        $firstname = $arr[0];
+        $lastname = $arr[1];
+      } else {
+        $firstname = $arr[0];
+      }
+    }
+
     $name   = $userinfo->name?$userinfo->name:'';
     $email  = $userinfo->email?$userinfo->email:'';
     $uuid   = $userinfo->uuid?$userinfo->uuid:'';
 
     $user = (array) $user;
-    $user['name'] = $name;
-    $user['email'] = $email;
-    $user['uuid'] == $uuid;
+    $user['flipuser_name'] = $name;
+    $user['flipuser_email'] = $email;
+    $user['flipuser_uuid'] == $uuid;
+    $user['firstname'] = $firstname;
+    $user['lastname'] = $lastname;
     return $user;
   }
 
