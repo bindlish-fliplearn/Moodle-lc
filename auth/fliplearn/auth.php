@@ -49,7 +49,8 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
   public function complete_login(core\oauth2\client $client, $redirecturl, $cmid) {
     global $CFG, $SESSION, $PAGE;
 
-    $userinfo = $this->get_userinfo($client);
+   $userMappingData = $userinfo = $this->get_userinfo($client);
+
     if (!$userinfo) {
       // Trigger login failed event.
       $failurereason = AUTH_LOGIN_NOUSER;
@@ -258,10 +259,30 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
       }
     }
 
+    global $DB;
+    $uuid = $userMappingData['uuid'];
+    $userMappingSql = "SELECT user_id FROM {guru_user_mapping} 
+                            WHERE uuid =?";
+      $userMapping = $DB->get_record_sql($userMappingSql, array($uuid));
+   if (empty($userMapping)) {
+          $email = $userMappingData['email']?$userMappingData['email']:$userMappingData['uuid'].'@fliplearn.com';
+           $userObj = new stdClass();
+                                $userObj->user_id = $userinfo['id'];
+                                $userObj->uuid  = $uuid;
+                                $userObj->firstname = $userMappingData['name'];
+                                $userObj->email = $email;
+                                $userObj->school_code = '';
+                                $userObj->role = '';
+                                $userObj->is_enrolled = 0; 
+                                $userObj->ayid = 0;
+        $id =  $DB->insert_record('guru_user_mapping',$userObj , $returnid=true, $bulk=false) ;
+      }
+
     // We used to call authenticate_user - but that won't work if the current user has a different default authentication
     // method. Since we now ALWAYS link a login - if we get to here we can directly allow the user in.
     $user = (object) $userinfo;
     complete_user_login($user);
+
     if (!empty($cmid)) {
       global $DB;
       $courseSql = "SELECT course FROM {course_modules} 
@@ -270,12 +291,12 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
       $courseId = $courseRes->course;
       $userId = $user->id;
       $roleId = 5;
- if (!enrol_try_internal_enrol($courseId, $userId, $roleId, time())) {
+      if(!enrol_try_internal_enrol($courseId, $userId, $roleId, time())) {
             // There's a problem.
             throw new moodle_exception('unabletoenrolerrormessage', 'langsourcefile');
         }
       redirect(new moodle_url('/mod/quiz/view.php?id=' . $cmid));
-    } else {
+      }else {
       redirect($redirecturl);
     }
   }
@@ -350,7 +371,15 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
       }
     }
 
-    return (array) $user;
+    $name   = $userinfo->name?$userinfo->name:'';
+    $email  = $userinfo->email?$userinfo->email:'';
+    $uuid   = $userinfo->uuid?$userinfo->uuid:'';
+
+    $user = (array) $user;
+    $user['name'] = $name;
+    $user['email'] = $email;
+    $user['uuid'] == $uuid;
+    return $user;
   }
 
   private function getIssuer($issuerid) {

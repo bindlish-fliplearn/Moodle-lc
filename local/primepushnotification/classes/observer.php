@@ -123,7 +123,7 @@ class local_primepushnotification_observer {
     public static function attempt_question(\mod_quiz\event\attempt_submitted $event) {
                 global $DB, $CFG;
                 $quiz = $event->get_record_snapshot('quiz_attempts', $event->objectid);
-
+                $attemptId = -1;
                 $cmid = $event->contextinstanceid;
                 $reviewUrl = $CFG->wwwroot . '/mod/quiz/review.php?attempt=' .$quiz->id. '&cmid=' .$cmid;
                 $quizId = $quiz->quiz;
@@ -163,10 +163,9 @@ class local_primepushnotification_observer {
                                     AND qua.responsesummary != ?";
 
                 $quizRes = $DB->get_record_sql($quizAttemptSql, array($uniqueid,2,$user_id,$quizId,'null'));
-
                 if($quizRes){
-                          $rightAns = $quizRes->rightans;
-                          $wrongAns = $quizRes->wrongans;
+                          $rightAns = $quizRes->rightans?$quizRes->rightans:0;
+                          $wrongAns = $quizRes->wrongans?$quizRes->wrongans:0;
                           $attemptedQuestions = $rightAns+$wrongAns;
                           $timeTaken = $quizRes->timetaken;
                           $serverurl = PRIME_URL.'/quiz/updateUserAssessmentLevel';
@@ -187,5 +186,6 @@ class local_primepushnotification_observer {
                           setcookie("attemptId",$attemptId);
                          return $responseData; 
                 }
+              setcookie("attemptId",$attemptId);
   }
 }
