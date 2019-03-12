@@ -27,6 +27,14 @@ function addFile(title, icon) {
     $('.fp-content').show();
     $('.fp-content').html(html);
 }
+setTimeout(function(){
+    $(document).ready(function(){
+        jQuery(document).on("click", '.mod_quiz-next-nav', function(event) {
+                JSReceiver.sendCallbackToApp("");
+            });
+    });
+}, 1000); 
+
 var allcookies = document.cookie;
 cookiearray = allcookies.split(';');
 for(var i=0; i<cookiearray.length; i++) {
@@ -37,14 +45,6 @@ for(var i=0; i<cookiearray.length; i++) {
             delete_cookie('attemptId');
         }
 }
-setTimeout(function(){
-    $(document).ready(function(){
-        jQuery(document).on("click", '.mod_quiz-next-nav', function(event) {
-                var val = -1
-                JSReceiver.sendCallbackToApp(val);
-            });
-    });
-}, 1000); 
 
 function delete_cookie(name) {
     document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
