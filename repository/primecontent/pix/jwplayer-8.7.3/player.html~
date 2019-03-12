@@ -1,0 +1,20 @@
+<script src="jwplayer.js"></script>
+<script src="jwplayerkey.js"></script>
+<div id='player'></div>
+<script>
+var playerInstance = jwplayer("player");
+playerInstance.setup({
+width: '640',
+height: '480',
+bufferlength: '1',
+controlbar: 'none',
+stretching: 'uniform',
+autostart: 'true',
+primary: 'flash',
+hlshtml: true,
+file: "https://d12qsoed6q4q41.cloudfront.net/fliplearnaes/_definst_/s3/b2ccontents/EOL/Contents/2014050700179376/2014050700179376.smil/playlist.m3u8?wowzatokenstarttime=1550386090&wowzatokenendtime=1550904490&wowzatokenhash=Xo3T6CBk1yJektc1_4JbBEre6-c-N6IIIQWCcQunM5Y=",
+defaultBandwidthEstimate : 240000
+});
+</script>
+
+

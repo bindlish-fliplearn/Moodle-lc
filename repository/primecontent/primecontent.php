@@ -22,198 +22,243 @@
  * @author Dongsheng Cai <dongsheng@moodle.com>, Raul Kern <raunator@gmail.com>
  * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
-
 define('PRIMECONTENT_THUMB_SIZE', 120);
 
 class primecontent {
-    private $_conn  = null;
-    private $_param = array();
 
-    public function __construct($url = '') {
-        if (empty($url)) {
-            $this->api = 'https://commons.wikimedia.org/w/api.php';
-        } else {
-            $this->api = $url;
-        }
-        $this->_param['format'] = 'php';
-        $this->_param['redirects'] = true;
-        $this->_conn = new curl(array('cache'=>true, 'debug'=>false));
+  private $_conn = null;
+  private $_param = array();
+
+  public function __construct($url = '') {
+    if (empty($url)) {
+      $this->api = 'https://commons.wikimedia.org/w/api.php';
+    } else {
+      $this->api = $url;
     }
+    $this->_param['format'] = 'php';
+    $this->_param['redirects'] = true;
+    $this->_conn = new curl(array('cache' => true, 'debug' => false));
+  }
+
+  public function displaySearchForm() {
+    global $DB;
+    //Extract course & section form URL
+    $classId = "";
+//    $subjectId = "";
     
-    public function primContentLogin($keyword = '') {
-        
-        global $DB, $USER ,$SESSION;
-        $query = array();
-        $files_array = array();
-        $search = 1;
-        $boardCode = '';
-        $classLevelId = '';
-        $subjectId = '';
-        $subjectCode = '';
-        $chapterId = '';
-        $courseId = '';
-        $current_link = $_SERVER[HTTP_REFERER];
-        $parts = parse_url($current_link);
-        parse_str($parts['query'], $query);
-
-        //Get User details
-        $userInfo = $DB->get_record('guru_user_mapping', array('user_id' => $USER->id), '*');
-        
-        //Extract course & section form URL
-        if (!empty($query)) {
-            $courseId = $query['course'];
-            $section = $query['section'];
+    $curl = new curl(array('cache' => false, 'debug' => false));
+    $classURL = PRIME_URL . "/v1/class?boardCode=cbse";
+    $content3 = $curl->get($classURL, '');
+    $result3 = json_decode($content3);
+    $keyword = new stdClass();
+    $keyword->label = get_string('keyword', 'repository_primecontent') . ': ';
+    $keyword->id = 'primecontent_class';
+    $keyword->type = 'select';
+    $keyword->name = 'primecontent_class';
+    foreach ($result3->response as $result) {
+      if (!empty($result->classId)) {
+        if ($classId == $result->classId) {
+          $classList[] = array(
+            'value' => $result->classId,
+            'label' => $result->className,
+            'selected' => true
+          );
         } else {
-            $files_array[] = 'Some error Occured';
-            return $files_array;
+          $classList[] = array(
+            'value' => $result->classId,
+            'label' => $result->className
+          );
         }
+      }
+    }
+    $selectClassList[] = array(
+      'value' => '',
+      'label' => 'Select class'
+    );
+    $keyword->options = array_merge($selectClassList, $classList);
 
-        //Get course & chapter mapping
-        $course_map = $DB->get_record('guru_prime_mapping', array('course_id'=>$courseId), '*');
-        if (!empty($course_map)) {
-            $boardCode = $course_map->board;
-            $classLevelId = $course_map->class_level_id;
-            $subjectCode = $course_map->subject;
-            $subjectId = $course_map->subject_id; 
-            
-            // $courseSection = $DB->get_record('course_sections', array('course'=>$courseId, 'section'=>$section), '*');
-            // Course Section mapping to guru_chapter_mapping
-            // if (!empty($courseSection)) {
-                // $sectionData = $DB->get_record('guru_chapter_mapping', array('section_id'=>$courseSection->id), '*');
-                // $chapterId = !empty($sectionData) ? $sectionData->chapter_id : '';
-            // }
-        }
+    //Will use when filepicker.js issue will resolve.
+//    foreach ($result3->response as $result) {
+//     foreach ($result->subjects as $subject) {
+//      if($subjectId == $subject->subjectId) {
+//          $subjectList[$result->classCode][] = array(
+//            'value' => $subject->subjectId,
+//            'label' => $subject->subjectName,
+//            'selected' => true
+//          );
+//        } else {
+//          $subjectList[$result->classCode][] = array(
+//            'value' => $subject->subjectId,
+//            'label' => $subject->subjectName
+//          );
+//        }
+//      }
+//    }
+    $selectSubjectList[] = array(
+      'value' => '',
+      'label' => 'Select subject'
+    );
+    $classSubject = array(
+      'label' => get_string('keyword', 'repository_primecontent') . ': ',
+      'type' => 'select',
+      'name' => 'primecontent_subject',
+      'id' => 'primecontent_subject',
+      'options' => $selectSubjectList,
+      'value' => '',
+    );
+    $form = array();
+    $form['login'] = array($keyword, (object) $classSubject);
+    $form['nologin'] = true;
+    $form['norefresh'] = true;
+    $form['nosearch'] = true;
+    $form['allowcaching'] = false; // indicates that login form can NOT    
+    return $form;
+  }
+  
+  public function getCourseMapping() {
+    $query = array();
+    $classId = "";
+    $subjectId = "";
+    $current_link = $_SERVER[HTTP_REFERER];
+    $parts = parse_url($current_link);
+    parse_str($parts['query'], $query);
+    if (!empty($query)) {
+      $courseId = $query['course'];
+      $course_map = $DB->get_record('guru_prime_mapping', array('course_id' => $courseId), '*');
+      if (!empty($course_map)) {
+        $classId = $course_map->class_level_id;
+        $subjectId = $course_map->subject_id;
+      }
+    }
+    return array('classId' => $classId, 'subjectId' => $subjectId);
+  }
 
-        if (empty($keyword)) {
-            if (!empty($subjectId)) {
-                $options = 'subjectId=' . $subjectId;
-                if (!empty($chapterId)) {
-                    $options = $options . 'chapterId=' . $chapterId;
-                }
-                $api_path = PRIME_URL . "/v1/getAllResource?$options";
-                // $api_path = "https://dev3ptoc.fliplearn.com/v1/getAllResource?subjectId=218";
-                $content = $this->_conn->get($api_path,'');
-                $result = json_decode($content);
-                if (is_array($result->response) && !empty($result->response)) {
-                    foreach ($result->response as $key1 => $values1) {
-                        foreach ($values1 as $key2 => $values2) {
-                            if ($key2 == 'topics') {
-                                foreach ($values2 as $key3 => $values3) {
-                                    foreach ($values3 as $key4 => $values4) {
-                                        if ($key4 == 'resources') {
-                                            foreach ($values4 as $page) {
-                                                $thumbnail = '';
-                                                $title = $page->title;
-                                                $title .= '.f4v';
-                                                
-                                                $isMedia = ($page->isMedia) ? 1 : 0;
-                                                $resourceType = ($page->resourceType) ? $page->resourceType : '';
-                                                $cType = ($page->cType) ? $page->cType : '';
-                                                if (strpos($page->thumbnail, '?'))
-                                                    $thumbnail = $page->thumbnail . '&resourceId=' . $page->id . '@@' . $resourceType . '@@' . $isMedia . '@@' . $cType;
-                                                else
-                                                    $thumbnail = $page->thumbnail . '?resourceId=' . $page->id . '@@' . $resourceType . '@@' . $isMedia . '@@' . $cType;
-                                                $files_array[] = array(
-                                                    'title'=>$title,
-                                                    'thumbnail' => $page->thumbnail,
-                                                    'thumbnail_width' => PRIMECONTENT_THUMB_SIZE,
-                                                    'thumbnail_height' => PRIMECONTENT_THUMB_SIZE,
-                                                    'license' => 'cc-sa',
-                                                    'icon' => $page->thumbnail,
-                                                    'source' => $thumbnail,
-                                                );
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (!empty($files_array)) {
-                        return $files_array;
-                    }
-                }
-            } 
-            if ($search) {
-                $keyword = new stdClass();
-                $keyword->label = get_string('keyword', 'repository_primecontent').': ';
-                $keyword->id    = 'input_text_keyword';
-                $keyword->type  = 'text';
-                $keyword->name  = 'primecontent_keyword';
-                $keyword->value = '';
-                if ($this->options['ajax']) {
-                    $form = array();
-                    $form['login'] = array($keyword);
-                    $form['nologin'] = true;
-                    $form['norefresh'] = true;
-                    $form['nosearch'] = true;
-                    $form['allowcaching'] = false; // indicates that login form can NOT
-                    // be cached in filepicker.js (maxwidth and maxheight are dynamic)
-                    return $form;
-                }/* else {
-                    echo <<<EOD
-<table>
-<tr>
-<td>{$keyword->label}</td><td><input name="{$keyword->name}" type="text" /></td>
-</tr>
-</table>
-<input type="submit" />
-EOD;
-                }*/
-            }
-            return $files_array;
-        } else {
-            $params = 'searchKey=' . $keyword;
-            if (!empty($boardCode)) {
-                $params .= '&boardCode=' . $boardCode;
-            }
-            if (!empty($classLevelId)) {
-                $params .= '&classLevelId=' . $classLevelId;   
-            }
-            if (!empty($subjectCode)) {
-                $params .= '&subjectCode=' . $subjectCode;
-            }
-            if (empty($boardCode) || empty($classLevelId) || empty($subjectCode)) {
-                $params .= '&allContent=true';
-            }
-            // $api_path = "https://stgptoc.fliplearn.com/v1/content/result?boardCode=cbse&classLevelId=9&subjectCode=Mathematics&searchKey=$keyword&ncertEbookEnable=1";
-            $api_path = PRIME_URL . "/v1/content/result?$params";
-            $this->_conn->setHeader(array(
-                    'loginId: ' . $userInfo->login_id,
-                    'sessionToken: ' . $SESSION->sessionToken,
-                    'platform: web',
-                    '3dSupport: 1',
-                    'Connection: keep-alive',
-                    'Cache-Control: no-cache'));
-            $content = $this->_conn->get($api_path,'');
-            $result = json_decode($content);
+  public function getPrimContentBySubjectId($primeClass, $primeSubject, $search = null) {
+    $files_array = array();
+    if (!empty($primeClass)) {
+      if(!empty($primeClass)) {
+        $options = 'classId='.$primeClass;
+      }
+      if(!empty($primeSubject)) {
+        $options .= '&subjectId=' . $primeSubject;
+      }
+      if (!empty($search)) {
+        $options .= '&searchKey=' . urlencode($search);
+      }
+      $options .= '&pageSize=100';
+      $api_path = PRIME_URL . "/v1/getAllResource?$options";
+      $content = $this->_conn->get($api_path, '');
+      $result = json_decode($content);
+      if (is_array($result->response) && !empty($result->response)) {
+        foreach ($result->response as $key1 => $values1) {
+          foreach ($values1 as $key2 => $values2) {
+            if ($key2 == 'topics') {
+              foreach ($values2 as $key3 => $values3) {
+                foreach ($values3 as $key4 => $values4) {
+                  if ($key4 == 'resources') {
+                    foreach ($values4 as $page) {
+                      $thumbnail = '';
+                      $title = $page->title;
+                      $title .= '.f4v';
 
-            if (isset($result->response) && !empty($result->response)) {
-                foreach ($result->response as $page) {
-                    $thumbnail = '';
-                    $title = $page->topicName;
-                    $title .= '.f4v';
-                    
-                    $isMedia = ($page->isMedia) ? 1 : 0;
-                    if (strpos($page->thumbnail, '?'))
-                        $thumbnail = $page->thumbnail . '&resourceId=' . $page->resourceId . '@@' . $page->mediaType . '@@' . $isMedia . '@@' . $page->cType;
-                    else
-                        $thumbnail = $page->thumbnail . '?resourceId=' . $page->resourceId . '@@' . $page->mediaType . '@@' . $isMedia . '@@' . $page->cType;
-                    $files_array[] = array(
-                        'title'=>$title,         //chop off 'File:'
+                      $isMedia = ($page->isMedia) ? 1 : 0;
+                      $resourceType = ($page->resourceType) ? $page->resourceType : '';
+                      $cType = ($page->cType) ? $page->cType : '';
+                      if (strpos($page->thumbnail, '?'))
+                        $thumbnail = $page->thumbnail . '&resourceId=' . $page->id . '@@' . $resourceType . '@@' . $isMedia . '@@' . $cType;
+                      else
+                        $thumbnail = $page->thumbnail . '?resourceId=' . $page->id . '@@' . $resourceType . '@@' . $isMedia . '@@' . $cType;
+                      $files_array[] = array(
+                        'title' => $title,
                         'thumbnail' => $page->thumbnail,
                         'thumbnail_width' => PRIMECONTENT_THUMB_SIZE,
                         'thumbnail_height' => PRIMECONTENT_THUMB_SIZE,
                         'license' => 'cc-sa',
                         'icon' => $page->thumbnail,
-                        // the accessible url of the file
-                        // 'url'=>'https://media.fliplearn.com/fliplearnaes/_definst_/s3/b2ccontents/EOL/Contents/2014050700182179/2014050700182179.smil/playlist.m3u8?wowzatokenstarttime=1540787744&wowzatokenendtime=1543466144&wowzatokenhash=JhvSOfXy3_LPejvWRBmeDi_7FnZ39_sS_q3YL5jiRn4=',
                         'source' => $thumbnail,
-                    );
+                      );
+                    }
+                  }
                 }
+              }
             }
+          }
         }
-        return $files_array;
+      }
     }
+    return $files_array;
+  }
+
+  public function login() {
+    global $SESSION, $USER, $DB;
+    $respo = FALSE;
+    $userInfo = $DB->get_record('guru_user_mapping', array('user_id' => $USER->id), '*');
+    if (isset($userInfo->uuid) && !empty($userInfo->uuid)) {
+      if (isset($SESSION->uuid) && !empty($SESSION->uuid) && isset($SESSION->sessionToken) && !empty($SESSION->sessionToken)) {
+        $uuid = $SESSION->uuid;
+        $sessionToken = $SESSION->sessionToken;
+        $checkSession = $this->checkSesstionToken($uuid, $sessionToken);
+        if (!$checkSession) {
+          print_error(UNSUBSCRIBE_MSG);
+          return;
+        }
+        $respo = TRUE;
+      } else {
+        $conn2 = new curl(array('cache' => true, 'debug' => false));
+        $autoLoginURL = UMS_URL . "/autologinByUuid/$userInfo->uuid";
+        $autoLoginResp = $conn2->get($autoLoginURL, '');
+        $result = json_decode($autoLoginResp);
+        if (isset($result->data->sessionToken)) {
+          $SESSION->sessionToken = $result->data->sessionToken;
+          $SESSION->uuid = $userInfo->uuid;
+          $respo = TRUE;
+        } else {
+          $respo = FALSE;
+        }
+      }
+    }
+    return $respo;
+  }
+
+  public function checkSesstionToken($uuid, $sessionToken) {
+    $tokenValid = false;
+    $conn = new curl(array('cache' => true, 'debug' => false));
+    $api_path = UMS_URL . "/isLoginTokenValidForUserByUuid";
+    $params = array('uuid' => $uuid,
+      'sessionToken' => $sessionToken
+    );
+    $params_json = json_encode($params);
+    $conn->setHeader(array(
+      'Content-Type: application/json',
+      'Connection: keep-alive',
+      'Cache-Control: no-cache'));
+    $content = $conn->post($api_path, $params_json);
+    $result = json_decode($content);
+    if (isset($result->status)) {
+      $tokenValid = $result->status;
+    }
+    return $tokenValid;
+  }
+
+  public function checkLicence($uuid) {
+    global $SESSION;
+    $respo = FALSE;
+    $conn3 = new curl(array('cache' => true, 'debug' => false));
+    $checkLicenceURL = BL_URL . "/user/checkUserLicence/$uuid?product=prime";
+    $checkLicenceResp = $conn3->get($checkLicenceURL, '');
+    $result = json_decode($checkLicenceResp);
+    if (isset($result->response)) {
+      foreach ($result->response as $value) {
+        if (isset($value->status)) {
+          $SESSION->isPrimeUser = $value->status;
+          $respo = TRUE;
+          break;
+        }
+      }
+    } else {
+      $respo = FALSE;
+    }
+    return $respo;
+  }
 
 }
