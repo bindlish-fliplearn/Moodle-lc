@@ -157,12 +157,11 @@ class local_primepushnotification_observer {
                                     join {question_attempt_steps} As qas 
                                     ON qas.questionattemptid = qua.id 
                                     WHERE  qua.questionusageid = ? 
-                                    AND qas.sequencenumber = ? 
                                     AND  qa.userid = ?  
                                     AND qa.quiz = ? 
                                     AND qua.responsesummary != ?";
 
-                $quizRes = $DB->get_record_sql($quizAttemptSql, array($uniqueid,2,$user_id,$quizId,'null'));
+                $quizRes = $DB->get_record_sql($quizAttemptSql, array($uniqueid,$user_id,$quizId,'null'));
                 if($quizRes){
                           $rightAns = $quizRes->rightans?$quizRes->rightans:0;
                           $wrongAns = $quizRes->wrongans?$quizRes->wrongans:0;
