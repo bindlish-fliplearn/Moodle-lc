@@ -40,8 +40,8 @@ for(var i=0; i<cookiearray.length; i++) {
 setTimeout(function(){
     $(document).ready(function(){
         jQuery(document).on("click", '.mod_quiz-next-nav', function(event) {
-                $val = -1
-                JSReceiver.sendCallbackToApp($val);
+                var val = -1
+                JSReceiver.sendCallbackToApp(val);
             });
     });
 }, 1000); 
