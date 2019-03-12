@@ -29,7 +29,7 @@ function addFile(title, icon) {
 }
 setTimeout(function(){
     $(document).ready(function(){
-        jQuery(document).on("click", '.mod_quiz-next-nav', function(event) {
+        jQuery(document).on("click", 'a.mod_quiz-next-nav', function(event) {
                 JSReceiver.sendCallbackToApp("");
             });
     });
