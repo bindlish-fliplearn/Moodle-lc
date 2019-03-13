@@ -45,7 +45,7 @@ define('COMMUNICATION_API_URL','http://stgeventapi.fliplearn.com:8084/event/');
 define('DOMAIN_NAME','stgmoodlelc.fliplearn.com');
 define('BASE_URL','https://stgmoodlelc.fliplearn.com');
 define('PQUIZ_URL','https://dev5pquiz.fliplearn.com');
-
+define('JWPLAYER_KEY', 'gvD6tOcIdFv2QesR3M1VVucjXUCn7hMBtiAtoQXmP8b86K71');
 
 // There is no php closing tag in this file,
 // it is intentional because it prevents trailing whitespace problems!
