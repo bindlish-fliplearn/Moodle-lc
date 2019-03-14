@@ -47,7 +47,7 @@ cookiearray = allcookies.split(';');
 for(var i=0; i<cookiearray.length; i++) {
         name = cookiearray[i].split('=')[0];
         value = cookiearray[i].split('=')[1];
-        if(name == 'attemptId'){
+        if(name.trim() == 'attemptId'){
                 try{
                     getAttemptedId(value);
                 }catch(e){
