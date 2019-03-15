@@ -333,7 +333,6 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
     $userEmail = $userinfo->email;
     $userinfo->email = $userinfo->uuid.'@fliplearn.com';
 //    $map = $this->get_userinfo_mapping($client);
-
     $map = [
       "email" => "email",
       "mobile" => "phone1",
