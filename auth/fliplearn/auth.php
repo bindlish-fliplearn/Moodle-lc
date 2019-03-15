@@ -329,7 +329,9 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
     } catch (\Exception $e) {
       return false;
     }
-
+    
+    $userEmail = $userinfo->email;
+    $userinfo->email = $userinfo->uuid.'@fliplearn.com';
 //    $map = $this->get_userinfo_mapping($client);
 
     $map = [
@@ -391,7 +393,7 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
     }
 
     $name   = $userinfo->name?$userinfo->name:'';
-    $email  = $userinfo->email?$userinfo->email:'';
+    $email  = $userEmail?$userEmail:'';
     $uuid   = $userinfo->uuid?$userinfo->uuid:'';
 
     $user = (array) $user;
