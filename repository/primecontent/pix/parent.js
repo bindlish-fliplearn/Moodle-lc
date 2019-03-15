@@ -30,13 +30,18 @@ function addFile(title, icon) {
 function getAttemptedId(attemptId) {
         window.webkit.messageHandlers.attemptId.postMessage(attemptId);
     }
+
 setTimeout(function(){
     $(document).ready(function(){
         jQuery(document).on("click", 'a.mod_quiz-next-nav', function(event) {
                 try{
                     getAttemptedId("");
                 }catch(e){
-                    JSReceiver.sendCallbackToApp("");
+                    try{
+                        JSReceiver.sendCallbackToApp("");
+                    }catch(ex){
+                        parent.getWebAttemptedId(value);
+                    }
                 }
             });
     });
@@ -51,7 +56,11 @@ for(var i=0; i<cookiearray.length; i++) {
                 try{
                     getAttemptedId(value);
                 }catch(e){
-                    JSReceiver.sendCallbackToApp(value);
+                    try{
+                        JSReceiver.sendCallbackToApp(value);
+                    }catch(ex){
+                        parent.getWebAttemptedId(value);
+                    }
                 }
             delete_cookie('attemptId');
         }
