@@ -85,9 +85,8 @@ function getChapter(chapterId) {
     var headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/x-www-form-urlencoded',
-        'loginId': 'vinay2.admin',
-        'profileCode': '5800667696',
-        'sessionToken': '5geO3FuaOCa4QIxkSeZ6ssTT5',
+        'loginId': loginId,
+        'sessionToken': sessionToken,
         '3dSupport': 1,
         'platform': 'web'
     };
@@ -188,9 +187,8 @@ function preview(resourceId) {
     var headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/x-www-form-urlencoded',
-        'loginId': 'vinay2.admin',
-        'profileCode': '5800667696',
-        'sessionToken': '5geO3FuaOCa4QIxkSeZ6ssTT5',
+        'loginId': loginId,
+        'sessionToken': sessionToken,
         '3dSupport': 1,
         'platform': 'web'
     };

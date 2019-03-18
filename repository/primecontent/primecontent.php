@@ -211,6 +211,7 @@ class primecontent {
         if (isset($result->data->sessionToken)) {
           $SESSION->sessionToken = $result->data->sessionToken;
           $SESSION->uuid = $userInfo->uuid;
+          $SESSION->loginId = $result->data->loginId;
           $respo = TRUE;
         } else {
           $respo = FALSE;
