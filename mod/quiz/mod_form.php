@@ -400,7 +400,7 @@ class mod_quiz_mod_form extends moodleform_mod {
         $mform->setDefault('grade', $quizconfig->maximumgrade);
 
         // -------------------------------------------------------------------------------
-        $this->add_action_buttons();
+        $this->add_action_buttons(true, 'Save & Add Questions');
 
         $PAGE->requires->yui_module('moodle-mod_quiz-modform', 'M.mod_quiz.modform.init');
     }

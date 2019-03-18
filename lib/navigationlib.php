@@ -4495,61 +4495,64 @@ class settings_navigation extends navigation_node {
             $url = new moodle_url('/course/modedit.php', array('update' => $this->page->cm->id, 'return' => 1));
             $modulenode->add(get_string('editsettings'), $url, navigation_node::TYPE_SETTING, null, 'modedit');
         }
-        // Assign local roles
+        if(is_siteadmin()){
+        //Assign local roles
         if (count(get_assignable_roles($this->page->cm->context))>0) {
             $url = new moodle_url('/'.$CFG->admin.'/roles/assign.php', array('contextid'=>$this->page->cm->context->id));
             $modulenode->add(get_string('localroles', 'role'), $url, self::TYPE_SETTING, null, 'roleassign');
         }
-        // Override roles
+       // Override roles
         if (has_capability('moodle/role:review', $this->page->cm->context) or count(get_overridable_roles($this->page->cm->context))>0) {
             $url = new moodle_url('/'.$CFG->admin.'/roles/permissions.php', array('contextid'=>$this->page->cm->context->id));
             $modulenode->add(get_string('permissions', 'role'), $url, self::TYPE_SETTING, null, 'roleoverride');
         }
-        // Check role permissions
+       // Check role permissions
         if (has_any_capability(array('moodle/role:assign', 'moodle/role:safeoverride','moodle/role:override', 'moodle/role:assign'), $this->page->cm->context)) {
             $url = new moodle_url('/'.$CFG->admin.'/roles/check.php', array('contextid'=>$this->page->cm->context->id));
             $modulenode->add(get_string('checkpermissions', 'role'), $url, self::TYPE_SETTING, null, 'rolecheck');
         }
-        // Manage filters
+       // Manage filters
         if (has_capability('moodle/filter:manage', $this->page->cm->context) && count(filter_get_available_in_context($this->page->cm->context))>0) {
             $url = new moodle_url('/filter/manage.php', array('contextid'=>$this->page->cm->context->id));
             $modulenode->add(get_string('filters', 'admin'), $url, self::TYPE_SETTING, null, 'filtermanage');
         }
-        // Add reports
+        //Add reports
         $reports = get_plugin_list_with_function('report', 'extend_navigation_module', 'lib.php');
         foreach ($reports as $reportfunction) {
             $reportfunction($modulenode, $this->page->cm);
         }
-        // Add a backup link
+        //Add a backup link
         $featuresfunc = $this->page->activityname.'_supports';
         if (function_exists($featuresfunc) && $featuresfunc(FEATURE_BACKUP_MOODLE2) && has_capability('moodle/backup:backupactivity', $this->page->cm->context)) {
             $url = new moodle_url('/backup/backup.php', array('id'=>$this->page->cm->course, 'cm'=>$this->page->cm->id));
             $modulenode->add(get_string('backup'), $url, self::TYPE_SETTING, null, 'backup');
         }
 
-        // Restore this activity
+        //Restore this activity
         $featuresfunc = $this->page->activityname.'_supports';
         if (function_exists($featuresfunc) && $featuresfunc(FEATURE_BACKUP_MOODLE2) && has_capability('moodle/restore:restoreactivity', $this->page->cm->context)) {
             $url = new moodle_url('/backup/restorefile.php', array('contextid'=>$this->page->cm->context->id));
             $modulenode->add(get_string('restore'), $url, self::TYPE_SETTING, null, 'restore');
         }
 
-        // Allow the active advanced grading method plugin to append its settings
+        //Allow the active advanced grading method plugin to append its settings
         $featuresfunc = $this->page->activityname.'_supports';
         if (function_exists($featuresfunc) && $featuresfunc(FEATURE_ADVANCED_GRADING) && has_capability('moodle/grade:managegradingforms', $this->page->cm->context)) {
             require_once($CFG->dirroot.'/grade/grading/lib.php');
             $gradingman = get_grading_manager($this->page->cm->context, 'mod_'.$this->page->activityname);
             $gradingman->extend_settings_navigation($this, $modulenode);
         }
+    }
 
         $function = $this->page->activityname.'_extend_settings_navigation';
         if (function_exists($function)) {
             $function($this, $modulenode);
         }
-
+        if(is_siteadmin()){
         // Remove the module node if there are no children.
         if ($modulenode->children->count() <= 0) {
             $modulenode->remove();
+        }
         }
 
         return $modulenode;

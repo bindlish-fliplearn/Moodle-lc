@@ -1266,3 +1266,7 @@ table#categoryquestions {
         page-break-inside: avoid;
     }
 }
+
+#id_modstandardgrade, #id_layouthdr, #id_interactionhdr, #id_reviewoptionshdr, #id_display, #id_security, #id_modstandardelshdr, #id_activitycompletionheader, #id_tagshdr, #id_competenciessection, #fitem_id_showdescription {
+display: none;
+}
