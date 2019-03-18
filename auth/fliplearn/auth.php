@@ -46,10 +46,11 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
     
   }
 
-  public function complete_login(core\oauth2\client $client, $redirecturl) {
+  public function complete_login(core\oauth2\client $client, $redirecturl, $cmid, $attemptId) {
     global $CFG, $SESSION, $PAGE;
 
-    $userinfo = $this->get_userinfo($client);
+   $userMappingData = $userinfo = $this->get_userinfo($client);
+
     if (!$userinfo) {
       // Trigger login failed event.
       $failurereason = AUTH_LOGIN_NOUSER;
@@ -238,7 +239,7 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
           $newuser = \auth_oauth2\api::create_new_confirmed_account($userinfo, $issuer);
                     
           // Save UUID of user.
-          if (!empty($userinfo['uuid'])) {
+          /*if (!empty($userinfo['uuid'])) {
             $field = $DB->get_record_sql('SELECT * FROM {user_info_field} WHERE name = ?', 
                          array('UUID'));          
             if (!empty($field) && isset($field->id)) {
@@ -249,7 +250,7 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
               $record->dataformat = '0';
               $DB->insert_record('user_info_data', $record);
             }
-          }
+          }*/
           
           $userinfo = get_complete_user_data('id', $newuser->id);
 
@@ -258,11 +259,53 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
       }
     }
 
+    global $DB;
+    $uuid = $userMappingData['uuid'];
+    $userMappingSql = "SELECT user_id FROM {guru_user_mapping} 
+                            WHERE uuid =?";
+    $userMapping = $DB->get_record_sql($userMappingSql, array($uuid));
+    if (empty($userMapping)) {
+      $email = $userMappingData['flipuser_email']?$userMappingData['flipuser_email']:$userMappingData['flipuser_uuid'].'@fliplearn.com';
+      $userObj = new stdClass();
+      $userObj->user_id = $userinfo->id;
+      $userObj->uuid  = $uuid;
+      $userObj->firstname = $userMappingData['flipuser_name'];
+      $userObj->email = $email;
+      $userObj->school_code = '';
+      $userObj->role = '';
+      $userObj->is_enrolled = 0; 
+      $userObj->ayid = 0;
+      $id =  $DB->insert_record('guru_user_mapping',$userObj , $returnid=true, $bulk=false) ;
+    }
+
     // We used to call authenticate_user - but that won't work if the current user has a different default authentication
     // method. Since we now ALWAYS link a login - if we get to here we can directly allow the user in.
     $user = (object) $userinfo;
     complete_user_login($user);
-    redirect($redirecturl);
+
+    if (!empty($cmid)) {
+      global $DB;
+      $courseSql = "SELECT course FROM {course_modules} 
+                            WHERE id =?";
+      $courseRes = $DB->get_record_sql($courseSql, array($cmid));
+      $courseId = $courseRes->course;
+      $userId = $user->id;
+      $roleId = 5;
+      
+      //Check if user is enrolled in the course. If not, enrol it in the given course
+      if(!enrol_try_internal_enrol($courseId, $userId, $roleId, time())) {
+        // There's a problem.
+        throw new moodle_exception('unabletoenrolerrormessage', 'langsourcefile');
+      }
+      
+      if (empty($attemptId)) {
+        redirect(new moodle_url('/mod/quiz/view.php?id=' . $cmid));
+      } else {
+        redirect(new moodle_url('/mod/quiz/review.php?attempt=' . $attemptId . '&cmid=' . $cmid));
+      }
+    } else {
+      redirect($redirecturl);
+    }
   }
 
   /**
@@ -286,9 +329,10 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
     } catch (\Exception $e) {
       return false;
     }
-
+    
+    $userEmail = $userinfo->email;
+    $userinfo->email = $userinfo->uuid.'@fliplearn.com';
 //    $map = $this->get_userinfo_mapping($client);
-
     $map = [
       "email" => "email",
       "mobile" => "phone1",
@@ -335,7 +379,29 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
       }
     }
 
-    return (array) $user;
+    $firstname = 'null';
+    $lastname = 'null';
+    if (!empty($userinfo->name)) {
+      $arr = explode(" ",$userinfo->name);
+      if (count($arr) > 1) {
+        $firstname = $arr[0];
+        $lastname = $arr[1];
+      } else {
+        $firstname = $arr[0];
+      }
+    }
+
+    $name   = $userinfo->name?$userinfo->name:'';
+    $email  = $userEmail?$userEmail:'';
+    $uuid   = $userinfo->uuid?$userinfo->uuid:'';
+
+    $user = (array) $user;
+    $user['flipuser_name'] = $name;
+    $user['flipuser_email'] = $email;
+    $user['flipuser_uuid'] == $uuid;
+    $user['firstname'] = $firstname;
+    $user['lastname'] = $lastname;
+    return $user;
   }
 
   private function getIssuer($issuerid) {

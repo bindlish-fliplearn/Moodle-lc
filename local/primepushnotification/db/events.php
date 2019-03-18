@@ -30,4 +30,8 @@ $observers = array(
         'eventname' => '\mod_forum\event\discussion_created',
         'callback' => 'local_primepushnotification_observer::primepushnotification',
     ),
+    array(
+        'eventname' => '\mod_quiz\event\attempt_submitted',
+        'callback' => 'local_primepushnotification_observer::attempt_question',
+    ),
 );

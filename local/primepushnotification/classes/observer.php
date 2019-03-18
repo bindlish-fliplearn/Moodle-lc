@@ -24,7 +24,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-
+require_once($CFG->dirroot . '/local/primepushnotification/lib.php');
 /**
  * Email signup notification event observers.
  *
@@ -64,9 +64,13 @@ class local_primepushnotification_observer {
                             ON gum.user_id = mra.userid
                             WHERE mra.userid != ?
                             AND mc.instanceid = ? 
-                            AND mc.contextlevel = ? ";
+                            AND mc.contextlevel = ?
+                            AND mra.userid 
+                            iN(SELECT ue.userid FROM mdl_enrol 
+                            AS me INNER JOIN mdl_user_enrolments 
+                            AS ue ON me.id = ue.enrolid 
+                            WHERE me.courseid = $courseId AND ue.status = 0)";
                     $result = $DB->get_records_sql($sql , array($userid,$courseId,$contextlevel));
-
                     $school_code = '';
                     $uuidList = array();
                     foreach($result as $value) {
@@ -75,7 +79,6 @@ class local_primepushnotification_observer {
                           array_push($uuidList, $uuid);
                     }
                   $clickUrl = BASE_URL.'/mod/forum/discuss.php?d='.$discussionId;
-
                     if(count($uuidList)>0){
                           $serializeRequest = array('senderUuid'=>1234,
                                               'schoolCode'=>$school_code,
@@ -94,24 +97,12 @@ class local_primepushnotification_observer {
                                             'eventDate' => $eventDate,
                                             'payload' => $serializeRequest
                                             ); 
-                          $data_string = json_encode($request);
-                          $ch = curl_init(COMMUNICATION_API_URL);
-                          curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-                          curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
-                          curl_setopt($ch, CURLOPT_TIMEOUT, 3); //timeout in seconds
-                          curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-                          curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                          curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                          'Content-Type: application/json',
-                          'Content-Length: ' . strlen($data_string))
-                          );
-                          $result = curl_exec($ch);
-                          
-                          $err = curl_errno($ch);
-                          if ($err) {
-                          	echo  $err;
-                           // $this->doError(curl_errno($ch), curl_error($ch));
-                          }   
+                         $data_string = json_encode($request);
+                         $result = curlPost($data_string, COMMUNICATION_API_URL);
+                         $responseData = json_decode($result);
+                         if($responseData->error !=null){
+                         	echo $responseData->error;
+                         }
                           try {
                               $notificationObj = new stdClass();
                               $notificationObj->course_id = $courseId;
@@ -129,4 +120,71 @@ class local_primepushnotification_observer {
             }
 
     }
+    public static function attempt_question(\mod_quiz\event\attempt_submitted $event) {
+                global $DB, $CFG;
+                $quiz = $event->get_record_snapshot('quiz_attempts', $event->objectid);
+                $attemptId = -1;
+                $cmid = $event->contextinstanceid;
+                $reviewUrl = $CFG->wwwroot . '/mod/quiz/review.php?attempt=' .$quiz->id. '&cmid=' .$cmid;
+                $quizId = $quiz->quiz;
+                $totalSql = "SELECT count('qs.id') 
+                              as totalQuestion FROM  {quiz_slots} as qs 
+                              where qs.quizid = ?";
+
+                $totalres = $DB->get_record_sql($totalSql, array($quizId));
+                $totalQuestion = $totalres->totalquestion;
+
+                $user_id = $event->userid;
+                $userSql = "SELECT uuid FROM {guru_user_mapping} 
+                            WHERE user_id =?";
+                
+                $userRes = $DB->get_record_sql($userSql, array($user_id));
+                $uuid = $userRes->uuid;
+
+                $attemptSQl = "SELECT max(iqa.uniqueid) AS uniqueid FROM {quiz_attempts} AS iqa WHERE iqa.userid = ? AND iqa.quiz = ? AND iqa.state = ?"; 
+                $attRes = $DB->get_record_sql($attemptSQl, array($user_id,$quizId,'finished'));
+                 $uniqueid = $attRes->uniqueid;
+
+                $quizAttemptSql = "SELECT (qa.timefinish-qa.timestart) 
+                                    AS timetaken, sum(case 
+                                    when qas.state='gradedwrong' 
+                                    then 1 else 0 end) as wrongAns,
+                                    sum(case when qas.state ='gradedright' 
+                                    then 1 else 0 end) as rightAns 
+                                    FROM {quiz_attempts} as qa 
+                                    JOIN {question_attempts} as qua 
+                                    on qua.questionusageid = qa.uniqueid 
+                                    join {question_attempt_steps} As qas 
+                                    ON qas.questionattemptid = qua.id 
+                                    WHERE  qua.questionusageid = ? 
+                                    AND  qa.userid = ?  
+                                    AND qa.quiz = ? 
+                                    AND qua.responsesummary != ?";
+
+                $quizRes = $DB->get_record_sql($quizAttemptSql, array($uniqueid,$user_id,$quizId,'null'));
+                if($quizRes){
+                          $rightAns = $quizRes->rightans?$quizRes->rightans:0;
+                          $wrongAns = $quizRes->wrongans?$quizRes->wrongans:0;
+                          $attemptedQuestions = $rightAns+$wrongAns;
+                          $timeTaken = $quizRes->timetaken;
+                          $serverurl = PRIME_URL.'/quiz/updateUserAssessmentLevel';
+                          $params = array('uuid'=>$uuid, 'testId'=> $cmid,
+                          'totalQuestions'=>$totalQuestion,
+                          'attemptedQuestions'=>$attemptedQuestions,
+                          'correctAnswers'=>$rightAns,'wrongAnswers'=> $wrongAns,
+                          'timeTaken'=>$timeTaken,
+                          'reviewUrl'=>$reviewUrl);
+                          $data_string = json_encode($params);
+                          // $myfile = fopen($CFG->dirroot . '/local/primepushnotification/classes/log.text', "w") or die("Unable to open file!");
+                          
+                          // fwrite($myfile, $data_string);
+                          $result = curlPost($data_string, $serverurl);
+                          $responseData = json_decode($result);
+                          $outPutdata = json_decode($responseData->data);
+                          $attemptId = $outPutdata->attemptId;
+                          setcookie("attemptId",$attemptId);
+                         return $responseData; 
+                }
+              setcookie("attemptId",$attemptId);
+  }
 }

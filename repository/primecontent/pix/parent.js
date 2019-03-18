@@ -27,3 +27,35 @@ function addFile(title, icon) {
     $('.fp-content').show();
     $('.fp-content').html(html);
 }
+function getAttemptedId(attemptId) {
+        window.webkit.messageHandlers.attemptId.postMessage(attemptId);
+    }
+setTimeout(function(){
+    $(document).ready(function(){
+        jQuery(document).on("click", 'a.mod_quiz-next-nav', function(event) {
+                try{
+                    getAttemptedId("");
+                }catch(e){
+                    JSReceiver.sendCallbackToApp("");
+                }
+            });
+    });
+}, 1000); 
+
+var allcookies = document.cookie;
+cookiearray = allcookies.split(';');
+for(var i=0; i<cookiearray.length; i++) {
+        name = cookiearray[i].split('=')[0];
+        value = cookiearray[i].split('=')[1];
+        if(name.trim() == 'attemptId'){
+                try{
+                    getAttemptedId(value);
+                }catch(e){
+                    JSReceiver.sendCallbackToApp(value);
+                }
+            delete_cookie('attemptId');
+        }
+}
+function delete_cookie(name) {
+    document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+};

@@ -5,6 +5,8 @@ require_once('auth.php');
 
 $issuerid = required_param('id', PARAM_INT);
 $wantsurl = new moodle_url(optional_param('wantsurl', '', PARAM_URL));
+$cmid = optional_param('cmid', '', PARAM_INT);
+$attemptId = optional_param('attemptId', '', PARAM_INT);
 
 require_sesskey();
 
@@ -21,7 +23,7 @@ $client = \core\oauth2\api::get_user_oauth_client($issuer, $returnurl);
 
 if ($client) {
   $auth = new \auth_plugin_fliplearn();
-  $auth->complete_login($client, $wantsurl);
+  $auth->complete_login($client, $wantsurl, $cmid, $attemptId);
 } else {
   throw new moodle_exception('Could not get an OAuth client.');
 }

@@ -1,11 +1,24 @@
 {
-    "name": "Moodle platform",
-    "short_name": "Moodle Lite",
+    "name": "Fliplearn",
+    "short_name": "Fliplearn",
     "start_url": "/",
     "display": "standalone",
     "orientation": "portrait-primary",
     "background_color": "#603795",
     "theme_color": "#603795",
     "gcm_sender_id": "103953800507",
-    "prefer_related_applications": true
+    "prefer_related_applications": true,
+    "icons": [
+    {
+      "src": "https://www.fliplearn.com/wp-content/uploads/2019/03/logo-icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://www.fliplearn.com/wp-content/uploads/2019/03/logo-icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
 }
+
