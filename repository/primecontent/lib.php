@@ -43,15 +43,7 @@ class repository_primecontent extends repository {
     $itemid      = optional_param('itemid', '',        PARAM_INT);
     $ctx_id = optional_param('ctx_id', '', PARAM_RAW);
     $pluginserviceurl = new moodle_url('/repository/primecontent/searchForm.php');
-    return array(
-            'nologin' => true,
-            'norefresh' => true,
-            'nosearch' => true,
-            'object' => array(
-                'type' => 'text/html',
-                'src' => $pluginserviceurl->out() . "?sesskey=" . $sessKey . "&itemid=" . $itemid . "&client_id=" . $client_id."&ctx_id=".$ctx_id
-            )
-        );
+    
     global $SESSION;
     
     $list = array();
@@ -68,22 +60,15 @@ class repository_primecontent extends repository {
       $uuid = $SESSION->uuid;
       $licence = $primecontent->checkLicence($uuid);
       if($licence) {
-        if(empty($primecontent_class)) {
-          $form = $primecontent->displaySearchForm();
-          return $form;
-        } else {
-          if((!isset($SESSION->classId) && empty($SESSION->classId)) || $SESSION->classId != $primecontent_class) {
-            $SESSION->classId = $primecontent_class;
-          }
-          if((!isset($SESSION->subjectId) && empty($SESSION->subjectId)) || $SESSION->subjectId != $primecontent_subject) {
-            $SESSION->subjectId = $primecontent_subject;
-          }
-          $data = $primecontent->getPrimContentBySubjectId($SESSION->classId, $SESSION->subjectId);
-          if(empty($data)) {
-            print_error("Content not found.");
-            return;
-          }
-        }
+        return array(
+          'nologin' => true,
+          'norefresh' => true,
+          'nosearch' => true,
+          'object' => array(
+              'type' => 'text/html',
+              'src' => $pluginserviceurl->out() . "?sesskey=" . $sessKey . "&itemid=" . $itemid . "&client_id=" . $client_id."&ctx_id=".$ctx_id
+          )
+      );
       } else {
         print_error("User licence is not valid.");
         return;
@@ -92,10 +77,6 @@ class repository_primecontent extends repository {
       print_error("User session is not valid.");
       return;
     }
-    $list['list'] = $data;
-    $list['norefresh'] = true;
-    $list['nologin'] = true;
-    return $list;
   }
 
   // if check_login returns false,

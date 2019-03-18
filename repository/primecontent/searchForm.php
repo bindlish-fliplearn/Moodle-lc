@@ -41,5 +41,7 @@ $ctx_id = optional_param('ctx_id', '', PARAM_RAW);
   ctx_id = "<?php echo $ctx_id; ?>";
   baseUrl = "<?php echo $CFG->wwwroot; ?>";
   primeUrl = "<?php echo PRIME_URL; ?>";
+  sessionToken = "<?php echo $SESSION->sessionToken; ?>";
+  loginId = "<?php echo $SESSION->loginId; ?>";
 </script>
 <script src="<?php echo $CFG->wwwroot; ?>/repository/primecontent/pix/primecontent.js"></script>

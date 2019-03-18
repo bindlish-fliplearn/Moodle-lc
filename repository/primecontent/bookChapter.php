@@ -8,9 +8,8 @@ $url = PRIME_URL . "/v1/booksChapters?ncertEbookEnable=1&topicList=false&subject
 $header = array(
   'Accept: application/json',
   'Content-Type: application/x-www-form-urlencoded',
-  'loginId: vinay2.admin',
-  'profileCode: 5800667696',
-  'sessionToken: 5geO3FuaOCa4QIxkSeZ6ssTT5',
+  'loginId: '.$SESSION->loginId,
+  'sessionToken:'.$SESSION->sessionToken,
   '3dSupport: 1',
   'platform: web'
 );
