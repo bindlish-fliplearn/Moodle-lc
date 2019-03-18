@@ -40,7 +40,10 @@ setTimeout(function(){
                     try{
                         JSReceiver.sendCallbackToApp("");
                     }catch(ex){
-                        parent.getWebAttemptedId(value);
+                            try{
+                                window.parent.postMessage("", '*');
+                            }catch(err){
+                                }
                     }
                 }
             });
@@ -59,7 +62,10 @@ for(var i=0; i<cookiearray.length; i++) {
                     try{
                         JSReceiver.sendCallbackToApp(value);
                     }catch(ex){
-                        parent.getWebAttemptedId(value);
+                         try{
+                                window.parent.postMessage(value, '*');
+                            }catch(err){
+                                }
                     }
                 }
             delete_cookie('attemptId');
