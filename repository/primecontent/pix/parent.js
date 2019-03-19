@@ -36,7 +36,14 @@ setTimeout(function(){
                 try{
                     getAttemptedId("");
                 }catch(e){
-                    JSReceiver.sendCallbackToApp("");
+                    try{
+                        JSReceiver.sendCallbackToApp("");
+                    }catch(ex){
+                            try{
+                                window.parent.postMessage("", '*');
+                            }catch(err){
+                                }
+                    }
                 }
             });
     });
@@ -51,7 +58,14 @@ for(var i=0; i<cookiearray.length; i++) {
                 try{
                     getAttemptedId(value);
                 }catch(e){
-                    JSReceiver.sendCallbackToApp(value);
+                     try{
+                        JSReceiver.sendCallbackToApp(value);
+                    }catch(ex){
+                         try{
+                                window.parent.postMessage(value, '*');
+                            }catch(err){
+                                }
+                    }
                 }
             delete_cookie('attemptId');
         }
