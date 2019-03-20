@@ -133,7 +133,7 @@ function downloadFile(resourceId) {
     var sourcekey = $('#resource_sourcekey_' + resourceId).val();
     var title = $('#resource_title_' + resourceId).val();
     var download = {
-        repo_id: "8",
+        repo_id: typeid,
         env: "filemanager",
         sourcekey: sourcekey,
         source: source,
