@@ -49,6 +49,6 @@ $record = $DB->get_record_sql($sql, array('primecontent'));
   primeUrl = "<?php echo PRIME_URL; ?>";
   sessionToken = "<?php echo $SESSION->sessionToken; ?>";
   loginId = "<?php echo $SESSION->loginId; ?>";
-  typeid = <?php echo $record->typeid; ?>
+  typeid = <?php echo $record->id; ?>
 </script>
 <script src="<?php echo $CFG->wwwroot; ?>/repository/primecontent/pix/primecontent.js"></script>
