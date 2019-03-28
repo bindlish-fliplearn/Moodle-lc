@@ -5,6 +5,12 @@ $itemid = optional_param('itemid', '', PARAM_RAW);
 $client_id = optional_param('client_id', '', PARAM_RAW);
 $sesskey = optional_param('sesskey', '', PARAM_RAW);
 $ctx_id = optional_param('ctx_id', '', PARAM_RAW);
+global $DB;
+$sql = "SELECT i.*, r.type AS repositorytype, r.visible, r.sortorder
+                      FROM {repository_instances} i
+                      JOIN {repository} r ON r.id = i.typeid
+                     WHERE r.type = ?";
+$record = $DB->get_record_sql($sql, array('primecontent'));
 ?>
 <link rel="stylesheet" href="<?php echo $CFG->wwwroot; ?>/repository/primecontent/pix/style.css">
 
@@ -43,5 +49,6 @@ $ctx_id = optional_param('ctx_id', '', PARAM_RAW);
   primeUrl = "<?php echo PRIME_URL; ?>";
   sessionToken = "<?php echo $SESSION->sessionToken; ?>";
   loginId = "<?php echo $SESSION->loginId; ?>";
+  typeid = <?php echo $record->id; ?>
 </script>
 <script src="<?php echo $CFG->wwwroot; ?>/repository/primecontent/pix/primecontent.js"></script>
