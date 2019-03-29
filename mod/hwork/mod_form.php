@@ -400,7 +400,7 @@ class mod_hwork_mod_form extends moodleform_mod {
         $mform->setDefault('grade', $hworkconfig->maximumgrade);
 
         // -------------------------------------------------------------------------------
-        $this->add_action_buttons();
+        $this->add_action_buttons(true, 'Save & Add Questions');
 
         $PAGE->requires->yui_module('moodle-mod_hwork-modform', 'M.mod_hwork.modform.init');
     }
