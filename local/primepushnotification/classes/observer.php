@@ -187,4 +187,12 @@ class local_primepushnotification_observer {
                 }
               setcookie("attemptId",$attemptId);
   }
+  public static function activity_completion(\core\event\course_module_updated $event){
+     global $DB, $CFG;
+      $objectid = $event->objectid;
+      $userSql = "SELECT * FROM {course_modules} 
+                            WHERE id =?";          
+      $courseRes = $DB->get_record_sql($userSql, array($objectid));
+      print_r($courseRes);die;
+  }
 }
