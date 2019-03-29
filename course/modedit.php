@@ -157,7 +157,7 @@ if ($mform->is_cancelled()) {
     }
 
     if (isset($fromform->submitbutton)) {
-        $url = new moodle_url("/mod/$module->name/edit.php", array('cmid' => $fromform->coursemodule, 'forceview' => 1));
+        $url = new moodle_url("/mod/$module->name/view.php", array('id' => $fromform->coursemodule, 'forceview' => 1));
         if (empty($fromform->showgradingmanagement)) {
             redirect($url);
         } else {
