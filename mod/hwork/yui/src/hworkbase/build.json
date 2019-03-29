@@ -1,0 +1,10 @@
+{
+    "name": "moodle-mod_hwork-hworkbase",
+    "builds": {
+        "moodle-mod_hwork-hworkbase": {
+            "jsfiles": [
+                "hworkbase.js"
+            ]
+        }
+    }
+}

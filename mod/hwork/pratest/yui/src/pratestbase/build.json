@@ -1,0 +1,10 @@
+{
+    "name": "moodle-mod_pratest-pratestbase",
+    "builds": {
+        "moodle-mod_pratest-pratestbase": {
+            "jsfiles": [
+                "pratestbase.js"
+            ]
+        }
+    }
+}

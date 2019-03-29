@@ -1,0 +1,10 @@
+{
+    "name": "moodle-mod_pratest-autosave",
+    "builds": {
+        "moodle-mod_pratest-autosave": {
+            "jsfiles": [
+                "autosave.js"
+            ]
+        }
+    }
+}

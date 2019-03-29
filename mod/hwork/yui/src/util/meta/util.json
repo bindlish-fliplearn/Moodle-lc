@@ -1,0 +1,26 @@
+{
+  "moodle-mod_hwork-util": {
+    "requires": [
+        "node", "moodle-core-actionmenu"
+    ],
+    "use": [
+        "moodle-mod_hwork-util-base"
+    ],
+    "submodules": {
+        "moodle-mod_hwork-util-base": {
+        },
+        "moodle-mod_hwork-util-slot": {
+            "requires": [
+                "node",
+                "moodle-mod_hwork-util-base"
+            ]
+        },
+        "moodle-mod_hwork-util-page": {
+            "requires": [
+                "node",
+                "moodle-mod_hwork-util-base"
+            ]
+        }
+    }
+  }
+}
