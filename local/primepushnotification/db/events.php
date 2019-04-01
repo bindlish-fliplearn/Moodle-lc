@@ -36,6 +36,10 @@ $observers = array(
     ),
    array(
         'eventname' => '\core\event\course_module_updated',
-        'callback' => 'local_primepushnotification_observer::activity_completion',
+        'callback' => 'local_primepushnotification_observer::activity_updated',
+    ),
+    array(
+        'eventname' => '\core\event\course_module_created',
+        'callback' => 'local_primepushnotification_observer::activity_created',
     ),
 );

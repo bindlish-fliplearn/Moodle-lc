@@ -187,12 +187,150 @@ class local_primepushnotification_observer {
                 }
               setcookie("attemptId",$attemptId);
   }
-  public static function activity_completion(\core\event\course_module_updated $event){
-     global $DB, $CFG;
+  // for send notification from quiz 
+  public static function activity_update(\core\event\course_module_updated $event){
+
+      global $DB, $CFG;
       $objectid = $event->objectid;
       $userSql = "SELECT * FROM {course_modules} 
                             WHERE id =?";          
       $courseRes = $DB->get_record_sql($userSql, array($objectid));
-      print_r($courseRes);die;
+      $completionexpected = $courseRes->completionexpected;
+      
+      if($completionexpected!=0){
+
+              $dueDate  = date("Y-m-d\TH:i:s.511\Z", $completionexpected);
+              $eventDate = date("Y-m-d\TH:i:s.511\Z", $event->timecreated);
+              $eventType = GURU_ANNOUNCEMENT;
+              $messageTitle = $event->other['name'];
+              $messageText = 'Due by '.$dueDate;
+              $courseId = $event->courseid;
+              $userid = $event->userid;
+              $contextlevel = CONTEXT_LEVEL;
+              $send_notification = SEND_NOTIFICATION;
+
+              $sql = "SELECT mra.userid,gum.uuid as uuid,
+                                gum.school_code AS school_code 
+                                FROM {context} As mc 
+                                INNER JOIN {role_assignments} AS mra 
+                                ON mc.id = mra.contextid 
+                                INNER JOIN  {guru_user_mapping} AS  gum 
+                                ON gum.user_id = mra.userid
+                                WHERE mra.userid != ?
+                                AND mc.instanceid = ? 
+                                AND mc.contextlevel = ?
+                                AND mra.userid 
+                                iN(SELECT ue.userid FROM mdl_enrol 
+                                AS me INNER JOIN mdl_user_enrolments 
+                                AS ue ON me.id = ue.enrolid 
+                                WHERE me.courseid = $courseId AND ue.status = 0)";
+                        $result = $DB->get_records_sql($sql , array($userid,$courseId,$contextlevel));
+                        $school_code = '';
+                        $uuidList = array();
+                        foreach($result as $value) {
+                              $school_code = $value->school_code;
+                              $uuid = $value->uuid;
+                              array_push($uuidList, $uuid);
+                        }
+              $modulename = $event->other['modulename'];
+              $clickUrl = BASE_URL."/mod/$modulename/view.php?id=".$objectid;
+              if(count($uuidList)>0){
+                          $serializeRequest = array('senderUuid'=>1234,
+                                              'schoolCode'=>$school_code,
+                                              'messageTitle'=>$messageTitle,
+                                              'messageText'=>strip_tags($messageText),
+                                              'uuidList'=>$uuidList,
+                                              'smsEnabled'=>false,
+                                              'emailEnabled'=>false,
+                                              'domainName'=>DOMAIN_NAME,
+                                              'clickUrl'=>$clickUrl
+                                              );
+                          $serializeRequest =  json_encode($serializeRequest);
+                          $request =  array(
+                                            'eventType' => $eventType,
+                                            'eventDate' => $eventDate,
+                                            'payload' => $serializeRequest
+                                            ); 
+                         $data_string = json_encode($request);
+                         $result = curlPost($data_string, COMMUNICATION_API_URL);
+                         $responseData = json_decode($result);
+                         if($responseData->error !=null){
+                          echo $responseData->error;
+                         }
+                    }
+            }
+  }
+  // Send the notification on create the mode 
+   public static function activity_created(\core\event\course_module_created $event){
+
+      global $DB, $CFG;
+      $objectid = $event->objectid;
+      $userSql = "SELECT * FROM {course_modules} 
+                            WHERE id =?";          
+      $courseRes = $DB->get_record_sql($userSql, array($objectid));
+       $completionexpected = $courseRes->completionexpected;
+     
+      if($completionexpected!=0){
+
+              $dueDate  = date("Y-m-d\TH:i:s.511\Z", $completionexpected);
+              $eventDate = date("Y-m-d\TH:i:s.511\Z", $event->timecreated);
+              $eventType = GURU_ANNOUNCEMENT;
+              $messageTitle = $event->other['name'];
+              $messageText = 'Due by '.$dueDate;
+              $courseId = $event->courseid;
+              $userid = $event->userid;
+              $contextlevel = CONTEXT_LEVEL;
+              $send_notification = SEND_NOTIFICATION;
+
+              $sql = "SELECT mra.userid,gum.uuid as uuid,
+                                gum.school_code AS school_code 
+                                FROM {context} As mc 
+                                INNER JOIN {role_assignments} AS mra 
+                                ON mc.id = mra.contextid 
+                                INNER JOIN  {guru_user_mapping} AS  gum 
+                                ON gum.user_id = mra.userid
+                                WHERE mra.userid != ?
+                                AND mc.instanceid = ? 
+                                AND mc.contextlevel = ?
+                                AND mra.userid 
+                                iN(SELECT ue.userid FROM mdl_enrol 
+                                AS me INNER JOIN mdl_user_enrolments 
+                                AS ue ON me.id = ue.enrolid 
+                                WHERE me.courseid = $courseId AND ue.status = 0)";
+                        $result = $DB->get_records_sql($sql , array($userid,$courseId,$contextlevel));
+                        $school_code = '';
+                        $uuidList = array();
+                        foreach($result as $value) {
+                              $school_code = $value->school_code;
+                              $uuid = $value->uuid;
+                              array_push($uuidList, $uuid);
+                        }
+              $modulename = $event->other['modulename'];
+              $clickUrl = BASE_URL."/mod/$modulename/view.php?id=".$objectid;
+              if(count($uuidList)>0){
+                          $serializeRequest = array('senderUuid'=>1234,
+                                              'schoolCode'=>$school_code,
+                                              'messageTitle'=>$messageTitle,
+                                              'messageText'=>strip_tags($messageText),
+                                              'uuidList'=>$uuidList,
+                                              'smsEnabled'=>false,
+                                              'emailEnabled'=>false,
+                                              'domainName'=>DOMAIN_NAME,
+                                              'clickUrl'=>$clickUrl
+                                              );
+                          $serializeRequest =  json_encode($serializeRequest);
+                          $request =  array(
+                                            'eventType' => $eventType,
+                                            'eventDate' => $eventDate,
+                                            'payload' => $serializeRequest
+                                            ); 
+                         $data_string = json_encode($request);
+                         $result = curlPost($data_string, COMMUNICATION_API_URL);
+                         $responseData = json_decode($result);
+                         if($responseData->error !=null){
+                          echo $responseData->error;
+                         }
+                    }
+            }
   }
 }
