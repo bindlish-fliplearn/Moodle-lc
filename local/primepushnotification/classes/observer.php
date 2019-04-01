@@ -188,9 +188,8 @@ class local_primepushnotification_observer {
               setcookie("attemptId",$attemptId);
   }
   // for send notification from quiz 
-  public static function activity_update(\core\event\course_module_updated $event){
-
-      global $DB, $CFG;
+  public static function activity_updated(\core\event\course_module_updated $event){
+     global $DB, $CFG;
       $objectid = $event->objectid;
       $userSql = "SELECT * FROM {course_modules} 
                             WHERE id =?";          
@@ -232,8 +231,10 @@ class local_primepushnotification_observer {
                               $uuid = $value->uuid;
                               array_push($uuidList, $uuid);
                         }
+                    $uuidList = array(162485674709);
+
               $modulename = $event->other['modulename'];
-              $clickUrl = BASE_URL."/mod/$modulename/view.php?id=".$objectid;
+              $clickUrl = BASE_URL."/mod/$modulename/view.php?id=".$objectid.'&forceview=1';
               if(count($uuidList)>0){
                           $serializeRequest = array('senderUuid'=>1234,
                                               'schoolCode'=>$school_code,
@@ -271,8 +272,7 @@ class local_primepushnotification_observer {
        $completionexpected = $courseRes->completionexpected;
      
       if($completionexpected!=0){
-
-              $dueDate  = date("Y-m-d\TH:i:s.511\Z", $completionexpected);
+              $dueDate  = date("Y-m-d", $completionexpected);
               $eventDate = date("Y-m-d\TH:i:s.511\Z", $event->timecreated);
               $eventType = GURU_ANNOUNCEMENT;
               $messageTitle = $event->other['name'];
@@ -306,7 +306,7 @@ class local_primepushnotification_observer {
                               array_push($uuidList, $uuid);
                         }
               $modulename = $event->other['modulename'];
-              $clickUrl = BASE_URL."/mod/$modulename/view.php?id=".$objectid;
+              $clickUrl = BASE_URL."/mod/$modulename/view.php?id=".$objectid.'&forceview=1';
               if(count($uuidList)>0){
                           $serializeRequest = array('senderUuid'=>1234,
                                               'schoolCode'=>$school_code,
@@ -327,6 +327,7 @@ class local_primepushnotification_observer {
                          $data_string = json_encode($request);
                          $result = curlPost($data_string, COMMUNICATION_API_URL);
                          $responseData = json_decode($result);
+                         //print_r($responseData);die;
                          if($responseData->error !=null){
                           echo $responseData->error;
                          }
