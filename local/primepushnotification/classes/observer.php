@@ -272,7 +272,7 @@ class local_primepushnotification_observer {
        $completionexpected = $courseRes->completionexpected;
      
       if($completionexpected!=0){
-              $dueDate  = date("Y-m-d", $completionexpected);
+              $dueDate  = date("Y-m-d\TH:i:s.511\Z", $completionexpected);
               $eventDate = date("Y-m-d\TH:i:s.511\Z", $event->timecreated);
               $eventType = GURU_ANNOUNCEMENT;
               $messageTitle = $event->other['name'];
