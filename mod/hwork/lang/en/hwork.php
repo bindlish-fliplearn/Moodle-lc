@@ -260,7 +260,7 @@ $string['delay2'] = 'Time delay between later attempts';
 $string['deleteattemptcheck'] = 'Are you absolutely sure you want to completely delete these attempts?';
 $string['deleteselected'] = 'Delete selected';
 $string['deletingquestionattempts'] = 'Deleting question attempts';
-$string['description'] = 'Description';
+$string['description'] = 'Instructions(Optional)';
 $string['disabled'] = 'Disabled';
 $string['displayoptions'] = 'Display options';
 $string['donotuseautosave'] = 'Do not use auto-save';
@@ -288,7 +288,7 @@ $string['editoverride'] = 'Edit override';
 $string['editqcats'] = 'Edit questions categories';
 $string['editquestion'] = 'Edit question';
 $string['editquestions'] = 'Edit questions';
-$string['edithwork'] = 'Edit Homework';
+$string['edithwork'] = 'Edit Question';
 $string['edithworkquestions'] = 'Edit Homework questions';
 $string['emailconfirmbody'] = 'Hi {$a->username},
 
