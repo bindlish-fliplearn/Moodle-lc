@@ -231,7 +231,6 @@ class local_primepushnotification_observer {
                               $uuid = $value->uuid;
                               array_push($uuidList, $uuid);
                         }
-                    $uuidList = array(162485674709);
 
               $modulename = $event->other['modulename'];
               $clickUrl = BASE_URL."/mod/$modulename/view.php?id=".$objectid.'&forceview=1';
