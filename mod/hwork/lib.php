@@ -1879,7 +1879,7 @@ function hwork_extend_settings_navigation($settings, $hworknode) {
       if (has_capability('mod/hwork:preview', $PAGE->cm->context)) {
           $url = new moodle_url('/mod/hwork/startattempt.php',
                   array('cmid'=>$PAGE->cm->id, 'sesskey'=>sesskey()));
-          $node = navigation_node::create('Preview as Students', $url,
+          $node = navigation_node::create('Preview as student', $url,
                   navigation_node::TYPE_SETTING, null, 'mod_hwork_preview',
                   new pix_icon('i/preview', ''));
           $hworknode->add_node($node, $beforekey);

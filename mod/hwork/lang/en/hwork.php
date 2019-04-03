@@ -144,7 +144,7 @@ $string['cannotsavenumberofquestion'] = 'Could not save number of questions per 
 $string['cannotsavequestion'] = 'Cannot save question list';
 $string['cannotsetgrade'] = 'Could not set a new maximum grade for the Homework';
 $string['cannotsetsumgrades'] = 'Failed to set sumgrades';
-$string['cannotstartgradesmismatch'] = 'Cannot start an attempt at this Homework. The Homework is set to be graded out of {$a->grade}, but none of the questions in the Homework have a grade. This can be fixed on the \'Edit Homework\' page.';
+$string['cannotstartgradesmismatch'] = 'Cannot start an attempt at this Homework. The Homework is set to be graded out of {$a->grade}, but none of the questions in the Homework have a grade. This can be fixed on the \'Edit Questions\' page.';
 $string['cannotstartmissingquestion'] = 'Cannot start an attempt at this Homework. The Homework definition includes a question that does not exist.';
 $string['cannotstartnoquestions'] = 'Cannot start an attempt at this Homework. The Homework has not been set up yet. No questions have been added.';
 $string['cannotwrite'] = 'Cannot write to export file ({$a})';
@@ -289,7 +289,7 @@ $string['editqcats'] = 'Edit questions categories';
 $string['editquestion'] = 'Edit question';
 $string['editquestions'] = 'Edit questions';
 $string['edithwork'] = 'Edit Question';
-$string['edithworkquestions'] = 'Edit Homework questions';
+$string['edithworkquestions'] = 'Edit Questions questions';
 $string['emailconfirmbody'] = 'Hi {$a->username},
 
 Thank you for submitting your answers to \'{$a->hworkname}\' in course \'{$a->coursename}\' at {$a->submissiontime}.
@@ -600,7 +600,7 @@ $string['overrideusereventname'] = '{$a->hwork} - Override';
 $string['pageshort'] = 'P';
 $string['page-mod-hwork-x'] = 'Any Homework module page';
 $string['page-mod-hwork-attempt'] = 'Attempt Homework page';
-$string['page-mod-hwork-edit'] = 'Edit Homework page';
+$string['page-mod-hwork-edit'] = 'Edit Questions page';
 $string['page-mod-hwork-report'] = 'Any Homework report page';
 $string['page-mod-hwork-review'] = 'Review Homework attempt page';
 $string['page-mod-hwork-summary'] = ' Homework attempt summary page';

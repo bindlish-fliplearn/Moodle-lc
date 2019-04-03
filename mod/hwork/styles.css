@@ -1270,3 +1270,7 @@ table#categoryquestions {
 #id_modstandardgrade, #id_layouthdr, #id_interactionhdr, #id_reviewoptionshdr, #id_display, #id_security, #id_modstandardelshdr, #id_tagshdr, #id_competenciessection, #fitem_id_showdescription {
 display: none;
 }
+
+#action-menu-2-menubar {
+    display: none;
+}
