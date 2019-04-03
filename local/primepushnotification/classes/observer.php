@@ -200,13 +200,13 @@ class local_primepushnotification_observer {
 
               $dueDate  = date("Y-m-d\TH:i:s.511\Z", $completionexpected);
               $eventDate = date("Y-m-d\TH:i:s.511\Z", $event->timecreated);
-              $eventType = GURU_ANNOUNCEMENT;
+              $eventType = $CFG->GURU_ANNOUNCEMENT;
               $messageTitle = $event->other['name'];
               $messageText = 'Due by '.$dueDate;
               $courseId = $event->courseid;
               $userid = $event->userid;
-              $contextlevel = CONTEXT_LEVEL;
-              $send_notification = SEND_NOTIFICATION;
+              $contextlevel = $CFG->CONTEXT_LEVEL;
+              $send_notification = $CFG->SEND_NOTIFICATION;
 
               $sql = "SELECT mra.userid,gum.uuid as uuid,
                                 gum.school_code AS school_code 
@@ -233,7 +233,7 @@ class local_primepushnotification_observer {
                         }
 
               $modulename = $event->other['modulename'];
-              $clickUrl = BASE_URL."/mod/$modulename/view.php?id=".$objectid.'&forceview=1';
+              $clickUrl = $CFG->BASE_URL."/mod/$modulename/view.php?id=".$objectid.'&forceview=1';
               if(count($uuidList)>0){
                           $serializeRequest = array('senderUuid'=>1234,
                                               'schoolCode'=>$school_code,
@@ -242,7 +242,7 @@ class local_primepushnotification_observer {
                                               'uuidList'=>$uuidList,
                                               'smsEnabled'=>false,
                                               'emailEnabled'=>false,
-                                              'domainName'=>DOMAIN_NAME,
+                                              'domainName'=>$CFG->DOMAIN_NAME,
                                               'clickUrl'=>$clickUrl
                                               );
                           $serializeRequest =  json_encode($serializeRequest);
@@ -252,7 +252,7 @@ class local_primepushnotification_observer {
                                             'payload' => $serializeRequest
                                             ); 
                          $data_string = json_encode($request);
-                         $result = curlPost($data_string, COMMUNICATION_API_URL);
+                         $result = curlPost($data_string, $CFG->COMMUNICATION_API_URL);
                          $responseData = json_decode($result);
                          if($responseData->error !=null){
                           echo $responseData->error;
@@ -273,13 +273,13 @@ class local_primepushnotification_observer {
       if($completionexpected!=0){
               $dueDate  = date("Y-m-d\TH:i:s.511\Z", $completionexpected);
               $eventDate = date("Y-m-d\TH:i:s.511\Z", $event->timecreated);
-              $eventType = GURU_ANNOUNCEMENT;
+              $eventType = $CFG->GURU_ANNOUNCEMENT;
               $messageTitle = $event->other['name'];
               $messageText = 'Due by '.$dueDate;
               $courseId = $event->courseid;
               $userid = $event->userid;
-              $contextlevel = CONTEXT_LEVEL;
-              $send_notification = SEND_NOTIFICATION;
+              $contextlevel = $CFG->CONTEXT_LEVEL;
+              $send_notification = $CFG->SEND_NOTIFICATION;
 
               $sql = "SELECT mra.userid,gum.uuid as uuid,
                                 gum.school_code AS school_code 
@@ -305,7 +305,7 @@ class local_primepushnotification_observer {
                               array_push($uuidList, $uuid);
                         }
               $modulename = $event->other['modulename'];
-              $clickUrl = BASE_URL."/mod/$modulename/view.php?id=".$objectid.'&forceview=1';
+              $clickUrl = $CFG->BASE_URL."/mod/$modulename/view.php?id=".$objectid.'&forceview=1';
               if(count($uuidList)>0){
                           $serializeRequest = array('senderUuid'=>1234,
                                               'schoolCode'=>$school_code,
@@ -314,7 +314,7 @@ class local_primepushnotification_observer {
                                               'uuidList'=>$uuidList,
                                               'smsEnabled'=>false,
                                               'emailEnabled'=>false,
-                                              'domainName'=>DOMAIN_NAME,
+                                              'domainName'=>$CFG->DOMAIN_NAME,
                                               'clickUrl'=>$clickUrl
                                               );
                           $serializeRequest =  json_encode($serializeRequest);
@@ -324,7 +324,7 @@ class local_primepushnotification_observer {
                                             'payload' => $serializeRequest
                                             ); 
                          $data_string = json_encode($request);
-                         $result = curlPost($data_string, COMMUNICATION_API_URL);
+                         $result = curlPost($data_string, $CFG->COMMUNICATION_API_URL);
                          $responseData = json_decode($result);
                          //print_r($responseData);die;
                          if($responseData->error !=null){
