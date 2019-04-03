@@ -271,7 +271,7 @@ class local_primepushnotification_observer {
        $completionexpected = $courseRes->completionexpected;
      
       if($completionexpected!=0){
-              $dueDate  = date("Y-m-d\TH:i:s.511\Z", $completionexpected);
+              $dueDate  = date("Y-m-d", $completionexpected);
               $eventDate = date("Y-m-d\TH:i:s.511\Z", $event->timecreated);
               $eventType = $CFG->GURU_ANNOUNCEMENT;
               $messageTitle = 'Homework assigned:'.$event->other['name'];
