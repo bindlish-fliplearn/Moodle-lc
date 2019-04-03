@@ -198,10 +198,10 @@ class local_primepushnotification_observer {
       
       if($completionexpected!=0){
 
-              $dueDate  = date("Y-m-d\TH:i:s.511\Z", $completionexpected);
+              $dueDate  = date("Y-m-d", $completionexpected);
               $eventDate = date("Y-m-d\TH:i:s.511\Z", $event->timecreated);
               $eventType = $CFG->GURU_ANNOUNCEMENT;
-              $messageTitle = $event->other['name'];
+              $messageTitle = 'Homework assigned:'.$event->other['name'];
               $messageText = 'Due by '.$dueDate;
               $courseId = $event->courseid;
               $userid = $event->userid;
@@ -274,7 +274,7 @@ class local_primepushnotification_observer {
               $dueDate  = date("Y-m-d\TH:i:s.511\Z", $completionexpected);
               $eventDate = date("Y-m-d\TH:i:s.511\Z", $event->timecreated);
               $eventType = $CFG->GURU_ANNOUNCEMENT;
-              $messageTitle = $event->other['name'];
+              $messageTitle = 'Homework assigned:'.$event->other['name'];
               $messageText = 'Due by '.$dueDate;
               $courseId = $event->courseid;
               $userid = $event->userid;
