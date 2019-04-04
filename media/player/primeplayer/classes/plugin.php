@@ -53,34 +53,17 @@ class media_primeplayer_plugin extends core_media_player {
     //Added by Jatin
     //Check prime license & session Token
     global $SESSION, $USER, $DB, $CFG;
+    $SESSION->isPrimeUser = "";
+    $SESSION->is3DUser = "";
     $userInfo = $DB->get_record('guru_user_mapping', array('user_id' => $USER->id), '*');
     if (isset($userInfo->uuid) && !empty($userInfo->uuid)) {
-      $tokenValid = false;
-      $conn = new curl(array('cache' => true, 'debug' => false));
-      if (isset($SESSION->sessionToken) && !empty($SESSION->sessionToken)) {
-        $api_path = UMS_URL . "/isLoginTokenValidForUserByUuid";
-        $params = array('uuid' => $userInfo->uuid,
-          'sessionToken' => $SESSION->sessionToken
-        );
-        $params_json = json_encode($params);
-        $conn->setHeader(array(
-          'Content-Type: application/json',
-          'Connection: keep-alive',
-          'Cache-Control: no-cache'));
-        $content = $conn->post($api_path, $params_json);
-        $result = json_decode($content);
-        if (isset($result->status)) {
-          $tokenValid = $result->status;
-        }
-      }
-      if (!$tokenValid) {
-        $conn2 = new curl(array('cache' => true, 'debug' => false));
-        $api_path2 = UMS_URL . "/autologinByUuid/$userInfo->uuid";
-        $content2 = $conn2->get($api_path2, '');
-        $result2 = json_decode($content2);
-        if (isset($result2->data->sessionToken)) {
-          $SESSION->sessionToken = $result2->data->sessionToken;
-        }
+      $conn2 = new curl(array('cache' => true, 'debug' => false));
+      $api_path2 = UMS_URL . "/autologinByUuid/$userInfo->uuid";
+      $content2 = $conn2->get($api_path2, '');
+      $result2 = json_decode($content2);
+      if (isset($result2->data->sessionToken)) {
+        $SESSION->sessionToken = $result2->data->sessionToken;
+        $SESSION->loginId = $result2->data->loginId;
       }
       $conn3 = new curl(array('cache' => true, 'debug' => false));
       $api_path3 = BL_URL . "/user/checkUserLicence/$userInfo->uuid";
@@ -98,7 +81,7 @@ class media_primeplayer_plugin extends core_media_player {
     }
 
     //Customise Code added to get prime resource CDN path based on resource Id
-    if (isset($SESSION->sessionToken)) {
+    if (isset($SESSION->sessionToken) && !empty($SESSION->sessionToken)) {
       foreach ($urls as $key) {
         $res_urls[] = urldecode($key->out(false));
       }
@@ -151,7 +134,7 @@ class media_primeplayer_plugin extends core_media_player {
               $classLevelId = $record->class_level_id;
               $api_path = PRIME_URL . "/resource/url?resourceId=$resourceId&product=$product&tagKey=null&classLevelId=$classLevelId";
               $conn->setHeader(array(
-                'loginId:' . $userInfo->login_id,
+                'loginId:' . $SESSION->loginId,
                 'sessionToken:' . $SESSION->sessionToken,
                 'SupportedApiVersion: 1',
                 'platform: web',
