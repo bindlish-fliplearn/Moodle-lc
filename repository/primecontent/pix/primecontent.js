@@ -65,9 +65,10 @@ $('document,body').on('click', '#classSubjectButton', function () {
     var primecontent_class = $('#primecontent_class').val();
     var primecontent_subject = $('#primecontent_subject').val();
     showLoading();
+    window.localStorage.setItem('primeClassId', primecontent_class);
     $.ajax({
         type: "GET",
-        url: baseUrl + "/repository/primecontent/bookChapter.php?sesskey=" + sesskey + "&itemid=" + itemid + "&client_id=" + client_id + "&subjectId=" + primecontent_subject,
+        url: baseUrl + "/repository/primecontent/bookChapter.php?sesskey=" + sesskey + "&itemid=" + itemid + "&client_id=" + client_id + "&classId=" + primecontent_class + "&subjectId=" + primecontent_subject,
         success: function (chapterTopicsHtml) {
             $("#search_class_subject").html(chapterTopicsHtml);
         }
@@ -180,10 +181,17 @@ function draftFile() {
 }
 
 function preview(resourceId) {
+    var classLevelId = window.localStorage.getItem('primeClassId');
     $('#player_div').show();
     $('#resource_div').hide();
     $('#add_resource').attr('onClick', 'downloadFile('+resourceId+');');
     var cType = $('#resource_cType_'+resourceId).val();
+    var product = "";
+    if(cType == "3d") {
+        product = "designmate_3d";
+    } else {
+        product = "prime";
+    } 
     var headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -192,17 +200,18 @@ function preview(resourceId) {
         '3dSupport': 1,
         'platform': 'web'
     };
+    var url = primeUrl + "/resource/url?product="+product+"&tagKey=null&ncertEbookEnable=1&resourceId="+resourceId+"&classLevelId="+classLevelId;
     $.ajax({
         type: "GET",
         headers:headers,
-        url: primeUrl + "/resource/url?product=prime&tagKey=null&ncertEbookEnable=1&resourceId="+resourceId,
+        url: url,
         success: function (data) {
             var resourse = JSON.parse(data);
             console.log(resourse);
             $('.moodle-dialogue-lightbox').hide();
             $('.moodle-dialogue').hide();
             console.log(cType);
-            if(cType == "MP4" || cType == "AVI" || cType == "FLV" || cType == "3d" || cType == "VDOEN") {
+            if(cType == "MP4" || cType == "AVI" || cType == "FLV" || cType == "VDOEN") {
             var playerInstance = jwplayer("player");
                 playerInstance.setup({
                     width: '620',

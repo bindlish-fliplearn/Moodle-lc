@@ -194,28 +194,18 @@ class primecontent {
     $respo = FALSE;
     $userInfo = $DB->get_record('guru_user_mapping', array('user_id' => $USER->id), '*');
     if (isset($userInfo->uuid) && !empty($userInfo->uuid)) {
-      if (isset($SESSION->uuid) && !empty($SESSION->uuid) && isset($SESSION->sessionToken) && !empty($SESSION->sessionToken)) {
-        $uuid = $SESSION->uuid;
-        $sessionToken = $SESSION->sessionToken;
-        $checkSession = $this->checkSesstionToken($uuid, $sessionToken);
-        if (!$checkSession) {
-          print_error(UNSUBSCRIBE_MSG);
-          return;
-        }
+      $conn2 = new curl(array('cache' => true, 'debug' => false));
+      $autoLoginURL = UMS_URL . "/autologinByUuid/$userInfo->uuid";
+      $autoLoginResp = $conn2->get($autoLoginURL, '');
+      $result = json_decode($autoLoginResp);
+      if (isset($result->data->sessionToken)) {
+        $SESSION->sessionToken = $result->data->sessionToken;
+        $SESSION->uuid = $userInfo->uuid;
+        $SESSION->loginId = $result->data->loginId;
         $respo = TRUE;
       } else {
-        $conn2 = new curl(array('cache' => true, 'debug' => false));
-        $autoLoginURL = UMS_URL . "/autologinByUuid/$userInfo->uuid";
-        $autoLoginResp = $conn2->get($autoLoginURL, '');
-        $result = json_decode($autoLoginResp);
-        if (isset($result->data->sessionToken)) {
-          $SESSION->sessionToken = $result->data->sessionToken;
-          $SESSION->uuid = $userInfo->uuid;
-          $SESSION->loginId = $result->data->loginId;
-          $respo = TRUE;
-        } else {
-          $respo = FALSE;
-        }
+        print_error($result->error->internalMessage);
+        return;
       }
     }
     return $respo;
