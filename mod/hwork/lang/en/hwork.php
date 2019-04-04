@@ -288,7 +288,7 @@ $string['editoverride'] = 'Edit override';
 $string['editqcats'] = 'Edit questions categories';
 $string['editquestion'] = 'Edit question';
 $string['editquestions'] = 'Edit questions';
-$string['edithwork'] = 'Edit Question';
+$string['edithwork'] = 'Add/Edit Questions';
 $string['edithworkquestions'] = 'Edit Questions questions';
 $string['emailconfirmbody'] = 'Hi {$a->username},
 
