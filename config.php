@@ -6,10 +6,10 @@ $CFG = new stdClass();
 
 $CFG->dbtype    = 'mysqli';
 $CFG->dblibrary = 'native';
-$CFG->dbhost    = 'stgumsdb.fliplearn.com';
-$CFG->dbname    = 'flip_launchpad';
+$CFG->dbhost    = 'localhost';
+$CFG->dbname    = 'assessment';
 $CFG->dbuser    = 'root';
-$CFG->dbpass    = 'flip@159$$';
+$CFG->dbpass    = 'root';
 $CFG->prefix    = 'mdl_';
 $CFG->dboptions = array (
   'dbpersist' => 0,
@@ -19,11 +19,26 @@ $CFG->dboptions = array (
 );
 
 $CFG->customscripts = '/var/www/html/flip-moodleguru/customscript';
-$CFG->wwwroot   = 'http://localhost/flip-launch';
-$CFG->dataroot  = '/var/www/flip-moodledata';
+$CFG->wwwroot   = 'http://localhost/flip_moodlelc';
+$CFG->dataroot  = '/var/www/html/moodledata_lc';
 $CFG->admin     = 'admin';
 
 $CFG->directorypermissions = 0777;
+
+// for send notification 
+
+$CFG->GURU_ANNOUNCEMENT     = 'GURU_ANNOUNCEMENT';
+$CFG->CONTEXT_LEVEL     = 50;
+$CFG->SEND_NOTIFICATION     = true;
+$CFG->COMMUNICATION_API_URL = 'http://stgeventapi.fliplearn.com:8084/event/';
+$CFG->DOMAIN_NAME     = 'stgmoodlelc.fliplearn.com';
+$CFG->BASE_URL     = 'https://stgmoodlelc.fliplearn.com';
+
+
+// end here 
+
+
+
 
 define('PRIME_URL', 'https://stgptoc.fliplearn.com');
 define('USER_LOGIN', 'quizdash.admin');
