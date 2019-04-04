@@ -1267,10 +1267,10 @@ table#categoryquestions {
     }
 }
 
-#id_modstandardgrade, #id_layouthdr, #id_interactionhdr, #id_reviewoptionshdr, #id_display, #id_security, #id_modstandardelshdr, #id_tagshdr, #id_competenciessection, #fitem_id_showdescription {
+#page-mod-hwork-mod #id_modstandardgrade, #page-mod-hwork-mod #id_layouthdr, #page-mod-hwork-mod #id_interactionhdr, #page-mod-hwork-mod #id_reviewoptionshdr, #page-mod-hwork-mod #id_display, #page-mod-hwork-mod #id_security, #page-mod-hwork-mod #id_modstandardelshdr, #page-mod-hwork-mod #id_tagshdr, #page-mod-hwork-mod #id_competenciessection, #page-mod-hwork-mod #fitem_id_showdescription {
 display: none;
 }
 
-#action-menu-2-menubar {
+#page-mod-hwork-mod #action-menu-2-menubar {
     display: none;
 }
