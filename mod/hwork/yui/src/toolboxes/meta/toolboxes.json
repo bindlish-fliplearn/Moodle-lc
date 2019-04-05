@@ -1,0 +1,14 @@
+{
+    "moodle-mod_hwork-toolboxes": {
+        "requires": [
+            "base",
+            "node",
+            "event",
+            "event-key",
+            "io",
+            "moodle-mod_hwork-hworkbase",
+            "moodle-mod_hwork-util-slot",
+            "moodle-core-notification-ajaxexception"
+        ]
+    }
+}

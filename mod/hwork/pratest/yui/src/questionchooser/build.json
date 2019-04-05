@@ -1,0 +1,10 @@
+{
+    "name": "moodle-mod_pratest-questionchooser",
+    "builds": {
+        "moodle-mod_pratest-questionchooser": {
+            "jsfiles": [
+                "questionchooser.js"
+            ]
+        }
+    }
+}

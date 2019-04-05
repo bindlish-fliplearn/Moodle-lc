@@ -1,0 +1,10 @@
+{
+    "name": "moodle-mod_hwork-questionchooser",
+    "builds": {
+        "moodle-mod_hwork-questionchooser": {
+            "jsfiles": [
+                "questionchooser.js"
+            ]
+        }
+    }
+}

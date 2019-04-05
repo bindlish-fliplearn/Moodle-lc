@@ -1,0 +1,10 @@
+{
+    "name": "moodle-mod_pratest-repaginate",
+    "builds": {
+        "moodle-mod_pratest-repaginate": {
+            "jsfiles": [
+                "repaginate.js"
+            ]
+        }
+    }
+}

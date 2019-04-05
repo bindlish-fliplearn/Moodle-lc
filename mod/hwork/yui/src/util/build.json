@@ -1,0 +1,21 @@
+{
+  "name": "moodle-mod_hwork-util",
+  "builds": {
+    "moodle-mod_hwork-util-base": {
+      "jsfiles": [
+        "base.js"
+      ]
+    },
+    "moodle-mod_hwork-util-slot": {
+      "jsfiles": [
+        "slot.js"
+      ]
+    }
+    ,
+    "moodle-mod_hwork-util-page": {
+      "jsfiles": [
+        "page.js"
+      ]
+    }
+  }
+}

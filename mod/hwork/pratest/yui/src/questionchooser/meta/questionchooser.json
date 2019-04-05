@@ -1,0 +1,9 @@
+{
+    "moodle-mod_pratest-questionchooser": {
+        "requires": [
+            "moodle-core-chooserdialogue",
+            "moodle-mod_pratest-util",
+            "querystring-parse"
+        ]
+    }
+}

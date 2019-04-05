@@ -34,4 +34,12 @@ $observers = array(
         'eventname' => '\mod_quiz\event\attempt_submitted',
         'callback' => 'local_primepushnotification_observer::attempt_question',
     ),
+   array(
+        'eventname' => '\core\event\course_module_updated',
+        'callback' => 'local_primepushnotification_observer::activity_updated',
+    ),
+    array(
+        'eventname' => '\core\event\course_module_created',
+        'callback' => 'local_primepushnotification_observer::activity_created',
+    ),
 );

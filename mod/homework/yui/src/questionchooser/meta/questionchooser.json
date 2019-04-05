@@ -1,9 +1,0 @@
-{
-    "moodle-mod_homework-questionchooser": {
-        "requires": [
-            "moodle-core-chooserdialogue",
-            "moodle-mod_homework-util",
-            "querystring-parse"
-        ]
-    }
-}
