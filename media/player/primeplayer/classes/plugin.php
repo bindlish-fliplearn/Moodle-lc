@@ -55,6 +55,7 @@ class media_primeplayer_plugin extends core_media_player {
     global $SESSION, $USER, $DB, $CFG;
     $SESSION->isPrimeUser = "";
     $SESSION->is3DUser = "";
+    $SESSION->classLevelId = "";
     $userInfo = $DB->get_record('guru_user_mapping', array('user_id' => $USER->id), '*');
     if (isset($userInfo->uuid) && !empty($userInfo->uuid)) {
       $conn2 = new curl(array('cache' => true, 'debug' => false));
@@ -75,6 +76,7 @@ class media_primeplayer_plugin extends core_media_player {
             $SESSION->isPrimeUser = $value->status;
           } if (isset($value->status) && $value->product == "designmate_3d") {
             $SESSION->is3DUser = $value->status;
+            $SESSION->classLevelId = $value->classLevelId;
           }
         }
       }
@@ -131,7 +133,11 @@ class media_primeplayer_plugin extends core_media_player {
                     WHERE grm.resourse_id = ?
                     group by gpm.class_level_id;";
               $record = $DB->get_record_sql($sql, array($resourceId));
-              $classLevelId = $record->class_level_id;
+              if (!empty($record->class_level_id)) {
+                $classLevelId = $record->class_level_id;
+              } else {
+                $classLevelId = $SESSION->classLevelId;
+              }
               $api_path = PRIME_URL . "/resource/url?resourceId=$resourceId&product=$product&tagKey=null&classLevelId=$classLevelId";
               $conn->setHeader(array(
                 'loginId:' . $SESSION->loginId,
