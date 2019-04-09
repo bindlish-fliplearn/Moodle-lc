@@ -32,10 +32,18 @@ $result3 = json_decode($content3, true);
       $mediaType = $resources['mediaType'];
       $isMedia = $resources['isMedia'];
       $cType = $resources['cType'];
-      if(strpos($resources['thumbNail'], '?')) {
-        $source = $resources['thumbNail'] . "&resourceId=" . $resources['resourceId'] . "@@".$mediaType."@@".$isMedia."@@".$cType;
+      if($cType == '3d') {
+        if(strpos($resources['defaultThumbnail'], '?')) {
+          $source = "https://www.fliplearn.com/wp-content/uploads/2019/04/fliplearn-top-logo-1.png&resourceId=" . $resources['resourceId'] . "@@".$mediaType."@@".$isMedia."@@".$cType;
+        } else {
+          $source = "https://www.fliplearn.com/wp-content/uploads/2019/04/fliplearn-top-logo-1.png?resourceId=" . $resources['resourceId'] . "@@".$mediaType."@@".$isMedia."@@".$cType;
+        }
       } else {
-        $source = $resources['thumbNail'] . "?resourceId=" . $resources['resourceId'] . "@@".$mediaType."@@".$isMedia."@@".$cType;
+        if(strpos($resources['thumbNail'], '?')) {
+          $source = $resources['thumbNail'] . "&resourceId=" . $resources['resourceId'] . "@@".$mediaType."@@".$isMedia."@@".$cType;
+        } else {
+          $source = $resources['thumbNail'] . "?resourceId=" . $resources['resourceId'] . "@@".$mediaType."@@".$isMedia."@@".$cType;
+        }
       }
       
       $sourcekey = sha1($source . repository::get_secret_key() . sesskey());
