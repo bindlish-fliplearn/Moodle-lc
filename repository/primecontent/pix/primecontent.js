@@ -208,6 +208,7 @@ function preview(resourceId) {
         success: function (data) {
             var resourse = JSON.parse(data);
             console.log(resourse);
+            if(resourse.error == null) {
             $('.moodle-dialogue-lightbox').hide();
             $('.moodle-dialogue').hide();
             console.log(cType);
@@ -228,6 +229,9 @@ function preview(resourceId) {
             } else {
                 var iframe = "<iframe height='430' width='620' src='"+resourse.response.cdnPath+"'></iframe>";
                 $('#player').html(iframe);
+            }
+            } else {
+                $('#player').html(resourse.error.errorMessage);
             }
         }
     });
