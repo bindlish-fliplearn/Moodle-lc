@@ -116,5 +116,18 @@
         });
         messaging.onMessage(function (payload) {
             console.log('onMessage: ', payload);
-        var n = new Notification(payload.notification.title,payload);
+        //var n = new Notification(payload.notification.title,payload);
+
+        Notification.requestPermission().then( function( permission )
+                {
+                navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                try {
+                        registrations[0].showNotification(payload.notification.title,payload);
+                }catch(ex){
+                console.log(ex);
+                }
+             });
+
+            });
+
         });
