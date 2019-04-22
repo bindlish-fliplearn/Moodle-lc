@@ -199,7 +199,7 @@ class local_primepushnotification_observer {
       $currDate =  date("Y-m-d");
       $currDateStr =  strtotime($currDate);
       $updateDateStr  = strtotime(date("Y-m-d", $completionexpected));
-      if($completionexpected!=0 && $currDateStr >= $updateDateStr){
+      if($completionexpected!=0 && $currDateStr <= $updateDateStr){
               $dueDate  = date("Y-m-d", $completionexpected);
               $eventDate = date("Y-m-d\TH:i:s.511\Z", $event->timecreated);
               $eventType = $CFG->GURU_ANNOUNCEMENT;
@@ -278,7 +278,7 @@ class local_primepushnotification_observer {
       $updateDateStr  = strtotime(date("Y-m-d", $completionexpected));
 
 
-      if($completionexpected!=0 && $currDateStr >= $updateDateStr){
+      if($completionexpected!=0 && $currDateStr <= $updateDateStr){
               $dueDate  = date("Y-m-d", $completionexpected);
               $eventDate = date("Y-m-d\TH:i:s.511\Z", $event->timecreated);
               $eventType = $CFG->GURU_ANNOUNCEMENT;
