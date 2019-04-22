@@ -209,15 +209,7 @@ $PAGE->requires->js('/question/qengine.js');
 echo html_writer::start_tag('div', array('class' => 'mod-hwork-edit-content'));
 
 $url = $CFG->wwwroot;
-echo '<h4>Add Questions</h4>';
-echo '<ul class="menu  align-tr-tr" id="action-menu-2-menu" data-rel="menu-content" aria-labelledby="action-menu-toggle-2" role="menu" data-align="tr-tr" data-constraint=".mod-quiz-edit-content" aria-hidden="false" style="top: -110px;">
-<li role="presentation" id="yui_3_17_2_1_1554189599282_534">    <a href="'.$url.'/question/question.php?courseid='.$hwork->course.'&sesskey='.sesskey().'&qtype=multichoice&returnurl=/mod/quiz/edit.php?cmid='.$cmid.'&addonpage=0&cmid='.$cmid.'&category='.$defaultcategory.'&addonpage=0&appendqnumstring=addquestion" class="cm-edit-action addquestion menu-action add-menu" data-action="addquestion" role="menuitem" aria-labelledby="actionmenuaction-7" id="yui_3_17_2_1_1554189599282_533"><img class="icon " alt="a new question" title="a new question" src="'.$url.'/theme/image.php?theme=adaptable&amp;component=core&amp;rev=1553860198&amp;image=t%2Fadd"><span class="menu-action-text" id="actionmenuaction-7">a new question</span></a>
-</li>
-<li role="presentation"><a href="'.$url.'/mod/quiz/edit.php?cmid='.$cmid.'" class="cm-edit-action questionbank menu-action add-menu" data-header="Add from the question bank at the end" data-action="questionbank" data-addonpage="0" role="menuitem" aria-labelledby="actionmenuaction-8"><img class="icon " alt="a new question" title="a new question" src="'.$url.'/theme/image.php?theme=adaptable&amp;component=core&amp;rev=1553860198&amp;image=t%2Fadd"><span class="menu-action-text" id="actionmenuaction-8">from question bank</span></a>
-</li>
-<li role="presentation" id="yui_3_17_2_1_1553863666090_551">    <a href="'.$url.'/mod/quiz/addrandom.php?returnurl='.$url.'%2Fmod%2Fquiz%2Fedit.php%3Fcmid%3D139926%26amp%3Bdata-addonpage%3D0&amp;cmid='.$cmid.'&amp;appendqnumstring=addarandomquestion" class="cm-edit-action addarandomquestion menu-action add-menu" data-header="Add a random question at the end" data-addonpage="0" data-action="addarandomquestion" role="menuitem" aria-labelledby="actionmenuaction-9" id="yui_3_17_2_1_1553863666090_550"><img class="icon " alt="a random question" title="a random question" src="'.$url.'/theme/image.php?theme=adaptable&amp;component=core&amp;rev=1553860198&amp;image=t%2Fadd"><span class="menu-action-text" id="actionmenuaction-9">a random question</span></a>
-</li>
-</ul>';
+
 echo $output->edit_page($hworkobj, $structure, $contexts, $thispageurl, $pagevars);
 
 // Questions wrapper end.
