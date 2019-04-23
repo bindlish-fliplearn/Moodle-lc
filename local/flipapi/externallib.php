@@ -70,4 +70,31 @@ class local_flipapi_external extends external_api {
     );
   }
 
+    public static function create_user_parameters() {
+        return new external_function_parameters(
+            array(
+                'user' => new external_multiple_structure(
+                    new external_single_structure(
+                        array(
+                            'user_id' => new external_value(PARAM_INT, 'id of user'),
+                            'uuid' => new external_value(PARAM_INT, 'user uuid '),
+                            'login_id' => new external_value(PARAM_TEXT, 'user login id'),
+                            'firstname' => new external_value(PARAM_TEXT, 'user first name'),
+                            'lastname' => new external_value(PARAM_TEXT, 'user last name'),
+                            'email' => new external_value(PARAM_TEXT, 'user email'),
+                            'role' => new external_value(PARAM_TEXT, 'user role'),
+                            'is_enrolled' => new external_value(PARAM_TEXT, 'user enrolled'),
+                             'school_code' => new external_value(PARAM_TEXT, 'user school code'),
+                              'ayid' => new external_value(PARAM_TEXT, 'user ayid'),
+                        )
+                    )
+                )
+            )
+        );
+  }
+  public static function flip_user_mapping($parms){
+      global $DB;
+      $resp = array();
+  }
+
 }
