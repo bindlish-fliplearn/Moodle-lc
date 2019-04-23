@@ -79,6 +79,9 @@ class local_primepushnotification_observer {
                           array_push($uuidList, $uuid);
                     }
                   $clickUrl = BASE_URL.'/mod/forum/discuss.php?d='.$discussionId;
+
+                $domainName = str_replace("'https://","",$CFG->wwwroot);
+
                     if(count($uuidList)>0){
                           $serializeRequest = array('senderUuid'=>1234,
                                               'schoolCode'=>$school_code,
@@ -87,7 +90,7 @@ class local_primepushnotification_observer {
                                               'uuidList'=>$uuidList,
                                               'smsEnabled'=>false,
                                               'emailEnabled'=>false,
-                                              'domainName'=>DOMAIN_NAME,
+                                              'domainName'=>$domainName,
                                               'clickUrl'=>$clickUrl
                                               );
 
@@ -234,6 +237,7 @@ class local_primepushnotification_observer {
                               array_push($uuidList, $uuid);
                         }
 
+              $domainName = str_replace("'https://","",$CFG->wwwroot);
               $modulename = $event->other['modulename'];
               $clickUrl = $CFG->BASE_URL."/mod/$modulename/view.php?id=".$objectid.'&forceview=1';
               if(count($uuidList)>0){
@@ -244,7 +248,7 @@ class local_primepushnotification_observer {
                                               'uuidList'=>$uuidList,
                                               'smsEnabled'=>false,
                                               'emailEnabled'=>false,
-                                              'domainName'=>$CFG->DOMAIN_NAME,
+                                            'domainName'=>$domainName,
                                               'clickUrl'=>$clickUrl
                                               );
                           $serializeRequest =  json_encode($serializeRequest);
@@ -314,6 +318,9 @@ class local_primepushnotification_observer {
                         }
               $modulename = $event->other['modulename'];
               $clickUrl = $CFG->BASE_URL."/mod/$modulename/view.php?id=".$objectid.'&forceview=1';
+
+          $domainName = str_replace("'https://","",$CFG->wwwroot);
+
               if(count($uuidList)>0){
                           $serializeRequest = array('senderUuid'=>1234,
                                               'schoolCode'=>$school_code,
@@ -322,7 +329,7 @@ class local_primepushnotification_observer {
                                               'uuidList'=>$uuidList,
                                               'smsEnabled'=>false,
                                               'emailEnabled'=>false,
-                                              'domainName'=>$CFG->DOMAIN_NAME,
+                                              'domainName'=>$domainName,
                                               'clickUrl'=>$clickUrl
                                               );
                           $serializeRequest =  json_encode($serializeRequest);
