@@ -80,7 +80,7 @@ class local_primepushnotification_observer {
                     }
                   $clickUrl = BASE_URL.'/mod/forum/discuss.php?d='.$discussionId;
 
-                $domainName = str_replace("'https://","",$CFG->wwwroot);
+                $domainName = str_replace("https://","",$CFG->wwwroot);
 
                     if(count($uuidList)>0){
                           $serializeRequest = array('senderUuid'=>1234,
@@ -237,7 +237,7 @@ class local_primepushnotification_observer {
                               array_push($uuidList, $uuid);
                         }
 
-              $domainName = str_replace("'https://","",$CFG->wwwroot);
+              $domainName = str_replace("https://","",$CFG->wwwroot);
               $modulename = $event->other['modulename'];
               $clickUrl = $CFG->BASE_URL."/mod/$modulename/view.php?id=".$objectid.'&forceview=1';
               if(count($uuidList)>0){
@@ -319,7 +319,7 @@ class local_primepushnotification_observer {
               $modulename = $event->other['modulename'];
               $clickUrl = $CFG->BASE_URL."/mod/$modulename/view.php?id=".$objectid.'&forceview=1';
 
-          $domainName = str_replace("'https://","",$CFG->wwwroot);
+          $domainName = str_replace("https://","",$CFG->wwwroot);
 
               if(count($uuidList)>0){
                           $serializeRequest = array('senderUuid'=>1234,
