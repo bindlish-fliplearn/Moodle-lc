@@ -23,6 +23,7 @@ $id = required_param('id', PARAM_RAW);
 $cmid = optional_param('cmid', '', PARAM_RAW);
 
 $attemptId = optional_param('attemptId', '', PARAM_RAW);
+$wantsurl = new moodle_url(optional_param('wantsurl', '', PARAM_URL));
 
 $redirecturl = new moodle_url($state);
 $params = $redirecturl->params();
@@ -39,6 +40,7 @@ $redirecturl->param('sesskey', $params['sesskey']);
 $redirecturl->param('id', $id);
 $redirecturl->param('cmid', $cmid);
 $redirecturl->param('attemptId', $attemptId);
+$redirecturl->param('wantsurl', $wantsurl);
 //print_r($redirecturl); die;
 
 if (isset($params['sesskey']) and confirm_sesskey($params['sesskey'])) {

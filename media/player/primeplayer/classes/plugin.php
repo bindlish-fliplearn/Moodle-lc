@@ -118,7 +118,7 @@ class media_primeplayer_plugin extends core_media_player {
               $isMedia = (isset($res[2]) && !empty($res[2])) ? $res[2] : '';
               $cType = (isset($res[3]) && !empty($res[3])) ? $res[3] : '';
 
-              if (!$SESSION->isPrimeUser || !$SESSION->is3DUser) {
+              if (!$SESSION->isPrimeUser && !$SESSION->is3DUser) {
                 return UNSUBSCRIBE_MSG;
               }
               $conn = new curl(array('cache' => true, 'debug' => false));
