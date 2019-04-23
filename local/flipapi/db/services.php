@@ -35,7 +35,7 @@ $functions = array(
     'classpath' => 'local/flipapi/externallib.php',
     'description' => 'Return fliplearn user mapping status.',
     'type' => 'read',
-  ),
+  )
 );
 
 // We define the services to install as pre-build services. A pre-build service is not editable by administrator.

@@ -70,31 +70,71 @@ class local_flipapi_external extends external_api {
     );
   }
 
-    public static function create_user_parameters() {
-        return new external_function_parameters(
-            array(
-                'user' => new external_multiple_structure(
-                    new external_single_structure(
-                        array(
-                            'user_id' => new external_value(PARAM_INT, 'id of user'),
-                            'uuid' => new external_value(PARAM_INT, 'user uuid '),
-                            'login_id' => new external_value(PARAM_TEXT, 'user login id'),
-                            'firstname' => new external_value(PARAM_TEXT, 'user first name'),
-                            'lastname' => new external_value(PARAM_TEXT, 'user last name'),
-                            'email' => new external_value(PARAM_TEXT, 'user email'),
-                            'role' => new external_value(PARAM_TEXT, 'user role'),
-                            'is_enrolled' => new external_value(PARAM_TEXT, 'user enrolled'),
-                             'school_code' => new external_value(PARAM_TEXT, 'user school code'),
-                              'ayid' => new external_value(PARAM_TEXT, 'user ayid'),
-                        )
+    public static function flip_user_mapping_parameters() {
+       return  new external_function_parameters(
+                    array(
+                    'userDetails'=> new external_multiple_structure(
+                        new external_single_structure(
+                          array(
+                              'user_id' => new external_value(PARAM_TEXT, 'id of user'),
+                              'uuid' => new external_value(PARAM_INT, 'user uuid '),
+                              'login_id' => new external_value(PARAM_TEXT, 'user login id'),
+                              'firstname' => new external_value(PARAM_TEXT, 'user first name'),
+                              'lastname' => new external_value(PARAM_TEXT, 'user last name'),
+                              'email' => new external_value(PARAM_TEXT, 'user email'),
+                              'role' => new external_value(PARAM_TEXT, 'user role'),
+                              'is_enrolled' => new external_value(PARAM_TEXT, 'user enrolled'),
+                               'school_code' => new external_value(PARAM_TEXT, 'user school code'),
+                                'ayid' => new external_value(PARAM_TEXT, 'user ayid'),
+                              )
+                      ))
                     )
-                )
-            )
-        );
+                    );
   }
   public static function flip_user_mapping($parms){
       global $DB;
       $resp = array();
+     return  $params = self::validate_parameters(self::flip_user_mapping_parameters(), array('userDetails'=>$parms));
+      $userDetails = $params['userDetails'][0];
+     // print_r( $userDetails);die;
+
+      // $userObj = new stdClass();
+      // $userObj->user_id = $userinfo->id;
+      // $userObj->uuid  = $uuid;
+      // $userObj->firstname = $userMappingData['flipuser_name'];
+      // $userObj->email = $email;
+      // $userObj->school_code = '';
+      // $userObj->role = '';
+      // $userObj->is_enrolled = 0; 
+      // $userObj->ayid = 0;
+      // $id =  $DB->insert_record('guru_user_mapping',$userObj , $returnid=true, $bulk=false) ;
+
+
   }
 
+    /**
+   * Returns description of method result value
+   * @return external_description
+   */
+  public static function flip_user_mapping_returns() {
+        return  new external_function_parameters(
+                    array(
+                    'userDetails'=> new external_multiple_structure(
+                        new external_single_structure(
+                          array(
+                              'user_id' => new external_value(PARAM_TEXT, 'id of user'),
+                              'uuid' => new external_value(PARAM_INT, 'user uuid '),
+                              'login_id' => new external_value(PARAM_TEXT, 'user login id'),
+                              'firstname' => new external_value(PARAM_TEXT, 'user first name'),
+                              'lastname' => new external_value(PARAM_TEXT, 'user last name'),
+                              'email' => new external_value(PARAM_TEXT, 'user email'),
+                              'role' => new external_value(PARAM_TEXT, 'user role'),
+                              'is_enrolled' => new external_value(PARAM_TEXT, 'user enrolled'),
+                               'school_code' => new external_value(PARAM_TEXT, 'user school code'),
+                                'ayid' => new external_value(PARAM_TEXT, 'user ayid'),
+                              )
+                      ))
+                    )
+                    );
+  }
 }
