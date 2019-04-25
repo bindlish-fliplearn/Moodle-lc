@@ -44,15 +44,15 @@ class local_primepushnotification_observer {
       global $DB, $CFG;
             $discussionsData = $event->get_record_snapshot('forum_discussions', $event->objectid);
             $eventDate = date("Y-m-d\TH:i:s.511\Z", $discussionsData->timemodified);
-            $eventType = GURU_ANNOUNCEMENT;
+            $eventType = $CFG->GURU_ANNOUNCEMENT;
             $messageTitle = $discussionsData->subject;
             $messageText = $discussionsData->message;
             $courseId = $discussionsData->course;
             $userid = $discussionsData->userid;
             $postId  = $discussionsData->firstpost;
             $discussionId = $event->objectid;
-            $contextlevel = CONTEXT_LEVEL;
-            $send_notification = SEND_NOTIFICATION;
+            $contextlevel = $CFG->CONTEXT_LEVEL;
+            $send_notification = $CFG->SEND_NOTIFICATION;
             $check = $DB->get_record_sql('SELECT COUNT(id) AS count FROM {guru_notification_send} WHERE post_id = ?', array($postId));
             if($check->count < 1 && $send_notification == true){
                     $sql = "SELECT mra.userid,gum.uuid as uuid,
@@ -78,7 +78,7 @@ class local_primepushnotification_observer {
                           $uuid = $value->uuid;
                           array_push($uuidList, $uuid);
                     }
-                  $clickUrl = BASE_URL.'/mod/forum/discuss.php?d='.$discussionId;
+                  $clickUrl = $CFG->wwwroot.'/mod/forum/discuss.php?d='.$discussionId;
 
                 $domainName = str_replace("https://","",$CFG->wwwroot);
 
@@ -101,7 +101,7 @@ class local_primepushnotification_observer {
                                             'payload' => $serializeRequest
                                             ); 
                          $data_string = json_encode($request);
-                         $result = curlPost($data_string, COMMUNICATION_API_URL);
+                         $result = curlPost($data_string, $CFG->COMMUNICATION_API_URL);
                          $responseData = json_decode($result);
                          if($responseData->error !=null){
                          	echo $responseData->error;
@@ -239,7 +239,7 @@ class local_primepushnotification_observer {
 
               $domainName = str_replace("https://","",$CFG->wwwroot);
               $modulename = $event->other['modulename'];
-              $clickUrl = $CFG->BASE_URL."/mod/$modulename/view.php?id=".$objectid.'&forceview=1';
+              $clickUrl = $CFG->wwwroot."/mod/$modulename/view.php?id=".$objectid.'&forceview=1';
               if(count($uuidList)>0){
                           $serializeRequest = array('senderUuid'=>1234,
                                               'schoolCode'=>$school_code,
@@ -317,7 +317,7 @@ class local_primepushnotification_observer {
                               array_push($uuidList, $uuid);
                         }
               $modulename = $event->other['modulename'];
-              $clickUrl = $CFG->BASE_URL."/mod/$modulename/view.php?id=".$objectid.'&forceview=1';
+              $clickUrl = $CFG->wwwroot."/mod/$modulename/view.php?id=".$objectid.'&forceview=1';
 
           $domainName = str_replace("https://","",$CFG->wwwroot);
 
