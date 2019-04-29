@@ -98,7 +98,7 @@
         $userDetails = $params['userDetails'][0];
 
         $userObj = new stdClass();
-        $userObj->user_id = $userDetails['uuid'];
+        $userObj->user_id = $userDetails['user_id'];
         $userObj->uuid  = $userDetails['uuid'];
         $userObj->login_id  = $userDetails['login_id'];
         $userObj->firstname = $userDetails['firstname'];
