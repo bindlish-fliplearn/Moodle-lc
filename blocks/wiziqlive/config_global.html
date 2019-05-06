@@ -1,0 +1,181 @@
+<!--/*
+ * wiziq.com Module
+ * WiZiQ's Live Class modules enable Moodle users to use WiZiQ’s web based virtual classroom equipped with real-time collaboration tools 
+ * Html page for block setting page for wiziq in moodle 
+ */
+ /**
+ * @package mod
+ * @subpackage wiziq
+ * @author preeti chauhan(preetic@wiziq.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */-->
+<?php 
+
+include("../mod/wiziq/wiziqconf.php"); 
+            $content = file_get_contents($ConfigFile);
+	if ($content !== false) {
+	   
+	   //echo "file is read",$content;
+	} else {
+	  
+	   echo "XML file is not read";
+	}
+
+try
+	{
+	  $objDOM = new DOMDocument();
+	  $objDOM->loadXML($content); 
+	  
+	}
+	catch(Exception $e)
+	{
+			
+		echo $e->getMessage();
+	}
+	$MaxDurationPerSession = $objDOM->getElementsByTagName("MaxDurationPerSession");
+	$MaxUsersPerSession = $objDOM->getElementsByTagName("MaxUsersPerSession");
+	$PresenterEntryBeforeTime = $objDOM->getElementsByTagName("PresenterEntryBeforeTime");
+	$PrivateChat = $objDOM->getElementsByTagName("PrivateChat");
+	$RecordingCreditLimit = $objDOM->getElementsByTagName("RecordingCreditLimit");
+	$ConcurrentSessions = $objDOM->getElementsByTagName("ConcurrentSessions");
+    $RecordingCreditPending=$objDOM->getElementsByTagName("RecordingCreditPending");
+    $subscription_url=$objDOM->getElementsByTagName("subscription_url");
+    $buynow_url=$objDOM->getElementsByTagName("buynow_url");
+    $Package_info_message=$objDOM->getElementsByTagName("Package_info_message");
+    $pricing_url=$objDOM->getElementsByTagName("pricing_url");
+    	
+	$maxdur=$MaxDurationPerSession->item(0)->nodeValue;
+	$maxuser=$MaxUsersPerSession->item(0)->nodeValue;
+	$prsenterentry=$PresenterEntryBeforeTime->item(0)->nodeValue;
+	$privatechat=$PrivateChat->item(0)->nodeValue;
+	$recordingcredit=$RecordingCreditLimit->item(0)->nodeValue;
+	$concurrsession=$ConcurrentSessions->item(0)->nodeValue;
+	$creditpending=$RecordingCreditPending->item(0)->nodeValue;
+    $subscription_url=$subscription_url->item(0)->nodeValue;
+    $buynow_url=$buynow_url->item(0)->nodeValue;
+    $Package_info_message=$Package_info_message->item(0)->nodeValue;
+    $pricing_url=$pricing_url->item(0)->nodeValue;
+     ?> 
+<head>
+    <title>WiZiQ Moodle</title>
+    <style type="text/css">
+    html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-weight:inherit;font-style:inherit;font-size:100%;font-family:inherit;vertical-align:baseline; }
+    img{border:0px;}
+    body{font:12px Arial,Helvetica,"Nimbus Sans L",sans-serif;background-color:#fff;color:#000000;margin:0;padding:0;}
+    .maintblbrdr{background-color:#EEEEEE;}
+    .moddletxtbox{padding:2px 5px;width:200px;border:solid 1px #A5ACB2;background-color:#ffffff;color:#000000;font-size:12px;}
+    a{text-decoration:underline;color:#0101FF;} a:hover{text-decoration:none;color:#0101FF;}
+    </style>
+</head>
+<body>
+<form method="post" action="module.php" name="form">
+<input type="hidden" name="sesskey" value="<?php echo $USER->sesskey ?>">
+
+
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr><td valign="top" style="height:15px;" colspan="2"></td></tr>
+<tr><td valign="top" align="center" style="font-size:16px;font-weight:bold;">WiZiQ Live Class</td></tr>
+<tr><td valign="top" style="height:15px;" colspan="2"></td></tr>
+<tr>
+    <td valign="top">
+        <table cellpadding="0" cellspacing="5" border="0" class="maintblbrdr" width="100%">
+        <tr><td valign="top" style="height:15px;" colspan="2"></td></tr>
+        <tr>
+            <td valign="middle" style="width:20%;text-align:right;padding-right:5px;">Customer Email</td>
+            
+            <td valign="top" style="width:80%;"><input type="text" class="moddletxtbox" name="customer_email" value="<?php echo $customer_email ?>"  disabled/></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td valign="top" align="left">The email address your account is registered with WiZiQ. You may change your customer email and the change gets automatically saved in WiZiQ. Your scheduling permissions are validated against this customer email and customer key. Refer this email for all your correspondence with WiZiQ.</td>
+        </tr>
+        <tr><td valign="top" style="height:15px;" colspan="2"></td></tr>
+        <tr>
+            <td valign="middle" style="text-align:right;padding-right:5px;">Customer Key</td>
+            <td valign="top"><input type="text" class="moddletxtbox" name="customer_key" value="<?php echo $customer_key ?>"  disabled/></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td valign="top" align="left">A unique key assigned to your account. The combination of customer email and customer key is used to validate your scheduling and recording permissions.</td>
+        </tr>
+        <tr><td valign="top" style="height:15px;" colspan="2"></td></tr>
+        <tr><td valign="top" colspan="2" align="center" style="font-size:16px;font-weight:bold;">Module Configuration</td></tr>
+        <tr><td valign="top" style="height:5px;" colspan="2"></td></tr>
+        <tr><td valign="top" colspan="2" ><div align="center">
+   <iframe  src="../mod/wiziq/package_message.php " id="remote_iframe_1" name="remote_iframe_1" style="border:1;padding:0;margin:0;width:100%;height:70px;overflow:auto" frameborder=1 scrolling="no" onload=" " ></iframe>
+                         </div></td></tr>
+        <tr>
+            <td valign="top" align="center" colspan="2">
+                <table width="98%" cellpadding="0" cellspacing="0" style="border:solid 1px #BBBBBB;text-align:left;">
+                <tr><td valign="top" style="padding:5px;">These parameters are specific to your account subscription. They change as and when you upgrade, downgrade or cancel your subscription on WiZiQ.<br /> For upgrade, downgrade or cancellation of a purchased pack please contact <a href="mailto:support@wiziq.com">support@wiziq.com.</a></td></tr>
+                </table>
+            </td>
+        </tr>
+        <tr><td valign="top" style="height:5px;" colspan="2"></td></tr>
+        <tr>
+            <td valign="middle" style="text-align:right;padding-right:5px;">Number of rooms</td>
+            <td valign="top"><input type="text" class="moddletxtbox" value="<?php echo $concurrsession ?>"  name="no_rooms" disabled/>&nbsp; <a href="<?php echo $subscription_url ?>" target="_blank">Change subscription</a></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td valign="top" align="left">This is the maximum number of simultaneous classes that can be scheduled by a user subject to the user permissions set for the course by the course administrator.</td>
+        </tr>
+        <tr><td valign="top" style="height:15px;" colspan="2"></td></tr>
+        <tr>
+            <td valign="middle" style="text-align:right;padding-right:5px;">Participants in a room</td>
+            <td valign="top"><input type="text" class="moddletxtbox" value="<?php echo $maxuser ?>"  name="part_room" disabled/>
+        </tr>
+        <tr>
+            <td></td>
+            <td valign="top" align="left">Maximum number of participants allowed in a class</td>
+        </tr>        
+        <tr><td valign="top" style="height:15px;" colspan="2"></td></tr>
+        <tr>
+            <td valign="middle" style="text-align:right;padding-right:5px;">Time for a class</td>
+            <td valign="top"><input type="text" class="moddletxtbox" value="<?php echo $maxdur ?>"  name="time_class" disabled/></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td valign="top" align="left">Maximum time in minutes for which a class can be scheduled and max extended.</td>
+        </tr>
+        <tr><td valign="top" style="height:15px;" colspan="2"></td></tr>
+        <tr>
+            <td valign="middle" style="text-align:right;padding-right:5px;">Number of recordings</td>
+            <td valign="top"><input type="text" class="moddletxtbox" value="<?php echo $recordingcredit ?>"  name="no_recordings" disabled/>&nbsp; <a href="<?php echo $buynow_url ?>" target="_blank">Purchase more recordings</a></td>
+                           </tr><tr>
+            <td></td>
+            <td valign="top" align="left">Total number of recordings that can be built. All the recordings are hosted max for 12 months from the date of their capture. You may purchase additional credits to build more recordings.</td>
+        </tr> 
+        <tr><td valign="top" style="height:15px;" colspan="2"></td></tr>       
+        </table>
+    </td>
+</tr>
+<tr><td valign="top" style="height:15px;"></td></tr>
+
+<tr><td valign="top" style="height:15px;"></td></tr>
+</table>
+</form>
+</body>
+</html>
+<?php
+
+if (!isset($CFG->customer_email)) {
+        $CFG->customer_email =  $customer_email;
+    }
+    if (!isset($CFG->customer_key)) {
+        $CFG->customer_key =  $customer_key;
+    }
+    if (!isset($CFG->no_rooms)) {
+        $CFG->no_rooms = '5';
+    }
+    if (!isset($CFG->part_rooms)) {
+        $CFG->part_rooms = '15';
+    }
+    if (!isset($CFG->time_class)) {
+        $CFG->time_class = '60';
+    }
+    if (!isset($CFG->no_recordings)) {
+        $CFG->no_recordings = '50';
+    }
+?>

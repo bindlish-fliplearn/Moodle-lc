@@ -1,0 +1,114 @@
+<!--/*
+ * wiziq.com Module
+ * WiZiQ's Live Class modules enable Moodle users to use WiZiQ�s web based virtual classroom equipped with real-time collaboration tools 
+ * Scheduling page html 
+ */
+ /**
+ * @package mod
+ * @subpackage wiziq
+ * @author preeti chauhan(preetic@wiziq.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */-->
+<?php 
+ 	require_once("wiziqconf.php");
+ 	require_once("cryptastic.php");
+    require_once("locallib.php");
+	wiziq_UserAccountDetails(&$maxdur,&$maxuser,&$prsenterentry,&$privatechat,&$recordingcredit,&$concurrsession,&$creditpending,&$subscription_url,&$buynow_url,&$Package_info_message,&$pricing_url);
+ 
+ $tmzone=$USER->timezone;
+/// First we check that form variables have been initialised
+if (!isset($form->name)) {
+    $form->name = '';
+}
+  $timezone=wiziq_GetUserTimezone();
+  $DatetimeUser=wiziq_CurrentDayTimeForCalendar();
+  ?>
+<table width="100%" >
+<tr>
+<td valign="top" align="left"> 
+<span style="margin-top:-0px; float:left">
+<?php include("sideblock.php"); ?></span>
+</td><td>
+<table width="100%" border="0" cellspacing="0" cellpadding="0" height="630px">
+<form name="form"  method="post" action="<?php echo $CFG->wwwroot; ?>/mod/wiziq/session.php" >
+<input type="hidden" name="course"        value="<?php echo $_REQUEST['course']; ?>" />
+<input type="hidden" name="sesskey"     value="<?php  echo $_REQUEST['sesskey']; ?>" />
+<input type="hidden" name="section"       value="<?php  echo $_REQUEST['section']; ?>" />
+<input type="hidden" name="module"        value="<?php  echo $_REQUEST['module']; ?>" />
+<input type="hidden" name="modulename"    value="<?php  echo $_REQUEST['modulename']; ?>" />
+<input type="hidden" name="instance"      value="<?php  echo $_REQUEST['instance']; ?>" />
+<input type="hidden" name="mode"          value="<?php  echo $_REQUEST['mode']; ?>" />
+<input type="hidden" name="groupid" value="<?php if(!empty($groupid)) echo implode(",", $groupid);  ?>"  />
+<input type="hidden" name="courseid" value="<?php if(!empty($courseid)) echo implode(",",$courseid); ?>"  />
+<input type="hidden" name="userid" value="<?php if(!empty($userid)) echo implode(",",$userid); ?>" />
+<input type="hidden" name="eventtype" value="<?php echo $eventtype; ?>" />
+<input type="hidden" name="DateNow" id="DateNow" value="<?php if(!empty($_REQUEST['DateNow'])) echo $_REQUEST['DateNow']; ?>" />
+<input type="hidden" name="TimeNow" id="TimeNow" value="<?php if(!empty($_REQUEST['TimeNow'])) echo str_replace('|',':',$_REQUEST['TimeNow']) ?>" />
+<input type="hidden" name="str" value="<?php echo $header; ?>" />
+<input type="hidden" id="maxDuration" value="<?php echo $maxdur; ?>"/>
+<input type="hidden" id="MoodleDateTime" value="<?php echo $DatetimeUser ;?>" />
+  <tr>
+    <td align="left" valign="top"><table width="100%" border="0" cellpadding="10" cellspacing="0">
+      <tr><td colspan="2" valign="top" align="left" style="font-weight:bold">Schedule WiZiQ Live Class</td></tr>
+        <tr>
+        <td width="25%" align="right" valign="middle" class="m_12b585858">Type of Event: </td>
+        <td colspan="2" align="left" valign="middle" class="m_12b"><?php echo $header; ?></td>
+        </tr>
+      <tr>
+        <td width="25%" align="right" valign="middle" class="m_12b585858"><span style="font-weight:bold; font-size:14px">*</span>Title:</td>
+        <td colspan="2" align="left" valign="middle" class="m_12b"><input name="name" type="text" class="m_textinput" id="name" onblur="validate_mod_wiki_mod_form_name(this)" onchange="validate_mod_wiki_mod_form_name(this)"  value="<?php  p($form->name) ?>" /><div id="id_name">
+        </div></td></tr>
+        <tr><td width="25%" align="right" valign="middle" class="m_12b585858"></td><td colspan="2" align="left" valign="middle" class="m_12b585858">
+        <input type="checkbox" id="chkNow" name="chkNow" value="checked" onclick="chkScheduleNow(this)" onchange="chkScheduleNow(this)"/>Schedule for right now
+        </td>
+        </tr>
+        <tr id="rowDate">
+        <td width="25%" align="right" valign="middle" class="m_12b585858"><span style="font-weight:bold; font-size:14px">*</span> Date:</td>
+        <td colspan="2" align="left" valign="middle" class="m_12b"><input name="date" id="date" type="text" class="m_textinput" />
+        <a href="javascript:var cal2 = new calendar2(document.form.date);cal2.popup();"><img src="cal.gif" width="16" height="16" border="0" alt="Click Here to Pick up the date" /></a><div id="id_date"></div> </td>
+        </tr>
+        <tr id="rowTime">
+        <td align="right" valign="top" class="m_12b585858"  style="padding-top:27px"><span style="font-weight:bold; font-size:14px">*</span> Time: </td>
+        <td colspan="2" align="left" valign="top" class="m_12b" ><div>e.g. 6:30 am or 4 PM</div>
+        <input name="time" class="m_textinput" type="text" onblur="IsValidTime(this)" onchange="IsValidTime(this)" id="time" /><div id="id_time"> </div>
+        </td>
+        </tr>
+        <tr>
+        <td align="right" valign="top" class="m_12b585858"  style="padding-top:27px"><span style="font-weight:bold; font-size:14px">*</span>Duration:</td>
+        <td colspan="2" align="left" valign="top" class="m_12b"><div><span style="font-size:11px"> <span style="font-size:10px">(Max. <?php echo $maxdur; ?> mins )</span> &nbsp;<?php if($maxdur<=60)  { ?>(<a href="<?php echo $buynow_url; ?>" target="_blank" >Buy subscription </a> for classes up to 300 minutes) <?php } ?></span></div><input name="duration" id="duration"  class="m_textinput" type="text" onblur="validate_mod_wiki_mod_form_duration(this)" onchange="validate_mod_wiki_mod_form_duration(this)" value="30"/> <div id="id_duration"></div>   
+        </td>
+        </tr>
+        <tr>
+        <td align="right" valign="top" class="m_12b585858">Timezone:</td>
+	<td colspan="2" align="left" valign="middle" class="m_12b"><?php  echo $timezone; ?> </td>
+        </tr>
+        <tr>
+        <td align="right" valign="top" class="m_12b585858">Type:</td>
+	<td colspan="2" align="left" valign="middle" class="m_12b">
+	<span style="float:left"> <input name="audio" type="radio" value="Video" checked="checked"/></span>
+	<span style="float:left; margin-top:2px">Audio and Video </span>
+        <span style="float:left"><input name="audio" type="radio" value="Audio" /></span>
+	<span style="float:left;margin-top:2px">Only Audio</span></td>
+        </tr>
+        <tr>
+        <td align="right" valign="top" class="m_12b585858">Record this class:</td>
+	<td  colspan="2" align="left" valign="middle" class="m_12b">
+        <input name="type" id="yes" type="radio" value="yes" checked="checked"/>Yes
+	<input name="type" id="no" type="radio" value="no" />No 
+        </td>
+        </tr>
+        <tr>
+        <td align="right" valign="top" class="m_12b585858">&nbsp;</td>
+        <td colspan="2" align="left" valign="middle"><span style=" float:left"><input name="Submit" type="image" src="images/sch.gif" value="Schedule" onclick="return validate_mod_wiki_mod_form(this.form)" style="cursor:default" />
+	</span>
+        <a href="javascript:history.go(-1)" ><span class="ulink" style="margin-left:10px; float:left; margin-top:5px">Cancel</span></a></td>
+        </tr>  
+        <tr><td>
+        <div style="float:left;width:100%;height:100px">
+        <iframe  src="package_message.php" id="remote_iframe_1" name="remote_iframe_1" style="border:0;padding:0;margin:0;width:520px;height:125px;overflow:auto" frameborder=0 scrolling="no" onload=" "  ></iframe>
+        </div></td>
+        </tr></table></td></tr></form>
+        </table></td>
+        </tr>
+        </table>
+        
