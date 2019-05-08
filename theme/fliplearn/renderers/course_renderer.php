@@ -598,7 +598,8 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
      * @return string
      */
     public function course_section_cm($course, &$completioninfo, cm_info $mod, $sectionreturn, $displayoptions = array()) {
-        global $PAGE;
+        global $PAGE, $DB;
+        $course_module_id = $mod->id;
         $output = '';
         // We return empty string (because course module will not be displayed at all) if
         // 1) The activity is not visible to users and
@@ -637,6 +638,12 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
 
         if (!empty($cmname)) {
             // Start the div for the activity title, excluding the edit icons.
+
+            $resultMapping =  $DB->get_record_sql('SELECT c_type FROM {guru_resourse_mapping} WHERE course_module_id  = ?', array($course_module_id));
+                if($resultMapping) {
+                    $output .= '<div style="float: right;margin-right: 20px; margin-top: 8px">'.C_NAME[$resultMapping->c_type].'</div>';
+                }
+
             $output .= html_writer::start_tag('div', array('class' => 'activityinstance'));
             $output .= $cmname;
 
