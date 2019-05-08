@@ -638,7 +638,6 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
 
         if (!empty($cmname)) {
             // Start the div for the activity title, excluding the edit icons.
-
             $resultMapping =  $DB->get_record_sql('SELECT c_type FROM {guru_resourse_mapping} WHERE course_module_id  = ?', array($course_module_id));
                 if($resultMapping) {
                     $output .= '<div style="float: right;margin-right: 20px; margin-top: 8px">'.C_NAME[$resultMapping->c_type].'</div>';
