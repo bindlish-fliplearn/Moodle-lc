@@ -28,6 +28,27 @@ $functions = array(
     'classpath' => 'local/flipapi/externallib.php',
     'description' => 'Return fliplearn user details.',
     'type' => 'read',
+  ),
+    'local_flipapi_flip_user_mapping' => array(
+    'classname' => 'local_flipapi_external',
+    'methodname' => 'flip_user_mapping',
+    'classpath' => 'local/flipapi/externallib.php',
+    'description' => 'Return fliplearn user mapping status.',
+    'type' => 'read',
+  ),
+  'local_flipapi_get_user_by_uuid' => array(
+    'classname' => 'local_flipapi_external',
+    'methodname' => 'get_user_by_uuid',
+    'classpath' => 'local/flipapi/externallib.php',
+    'description' => 'Return fliplearn user details by uuid.',
+    'type' => 'read',
+  ),
+  'local_flipapi_get_role_details_by_shortname' => array(
+    'classname' => 'local_flipapi_external',
+    'methodname' => 'get_role_details_by_shortname',
+    'classpath' => 'local/flipapi/externallib.php',
+    'description' => 'Return role details by shortname.',
+    'type' => 'read',
   )
 );
 
