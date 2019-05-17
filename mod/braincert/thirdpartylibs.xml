@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<libraries>
+		<library>
+        <location>css/font-awesome.min.css</location>
+        <name>Font Awesome.</name>
+        <version>4.7.0</version>
+        <license>MIT License</license>
+        <licenseversion>2.0</licenseversion>
+    </library>
+    <library>
+        <location>js/jquery.min.js</location>
+        <name>jQuery v3.3.1</name>
+        <version>v3.3.1</version>
+        <license>MIT</license>
+        <licenseversion>2.0</licenseversion>
+    </library>
+    <library>
+        <location>js/chart.bundle.js</location>
+        <name>Chart.js</name>
+        <version>2.7.1</version>
+        <license>MIT</license>
+        <licenseversion>2.0</licenseversion>
+    </library>
+    <library>
+        <location>js/video.js</location>
+        <name>Video.js 6.2.7</name>
+        <version>6.2.7</version>
+        <license>Apache License Version 2.0</license>
+        <licenseversion>2.0</licenseversion>
+    </library>
+</libraries>

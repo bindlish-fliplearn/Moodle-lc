@@ -1,0 +1,134 @@
+.class_div.cl_list {
+    font-size: 14.5px;
+    line-height: 20px;
+    background-color: #fff;
+}
+.bc-alert {
+    border-radius: 0.25em;
+    display: inline;
+    font-size: 75%;
+    font-weight: bold;
+    line-height: 1;
+    padding: 0.2em 0.6em 0.3em;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+.bc-alert-success {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+.bc-alert-warning {
+    color: #8a6d3b;
+    background-color: #fcf8e3;
+    border-color: #faebcc;
+}
+.bc-alert-danger {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+}
+#fitem_id_end_classes_count .felement {
+    position: relative;
+}
+#fitem_id_end_classes_count .felement::after {
+    content: "Classes";
+    left: 110px;
+    position: absolute;
+}
+#page-mod-braincert-inviteusergroup form,
+#page-mod-braincert-inviteusergroup .submitdiv,
+#page-mod-braincert-view .allclassdiv {
+   margin-top: 20px;
+}
+#page-mod-braincert-inviteusergroup form ul {
+    list-style: none;
+}
+#page-mod-braincert-attendance_report .attendeestable {
+   padding-top: 40px;
+}
+/*menu-button start*/
+
+#page-mod-braincert-index .class_list {
+    width: calc(100% - 70px);
+    border: 1px solid #ddd;
+    float: left;
+    padding: 20px;
+    margin: 10px 33px;
+    box-sizing: border-box;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    overflow: auto;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    right: 0;
+    text-align: left;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 6px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown a:hover {
+    background-color: #ddd
+}
+
+.show {
+    display:block;
+}
+
+.drop_fr_icon .dropbtn{
+    background: #ddd;
+    padding: 3px 7px;
+    width: 28px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.drop_fr_icon .dropbtn i,
+.drop_fr_icon .dropbtn b{
+    pointer-events: none;
+}
+
+.span6.drop_fr_icon {
+    text-align: right;
+    float: right;
+}
+
+.class_list hr {
+    margin: 2px 0;
+    border-bottom: 1px solid #DDDDDD;
+}
+
+@media(max-width:767px){
+    #page-mod-braincert-index .class_list {
+        width: 100%;
+        margin: 10px 0px;
+    }
+}
+
+.table-bordered {
+    margin-top: 20px;
+}
+
+.pricedescription {
+    top:150px;
+    left:45%;
+    width:800px;
+    padding:20px;
+}
+
+.initialhide {
+    display:none;
+}
+
+/*menu-button end*/

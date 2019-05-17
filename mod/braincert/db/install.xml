@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/braincert/db" VERSION="20120122" COMMENT="XMLDB file for Moodle mod/braincert"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="braincert" COMMENT="Default comment for braincert, please edit me" NEXT="braincert_manage_template">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="course"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="id" NEXT="name"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="course" NEXT="class_id"/>
+        <FIELD NAME="class_id" TYPE="int" LENGTH="20" NOTNULL="true" SEQUENCE="false" PREVIOUS="name" NEXT="intro"/>
+        <FIELD NAME="intro" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" PREVIOUS="class_id" NEXT="introformat"/>
+        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="intro" NEXT="braincert_timezone"/>
+        <FIELD NAME="braincert_timezone" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="introformat" NEXT="default_timezone"/>
+        <FIELD NAME="default_timezone" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="braincert_timezone" NEXT="start_date"/>
+        <FIELD NAME="start_date" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" PREVIOUS="default_timezone" NEXT="start_time"/>
+        <FIELD NAME="start_time" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" PREVIOUS="start_date" NEXT="end_time"/>
+        <FIELD NAME="end_time" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" PREVIOUS="start_time" NEXT="is_region"/>
+        <FIELD NAME="is_region" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="end_time" NEXT="is_recurring"/>
+        <FIELD NAME="is_recurring" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="is_region" NEXT="end_classes_count"/>
+        <FIELD NAME="end_classes_count" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="is_recurring" NEXT="class_repeats"/>
+        <FIELD NAME="class_repeats" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="end_classes_count" NEXT="weekdays"/>
+        <FIELD NAME="weekdays" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" PREVIOUS="class_repeats" NEXT="change_language"/>
+        <FIELD NAME="change_language" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="weekdays" NEXT="bc_interface_language"/>
+        <FIELD NAME="bc_interface_language" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="change_language" NEXT="record_type"/>
+        <FIELD NAME="record_type" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="bc_interface_language" NEXT="classroomtype"/>
+        <FIELD NAME="classroomtype" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="record_type" NEXT="is_corporate"/>
+        <FIELD NAME="is_corporate" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="classroomtype" NEXT="isvideo"/>
+        <FIELD NAME="isvideo" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="is_corporate" NEXT="screen_sharing"/>
+        <FIELD NAME="screen_sharing" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" PREVIOUS="isvideo" NEXT="private_chat"/>
+        <FIELD NAME="private_chat" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false" PREVIOUS="screen_sharing" NEXT="class_type"/>
+        <FIELD NAME="class_type" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="private_chat" NEXT="currency"/>
+        <FIELD NAME="currency" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" PREVIOUS="class_type" NEXT="maxattendees"/>
+        <FIELD NAME="maxattendees" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="currency" NEXT="groupingid"/>
+        <FIELD NAME="groupingid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="maxattendees" NEXT="timemodified"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="groupingid"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
+      </INDEXES>
+    </TABLE>
+    
+    
+    <TABLE NAME="braincert_manage_template" COMMENT="Defines braincerts mail template" PREVIOUS="braincert">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="bcid"/>
+        <FIELD NAME="bcid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="emailsubject"/>
+        <FIELD NAME="emailsubject" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="bcid" NEXT="emailmessage"/>
+        <FIELD NAME="emailmessage" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="emailsubject" />
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    
+    <TABLE NAME="virtualclassroom_purchase" COMMENT="Defines braincerts mail template" PREVIOUS="braincert">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="class_id"/>
+        <FIELD NAME="class_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="mc_gross"/>
+        <FIELD NAME="mc_gross" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="class_id" NEXT="payer_id"/>
+        <FIELD NAME="payer_id" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" PREVIOUS="mc_gross" NEXT="payment_mode"/>
+        <FIELD NAME="payment_mode" TYPE="text" NOTNULL="false" SEQUENCE="false" PREVIOUS="payer_id" NEXT="date_purchased"/>
+        <FIELD NAME="date_purchased" TYPE="text" LENGTH="10" NOTNULL="true" SEQUENCE="false" PREVIOUS="payment_mode"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    
+    
+  </TABLES>
+</XMLDB>
