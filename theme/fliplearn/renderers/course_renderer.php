@@ -619,22 +619,26 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
         $cmname = $this->course_section_cm_name($mod, $displayoptions, $resultMapping->thumbnail_url);
 
         if (!empty($cmname)) {
-            // Start the div for the activity title, excluding the edit icons.
-                if($resultMapping) {
-                    $output .= '<div style="float: right;margin-right: 20px; margin-top: 8px">'.C_NAME[$resultMapping->c_type].'</div>';
-                }
-
-            $output .= html_writer::start_tag('div', array('class' => 'activityinstance'));
-            $output .= $cmname;
-
-            // Module can put text after the link (e.g. forum unread).
-            $output .= $mod->afterlink;
-
-            // Closing the tag which contains everything but edit icons. Content part of the module should not be part of this.
-            $output .= html_writer::end_tag('div'); // .activityinstance class.
+        // Start the div for the activity title, excluding the edit icons.
+        if ($resultMapping) {
+          if ($this->page->user_is_editing()) {
+            $output .= '<div style="float: right;margin-right: 120px; margin-top: 8px">' . C_NAME[$resultMapping->c_type] . '</div>';
+          } else {
+            $output .= '<div style="float: right;margin-right: 20px; margin-top: 8px">' . C_NAME[$resultMapping->c_type] . '</div>';
+          }
         }
 
-        // If there is content but NO link (eg label), then display the
+        $output .= html_writer::start_tag('div', array('class' => 'activityinstance'));
+        $output .= $cmname;
+
+        // Module can put text after the link (e.g. forum unread).
+        $output .= $mod->afterlink;
+
+        // Closing the tag which contains everything but edit icons. Content part of the module should not be part of this.
+        $output .= html_writer::end_tag('div'); // .activityinstance class.
+      }
+
+    // If there is content but NO link (eg label), then display the
         // content here (BEFORE any icons). In this case icons must be
         // displayed after the content so that it makes more sense visually
         // and for accessibility reasons, e.g. if you have a one-line label
