@@ -1,0 +1,36 @@
+#page-admin-setting-modsettingwiziq #adminsettings input {
+	height: 30px;
+
+}
+
+
+ #fgroup_id_classtype {position: relative;}
+            #fgroup_id_classtype img { position: absolute; left: 500px; top: 1px; }
+            textarea[cols], input[size] , input{height:auto !important;}
+            .mform .fcheckbox input[type="checkbox"]{ margin-top: 3px !important; }
+
+
+            table.flexible {
+    font-size: 9pt;
+    margin: 10px 0 15px;
+    text-align: left;
+    width: 100%;
+}
+
+#page-mod-wiziq-index table.flexible thead tr .header {
+    background-image: url("pix/bg.gif");
+    background-position: right center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+#page-mod-wiziq-index table.flexible tbody td {
+
+    vertical-align: top;
+}
+
+#page-mod-wiziq-index table.flexible thead tr .headerSortUp {
+    background-image: url("pix/asc.gif");
+}
+#page-mod-wiziq-index table.flexible thead tr .headerSortDown {
+    background-image: url("pix/desc.gif");
+}
