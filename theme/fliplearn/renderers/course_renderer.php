@@ -527,8 +527,10 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
         // Get icon url, but strip -24, -64, -256  etc from the end of filetype icons so we
         // only need to provide one SVG, see MDL-47082. (Used from snap theme).
         $imageurl = \preg_replace('/-\d\d\d?$/', '', $mod->get_icon_url());
-
-        $activitylink = html_writer::empty_tag('img', array('src' =>$thumbUrl, //$imageurl,
+        if(!empty($thumbUrl)) {
+          $imageurl = $thumbUrl;
+        }
+        $activitylink = html_writer::empty_tag('img', array('src' => $imageurl, //$imageurl,
                 'class' => 'iconlarge activityicon', 'alt' => ' ', 'role' => 'presentation')) . $accesstext .
                 html_writer::tag('span', $instancename . $altname, array('class' => 'instancename'));
 
