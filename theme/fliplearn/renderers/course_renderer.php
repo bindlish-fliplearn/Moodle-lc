@@ -615,7 +615,7 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
         // Start a wrapper for the actual content to keep the indentation consistent.
         $output .= html_writer::start_tag('div', array('class' => 'activity-wrapper'));
         
-        $resultMapping =  $DB->get_record_sql('SELECT c_type,thumbnail_url FROM {guru_resourse_mapping} WHERE course_module_id  = ?', array($course_module_id));
+        $resultMapping =  $DB->get_record_sql('SELECT c_type,thumbnail_url FROM {guru_context_topic} WHERE modules_id  = ?', array($course_module_id));
         
         // Display the link to the module (or do nothing if module has no url).
         $cmname = $this->course_section_cm_name($mod, $displayoptions, $resultMapping->thumbnail_url);
