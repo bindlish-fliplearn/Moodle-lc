@@ -88,8 +88,8 @@ class local_primepushnotification_observer {
                                               'messageTitle'=>$messageTitle,
                                               'messageText'=>strip_tags($messageText),
                                               'uuidList'=>$uuidList,
-                                              'smsEnabled'=>false,
-                                              'emailEnabled'=>false,
+                                              'smsEnabled'=>true,
+                                              'emailEnabled'=>true,
                                               'domainName'=>$domainName,
                                               'clickUrl'=>$clickUrl
                                               );
@@ -246,8 +246,8 @@ class local_primepushnotification_observer {
                                               'messageTitle'=>$messageTitle,
                                               'messageText'=>strip_tags($messageText),
                                               'uuidList'=>$uuidList,
-                                              'smsEnabled'=>false,
-                                              'emailEnabled'=>false,
+                                              'smsEnabled'=>true,
+                                              'emailEnabled'=>true,
                                             'domainName'=>$domainName,
                                               'clickUrl'=>$clickUrl
                                               );
@@ -327,8 +327,8 @@ class local_primepushnotification_observer {
                                               'messageTitle'=>$messageTitle,
                                               'messageText'=>strip_tags($messageText),
                                               'uuidList'=>$uuidList,
-                                              'smsEnabled'=>false,
-                                              'emailEnabled'=>false,
+                                              'smsEnabled'=>true,
+                                              'emailEnabled'=>true,
                                               'domainName'=>$domainName,
                                               'clickUrl'=>$clickUrl
                                               );
