@@ -100,9 +100,13 @@ class local_primepushnotification_observer {
                                             'eventDate' => $eventDate,
                                             'payload' => $serializeRequest
                                             ); 
+
+                        //print_r($request); die();
                          $data_string = json_encode($request);
                          $result = curlPost($data_string, $CFG->COMMUNICATION_API_URL);
                          $responseData = json_decode($result);
+
+                         //print_r($responseData); die();
                          if($responseData->error !=null){
                          	echo $responseData->error;
                          }
@@ -240,7 +244,7 @@ class local_primepushnotification_observer {
               $domainName = str_replace("https://","",$CFG->wwwroot);
               $modulename = $event->other['modulename'];
               $clickUrl = $CFG->wwwroot."/mod/$modulename/view.php?id=".$objectid.'&forceview=1';
-              if(count($uuidList)>0){
+              if(count($uuidList)>0 && $send_notification == true){
                           $serializeRequest = array('senderUuid'=>1234,
                                               'schoolCode'=>$school_code,
                                               'messageTitle'=>$messageTitle,
@@ -321,7 +325,7 @@ class local_primepushnotification_observer {
 
           $domainName = str_replace("https://","",$CFG->wwwroot);
 
-              if(count($uuidList)>0){
+              if(count($uuidList)>0 && $send_notification == true){
                           $serializeRequest = array('senderUuid'=>1234,
                                               'schoolCode'=>$school_code,
                                               'messageTitle'=>$messageTitle,
