@@ -53,6 +53,7 @@ class local_primepushnotification_observer {
             $discussionId = $event->objectid;
             $contextlevel = $CFG->CONTEXT_LEVEL;
             $send_notification = $CFG->SEND_NOTIFICATION;
+            
             $check = $DB->get_record_sql('SELECT COUNT(id) AS count FROM {guru_notification_send} WHERE post_id = ?', array($postId));
             if($check->count < 1 && $send_notification == true){
                     $sql = "SELECT mra.userid,gum.uuid as uuid,
@@ -210,7 +211,11 @@ class local_primepushnotification_observer {
               $dueDate  = date("Y-m-d", $completionexpected);
               $eventDate = date("Y-m-d\TH:i:s.511\Z", $event->timecreated);
               $eventType = $CFG->GURU_ANNOUNCEMENT;
-              $messageTitle = 'Homework assigned:'.$event->other['name'];
+              if($event->other['modulename'] == 'hwork') {
+                $messageTitle = 'Homework assigned:'.$event->other['name'];
+              } else {
+                $messageTitle = $event->other['name'];
+              }
               $messageText = 'Due by '.$dueDate;
               $courseId = $event->courseid;
               $userid = $event->userid;
@@ -272,7 +277,6 @@ class local_primepushnotification_observer {
   }
   // Send the notification on create the mode 
    public static function activity_created(\core\event\course_module_created $event){
-
       global $DB, $CFG;
       $objectid = $event->objectid;
       $userSql = "SELECT * FROM {course_modules} 
@@ -290,7 +294,12 @@ class local_primepushnotification_observer {
               $dueDate  = date("Y-m-d", $completionexpected);
               $eventDate = date("Y-m-d\TH:i:s.511\Z", $event->timecreated);
               $eventType = $CFG->GURU_ANNOUNCEMENT;
-              $messageTitle = 'Homework assigned:'.$event->other['name'];
+              if($event->other['modulename'] == 'hwork') {
+                $messageTitle = 'Homework assigned:'.$event->other['name'];
+              } else {
+                $messageTitle = $event->other['name'];
+              }
+
               $messageText = 'Due by '.$dueDate;
               $courseId = $event->courseid;
               $userid = $event->userid;
