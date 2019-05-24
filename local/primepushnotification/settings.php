@@ -16,7 +16,11 @@ if ( $hassiteconfig ){
 		'pushnotification',
  
 		// This is the friendly title for the config, which will be displayed
-		'Push Notification' 
+		'Push Notification' ,
+    
+    'Check if you want to enable Push Notification',
+    
+    'admin'
 	) );
 
 		// Add a setting field to the settings for this page
@@ -26,7 +30,11 @@ if ( $hassiteconfig ){
 		'emailnotification',
  
 		// This is the friendly title for the config, which will be displayed
-		'Email Notification' 
+		'Email Notification',
+    
+    'Check if you want to enable Email Notification',
+    
+    'admin'
 	) );
 
 
@@ -37,7 +45,11 @@ if ( $hassiteconfig ){
 		'smsnotification',
  
 		// This is the friendly title for the config, which will be displayed
-		'Sms Notification' 
+		'Sms Notification' ,
+    
+    'Check if you want to enable Sms Notification',
+    
+    'admin'
 	) );
 	
 
