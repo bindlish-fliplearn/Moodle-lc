@@ -198,9 +198,11 @@ class local_primepushnotification_observer {
   // for send notification from quiz 
   public static function activity_updated(\core\event\course_module_updated $event){
      global $DB, $CFG;
-      $objectid = $event->objectid;
-      $userSql = "SELECT * FROM {course_modules} 
-                            WHERE id =?";          
+      $objectid = $event->objectid;   
+      $tableName = '{'.$event->other['modulename'].'}';
+      $userSql = "SELECT completionexpected,intro FROM {course_modules} as cm
+                           JOIN $tableName as mn on cm.instance = mn.id
+                          WHERE cm.id =?"; 
       $courseRes = $DB->get_record_sql($userSql, array($objectid));
       $completionexpected = $courseRes->completionexpected;
 
@@ -213,10 +215,11 @@ class local_primepushnotification_observer {
               $eventType = $CFG->GURU_ANNOUNCEMENT;
               if($event->other['modulename'] == 'hwork') {
                 $messageTitle = 'Homework assigned:'.$event->other['name'];
+                $messageText = 'Due by '.$dueDate;
               } else {
                 $messageTitle = $event->other['name'];
+                $messageText = $courseRes->intro;
               }
-              $messageText = 'Due by '.$dueDate;
               $courseId = $event->courseid;
               $userid = $event->userid;
               $contextlevel = $CFG->CONTEXT_LEVEL;
@@ -279,10 +282,12 @@ class local_primepushnotification_observer {
    public static function activity_created(\core\event\course_module_created $event){
       global $DB, $CFG;
       $objectid = $event->objectid;
-      $userSql = "SELECT * FROM {course_modules} 
-                            WHERE id =?";          
+      $tableName = '{'.$event->other['modulename'].'}';
+      $userSql = "SELECT completionexpected,intro FROM {course_modules} as cm
+                           JOIN $tableName as mn on cm.instance = mn.id
+                          WHERE cm.id =?";  
       $courseRes = $DB->get_record_sql($userSql, array($objectid));
-       $completionexpected = $courseRes->completionexpected;
+      $completionexpected = $courseRes->completionexpected;
       
 
       $currDate =  date("Y-m-d");
@@ -296,11 +301,12 @@ class local_primepushnotification_observer {
               $eventType = $CFG->GURU_ANNOUNCEMENT;
               if($event->other['modulename'] == 'hwork') {
                 $messageTitle = 'Homework assigned:'.$event->other['name'];
+                $messageText = 'Due by '.$dueDate;
               } else {
                 $messageTitle = $event->other['name'];
+                $messageText = $courseRes->intro;
               }
 
-              $messageText = 'Due by '.$dueDate;
               $courseId = $event->courseid;
               $userid = $event->userid;
               $contextlevel = $CFG->CONTEXT_LEVEL;
