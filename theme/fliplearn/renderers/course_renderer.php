@@ -527,8 +527,10 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
         // Get icon url, but strip -24, -64, -256  etc from the end of filetype icons so we
         // only need to provide one SVG, see MDL-47082. (Used from snap theme).
         $imageurl = \preg_replace('/-\d\d\d?$/', '', $mod->get_icon_url());
-
-        $activitylink = html_writer::empty_tag('img', array('src' =>$thumbUrl, //$imageurl,
+        if(!empty($thumbUrl)) {
+          $imageurl = $thumbUrl;
+        }
+        $activitylink = html_writer::empty_tag('img', array('src' => $imageurl, //$imageurl,
                 'class' => 'iconlarge activityicon', 'alt' => ' ', 'role' => 'presentation')) . $accesstext .
                 html_writer::tag('span', $instancename . $altname, array('class' => 'instancename'));
 
@@ -613,7 +615,7 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
         // Start a wrapper for the actual content to keep the indentation consistent.
         $output .= html_writer::start_tag('div', array('class' => 'activity-wrapper'));
         
-        $resultMapping =  $DB->get_record_sql('SELECT c_type,thumbnail_url FROM {guru_resourse_mapping} WHERE course_module_id  = ?', array($course_module_id));
+        $resultMapping =  $DB->get_record_sql('SELECT c_type,thumbnail_url FROM {guru_context_topic} WHERE modules_id  = ?', array($course_module_id));
         
         // Display the link to the module (or do nothing if module has no url).
         $cmname = $this->course_section_cm_name($mod, $displayoptions, $resultMapping->thumbnail_url);
