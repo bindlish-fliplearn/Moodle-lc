@@ -457,19 +457,8 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
      * @param array $displayoptions
      * @return string
      */
-    public function course_section_cm_name(cm_info $mod, $displayoptions = array()) {
+    public function course_section_cm_name(cm_info $mod, $displayoptions = array(), $thumbUrl = '') {
         global $DB;
-//      die("kkkkkkk");
-//      
-
-//        var_dump($this->page->theme->settings); die;
-        // If use adaptable icons is set to false, then just run parent method as normal.
-//        if (empty($this->page->theme->settings->coursesectionactivityuseadaptableicons)) {
-//            return parent::course_section_cm_name($mod, $displayoptions);
-//        }
-        
-//        die("PARENT");
-
         $output = '';
         if (!$mod->uservisible && empty($mod->availableinfo)) {
             // Nothing to be displayed to the user.
@@ -479,15 +468,6 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
         if (!$url) {
             return $output;
         }
-         $course_module_id  = $mod->id;
-        $result =  $DB->get_record_sql('SELECT source FROM {files} WHERE id  = ?', array($course_module_id));
-        $thumbUrl = '';
-        if($result){
-           $thumbUrl = $result->source; 
-        }
-        
-      //  echo "<pre>";
-       // print_r($mod->course);die;
 
         // Accessibility: for files get description via icon, this is very ugly hack!
         $instancename = $mod->get_formatted_name();
@@ -547,8 +527,10 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
         // Get icon url, but strip -24, -64, -256  etc from the end of filetype icons so we
         // only need to provide one SVG, see MDL-47082. (Used from snap theme).
         $imageurl = \preg_replace('/-\d\d\d?$/', '', $mod->get_icon_url());
-
-        $activitylink = html_writer::empty_tag('img', array('src' =>$thumbUrl, //$imageurl,
+        if(!empty($thumbUrl)) {
+          $imageurl = $thumbUrl;
+        }
+        $activitylink = html_writer::empty_tag('img', array('src' => $imageurl, //$imageurl,
                 'class' => 'iconlarge activityicon', 'alt' => ' ', 'role' => 'presentation')) . $accesstext .
                 html_writer::tag('span', $instancename . $altname, array('class' => 'instancename'));
 
@@ -598,7 +580,8 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
      * @return string
      */
     public function course_section_cm($course, &$completioninfo, cm_info $mod, $sectionreturn, $displayoptions = array()) {
-        global $PAGE;
+        global $PAGE, $DB;
+        $course_module_id = $mod->id;
         $output = '';
         // We return empty string (because course module will not be displayed at all) if
         // 1) The activity is not visible to users and
@@ -631,23 +614,33 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
 
         // Start a wrapper for the actual content to keep the indentation consistent.
         $output .= html_writer::start_tag('div', array('class' => 'activity-wrapper'));
-
+        
+        $resultMapping =  $DB->get_record_sql('SELECT c_type,thumbnail_url FROM {guru_context_topic} WHERE modules_id  = ?', array($course_module_id));
+        
         // Display the link to the module (or do nothing if module has no url).
-        $cmname = $this->course_section_cm_name($mod, $displayoptions);
+        $cmname = $this->course_section_cm_name($mod, $displayoptions, $resultMapping->thumbnail_url);
 
         if (!empty($cmname)) {
-            // Start the div for the activity title, excluding the edit icons.
-            $output .= html_writer::start_tag('div', array('class' => 'activityinstance'));
-            $output .= $cmname;
-
-            // Module can put text after the link (e.g. forum unread).
-            $output .= $mod->afterlink;
-
-            // Closing the tag which contains everything but edit icons. Content part of the module should not be part of this.
-            $output .= html_writer::end_tag('div'); // .activityinstance class.
+        // Start the div for the activity title, excluding the edit icons.
+        if ($resultMapping) {
+          if ($this->page->user_is_editing()) {
+            $output .= '<div style="float: right;margin-right: 120px; margin-top: 8px">' . C_NAME[$resultMapping->c_type] . '</div>';
+          } else {
+            $output .= '<div style="float: right;margin-right: 20px; margin-top: 8px">' . C_NAME[$resultMapping->c_type] . '</div>';
+          }
         }
 
-        // If there is content but NO link (eg label), then display the
+        $output .= html_writer::start_tag('div', array('class' => 'activityinstance'));
+        $output .= $cmname;
+
+        // Module can put text after the link (e.g. forum unread).
+        $output .= $mod->afterlink;
+
+        // Closing the tag which contains everything but edit icons. Content part of the module should not be part of this.
+        $output .= html_writer::end_tag('div'); // .activityinstance class.
+      }
+
+    // If there is content but NO link (eg label), then display the
         // content here (BEFORE any icons). In this case icons must be
         // displayed after the content so that it makes more sense visually
         // and for accessibility reasons, e.g. if you have a one-line label
