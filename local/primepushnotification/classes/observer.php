@@ -53,6 +53,7 @@ class local_primepushnotification_observer {
             $discussionId = $event->objectid;
             $contextlevel = $CFG->CONTEXT_LEVEL;
             $send_notification = $CFG->SEND_NOTIFICATION;
+            
             $check = $DB->get_record_sql('SELECT COUNT(id) AS count FROM {guru_notification_send} WHERE post_id = ?', array($postId));
             if($check->count < 1 && $send_notification == true){
                     $sql = "SELECT mra.userid,gum.uuid as uuid,
@@ -88,8 +89,8 @@ class local_primepushnotification_observer {
                                               'messageTitle'=>$messageTitle,
                                               'messageText'=>strip_tags($messageText),
                                               'uuidList'=>$uuidList,
-                                              'smsEnabled'=>false,
-                                              'emailEnabled'=>false,
+                                              'smsEnabled'=>true,
+                                              'emailEnabled'=>true,
                                               'domainName'=>$domainName,
                                               'clickUrl'=>$clickUrl
                                               );
@@ -100,9 +101,13 @@ class local_primepushnotification_observer {
                                             'eventDate' => $eventDate,
                                             'payload' => $serializeRequest
                                             ); 
+
+                        //print_r($request); die();
                          $data_string = json_encode($request);
                          $result = curlPost($data_string, $CFG->COMMUNICATION_API_URL);
                          $responseData = json_decode($result);
+
+                         //print_r($responseData); die();
                          if($responseData->error !=null){
                          	echo $responseData->error;
                          }
@@ -193,9 +198,11 @@ class local_primepushnotification_observer {
   // for send notification from quiz 
   public static function activity_updated(\core\event\course_module_updated $event){
      global $DB, $CFG;
-      $objectid = $event->objectid;
-      $userSql = "SELECT * FROM {course_modules} 
-                            WHERE id =?";          
+      $objectid = $event->objectid;   
+      $tableName = '{'.$event->other['modulename'].'}';
+      $userSql = "SELECT completionexpected,intro FROM {course_modules} as cm
+                           JOIN $tableName as mn on cm.instance = mn.id
+                          WHERE cm.id =?"; 
       $courseRes = $DB->get_record_sql($userSql, array($objectid));
       $completionexpected = $courseRes->completionexpected;
 
@@ -206,8 +213,13 @@ class local_primepushnotification_observer {
               $dueDate  = date("Y-m-d", $completionexpected);
               $eventDate = date("Y-m-d\TH:i:s.511\Z", $event->timecreated);
               $eventType = $CFG->GURU_ANNOUNCEMENT;
-              $messageTitle = 'Homework assigned:'.$event->other['name'];
-              $messageText = 'Due by '.$dueDate;
+              if($event->other['modulename'] == 'hwork') {
+                $messageTitle = 'Homework assigned:'.$event->other['name'];
+                $messageText = 'Due by '.$dueDate;
+              } else {
+                $messageTitle = $event->other['name'];
+                $messageText = $courseRes->intro;
+              }
               $courseId = $event->courseid;
               $userid = $event->userid;
               $contextlevel = $CFG->CONTEXT_LEVEL;
@@ -240,14 +252,14 @@ class local_primepushnotification_observer {
               $domainName = str_replace("https://","",$CFG->wwwroot);
               $modulename = $event->other['modulename'];
               $clickUrl = $CFG->wwwroot."/mod/$modulename/view.php?id=".$objectid.'&forceview=1';
-              if(count($uuidList)>0){
+              if(count($uuidList)>0 && $send_notification == true){
                           $serializeRequest = array('senderUuid'=>1234,
                                               'schoolCode'=>$school_code,
                                               'messageTitle'=>$messageTitle,
                                               'messageText'=>strip_tags($messageText),
                                               'uuidList'=>$uuidList,
-                                              'smsEnabled'=>false,
-                                              'emailEnabled'=>false,
+                                              'smsEnabled'=>true,
+                                              'emailEnabled'=>true,
                                             'domainName'=>$domainName,
                                               'clickUrl'=>$clickUrl
                                               );
@@ -268,13 +280,14 @@ class local_primepushnotification_observer {
   }
   // Send the notification on create the mode 
    public static function activity_created(\core\event\course_module_created $event){
-
       global $DB, $CFG;
       $objectid = $event->objectid;
-      $userSql = "SELECT * FROM {course_modules} 
-                            WHERE id =?";          
+      $tableName = '{'.$event->other['modulename'].'}';
+      $userSql = "SELECT completionexpected,intro FROM {course_modules} as cm
+                           JOIN $tableName as mn on cm.instance = mn.id
+                          WHERE cm.id =?";  
       $courseRes = $DB->get_record_sql($userSql, array($objectid));
-       $completionexpected = $courseRes->completionexpected;
+      $completionexpected = $courseRes->completionexpected;
       
 
       $currDate =  date("Y-m-d");
@@ -286,8 +299,14 @@ class local_primepushnotification_observer {
               $dueDate  = date("Y-m-d", $completionexpected);
               $eventDate = date("Y-m-d\TH:i:s.511\Z", $event->timecreated);
               $eventType = $CFG->GURU_ANNOUNCEMENT;
-              $messageTitle = 'Homework assigned:'.$event->other['name'];
-              $messageText = 'Due by '.$dueDate;
+              if($event->other['modulename'] == 'hwork') {
+                $messageTitle = 'Homework assigned:'.$event->other['name'];
+                $messageText = 'Due by '.$dueDate;
+              } else {
+                $messageTitle = $event->other['name'];
+                $messageText = $courseRes->intro;
+              }
+
               $courseId = $event->courseid;
               $userid = $event->userid;
               $contextlevel = $CFG->CONTEXT_LEVEL;
@@ -321,14 +340,14 @@ class local_primepushnotification_observer {
 
           $domainName = str_replace("https://","",$CFG->wwwroot);
 
-              if(count($uuidList)>0){
+              if(count($uuidList)>0 && $send_notification == true){
                           $serializeRequest = array('senderUuid'=>1234,
                                               'schoolCode'=>$school_code,
                                               'messageTitle'=>$messageTitle,
                                               'messageText'=>strip_tags($messageText),
                                               'uuidList'=>$uuidList,
-                                              'smsEnabled'=>false,
-                                              'emailEnabled'=>false,
+                                              'smsEnabled'=>true,
+                                              'emailEnabled'=>true,
                                               'domainName'=>$domainName,
                                               'clickUrl'=>$clickUrl
                                               );
