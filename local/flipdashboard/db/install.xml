@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/flipdashboard/db" VERSION="20120122" COMMENT="XMLDB file for Moodle local/flipdashboard"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="guru_braincert_user" COMMENT="Default comment for braincert, please edit me" NEXT="guru_braincert_notification">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true" NEXT="class_id"/>
+        <FIELD NAME="class_id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="user_id"/>
+        <FIELD NAME="user_id" TYPE="int" LENGTH="11" NOTNULL="true"  SEQUENCE="false" PREVIOUS="class_id" NEXT="duration"/>
+        <FIELD NAME="duration" TYPE="varchar" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="user_id" NEXT="percentage"/>
+        <FIELD NAME="percentage" TYPE="varchar" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="duration" NEXT="is_teacher"/>
+        <FIELD NAME="is_teacher" TYPE="varchar" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="percentage" NEXT="session"/>
+        <FIELD NAME="session" TYPE="text" NOTNULL="true"  SEQUENCE="false" PREVIOUS="percentage"/>        
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="class_id" UNIQUE="false" FIELDS="class_id"/>
+        <INDEX NAME="user_id" UNIQUE="false" FIELDS="user_id"/>
+      </INDEXES>
+    </TABLE>
+    
+    
+    <TABLE NAME="guru_braincert_notification" COMMENT="Defines braincerts mail template" PREVIOUS="guru_braincert_user">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true" NEXT="class_id"/>
+        <FIELD NAME="course_id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="class_id"/>
+        <FIELD NAME="class_id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" PREVIOUS="course_id" NEXT="class_time"/>
+        <FIELD NAME="class_time" TYPE="varchar" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="class_id" NEXT="event_request"/>
+        <FIELD NAME="event_request" TYPE="text"  NOTNULL="true" SEQUENCE="false" PREVIOUS="class_time" NEXT="event_response"/>
+        <FIELD NAME="event_response" TYPE="text" NOTNULL="true" SEQUENCE="false" PREVIOUS="event_request" NEXT="min"/>
+        <FIELD NAME="min" TYPE="int" NOTNULL="true"  SEQUENCE="false" PREVIOUS="event_response"/>  
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="class_id" UNIQUE="false" FIELDS="class_id"/>
+        <INDEX NAME="user_id" UNIQUE="false" FIELDS="user_id"/>
+      </INDEXES>
+    </TABLE>
+    
+    <TABLE NAME="guru_braincert_recording" COMMENT="Defines braincerts mail template" PREVIOUS="guru_braincert_notification">
+     <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true" NEXT="class_id"/>
+        <FIELD NAME="class_id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="user_id"/>
+        <FIELD NAME="user_id" TYPE="int" LENGTH="11" NOTNULL="true"  SEQUENCE="false" PREVIOUS="class_id" NEXT="name"/>
+        <FIELD NAME="name" TYPE="varchar" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="user_id" NEXT="date_recorded"/>
+        <FIELD NAME="date_recorded" TYPE="text"  NOTNULL="true" SEQUENCE="false" PREVIOUS="name" NEXT="size"/>
+        <FIELD NAME="size" TYPE="text" NOTNULL="true" SEQUENCE="false" PREVIOUS="date_recorded" NEXT="is_public"/>
+        <FIELD NAME="is_public" TYPE="int" NOTNULL="true"  SEQUENCE="false" PREVIOUS="size" NEXT="allow_download"/>  
+        <FIELD NAME="allow_download" TYPE="int" NOTNULL="true"  SEQUENCE="false" PREVIOUS="is_public" NEXT="privatekey"/>  
+        <FIELD NAME="privatekey" TYPE="int" NOTNULL="true"  SEQUENCE="false" PREVIOUS="allow_download" NEXT="record_path"/>  
+        <FIELD NAME="record_path" TYPE="int" NOTNULL="true"  SEQUENCE="false" PREVIOUS="privatekey" NEXT="record_url"/>  
+        <FIELD NAME="record_url" TYPE="int" NOTNULL="true"  SEQUENCE="false" PREVIOUS="record_path"/>  
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="class_id" UNIQUE="false" FIELDS="class_id"/>
+        <INDEX NAME="user_id" UNIQUE="false" FIELDS="user_id"/>
+      </INDEXES>
+    </TABLE>
+    
+    <TABLE NAME="guru_braincert_class" COMMENT="Defines braincerts mail template" PREVIOUS="guru_braincert_recording">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true" NEXT="class_id"/>
+        <FIELD NAME="course_id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="class_id"/>
+        <FIELD NAME="class_id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false" PREVIOUS="course_id" NEXT="class_time"/>
+        <FIELD NAME="class_time" TYPE="varchar" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="class_id" NEXT="event_request"/>
+        <FIELD NAME="class_response" TYPE="text"  NOTNULL="true" SEQUENCE="false" PREVIOUS="class_time" NEXT="user_count"/>
+        <FIELD NAME="user_count" TYPE="text" NOTNULL="true" SEQUENCE="false" PREVIOUS="class_response" NEXT="min"/>
+        <FIELD NAME="min" TYPE="int" NOTNULL="true"  SEQUENCE="false" PREVIOUS="user_count"/>  
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="course_id" UNIQUE="false" FIELDS="course_id"/>
+        <INDEX NAME="class_id" UNIQUE="false" FIELDS="class_id"/>
+      </INDEXES>
+    </TABLE>
+    
+    
+  </TABLES>
+</XMLDB>
