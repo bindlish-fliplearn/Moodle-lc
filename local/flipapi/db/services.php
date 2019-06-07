@@ -49,6 +49,13 @@ $functions = array(
     'classpath' => 'local/flipapi/externallib.php',
     'description' => 'Return role details by shortname.',
     'type' => 'read',
+  ),
+  'local_flipapi_upadte_completionexpected_by_id' => array(
+    'classname' => 'local_flipapi_external',
+    'methodname' => 'update_completionexpected_by_id',
+    'classpath' => 'local/flipapi/externallib.php',
+    'description' => 'Bulk update activity completion expected date.',
+    'type' => 'update',
   )
 );
 
