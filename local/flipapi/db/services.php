@@ -49,7 +49,15 @@ $functions = array(
     'classpath' => 'local/flipapi/externallib.php',
     'description' => 'Return role details by shortname.',
     'type' => 'read',
-  )
+  ),
+  'local_calendar_get_action_completed_events_by_timesort' => array(
+    'classname' => 'local_flipapi_external',
+    'methodname' => 'get_calendar_action_completed_events_by_timesort',
+    'classpath' => 'local/flipapi/externallib.php',
+    'description' => 'Return role details by shortname.',
+    'type' => 'read',
+    'ajax'          => true,
+  ),
 );
 
 // We define the services to install as pre-build services. A pre-build service is not editable by administrator.
