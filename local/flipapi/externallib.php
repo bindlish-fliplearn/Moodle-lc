@@ -244,7 +244,6 @@
             );
         }
 
-
     /**
      * Returns description of method parameters.
      *
@@ -316,6 +315,67 @@
     public static function get_calendar_action_completed_events_by_timesort_returns() {
         return events_exporter::get_read_structure();
     }
+
+        
+        
+        /**
+   * Returns description of method parameters
+   * @return external_function_parameters
+   */
+  public static function update_completionexpected_by_id_parameters() {
+    return new external_function_parameters(
+        array(
+          'courseId' => new external_value(PARAM_TEXT, 'This is homework course id.'),
+          'assignDate' => new external_value(PARAM_TEXT, 'This is homework assign date.'),
+          'activityId' => new external_value(PARAM_TEXT, 'This is homework cm id.')
+          )
+      );
   }
+
+  /**
+   * get user details by uuid 
+   */
+
+  /**
+   * Returns welcome message
+   * @return string welcome message
+   */
+  public static function update_completionexpected_by_id($courseId, $assignDate, $activityId) {
+    global $DB;
+    //REQUIRED
+    self::validate_parameters(
+            self::update_completionexpected_by_id_parameters(),
+            array(
+                'courseId' => $courseId,
+                'assignDate' => $assignDate,
+                'activityId' => $activityId,
+            )
+        );
+    $date = strtotime($assignDate);
+    $sql = "UPDATE {course_modules} SET completionexpected = $date  WHERE id IN ($activityId)";
+    $record = $DB->execute($sql);
+    $cacherev = time();
+    $courseSql = "UPDATE {course} SET cacherev = (CASE WHEN cacherev IS NULL THEN $cacherev WHEN cacherev < $cacherev THEN $cacherev WHEN cacherev > $cacherev + 3600 THEN $cacherev ELSE cacherev + 1 END) WHERE id = '$courseId'";
+    $DB->execute($courseSql);
+    if ($record) {
+      return ['status' => 'true'];
+    } else {
+      return ['status' => 'false'];
+    }
+  }
+
+  /**
+   * Returns description of method result value
+   * @return external_description
+   */
+  public static function update_completionexpected_by_id_returns() {
+    return new external_single_structure(
+      array(
+      'status' => new external_value(PARAM_TEXT, 'status')
+      )
+    );
+  }
+
+}
 
 

@@ -259,7 +259,7 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
             // End course-content.
         }
         $content .= html_writer::tag('div', '', array('class' => 'boxfooter')); // Coursecat.
-
+        
         return $content;
     }
 
@@ -622,12 +622,19 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
 
         if (!empty($cmname)) {
         // Start the div for the activity title, excluding the edit icons.
-        if ($resultMapping) {
+        if (count($resultMapping) > 0) {
           if ($this->page->user_is_editing()) {
             $output .= '<div style="float: right;margin-right: 120px; margin-top: 8px">' . C_NAME[$resultMapping->c_type] . '</div>';
           } else {
             $output .= '<div style="float: right;margin-right: 20px; margin-top: 8px">' . C_NAME[$resultMapping->c_type] . '</div>';
           }
+        if($mod->completionexpected <> 0) {
+          if ($this->page->user_is_editing()) {
+            $output .= '<div style="float: right;margin-right: 120px; margin-top: 8px">' . date('d-M',$mod->completionexpected) . '</div>';
+          } else {
+            $output .= '<div style="float: right;margin-right: 20px; margin-top: 8px">' . date('d-M',$mod->completionexpected) . '</div>';
+          }
+        }
         }
 
         $output .= html_writer::start_tag('div', array('class' => 'activityinstance'));
@@ -661,12 +668,15 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
 
         $modicons .= $this->course_section_cm_completion($course, $completioninfo, $mod, $displayoptions);
 
-        if (!empty($modicons)) {
-            $output .= html_writer::start_tag('div', array('class' => 'actions-right'));
-            $output .= html_writer::span($modicons, 'actions');
-            $output .= html_writer::end_tag('div');
+//        if (!empty($modicons)) {
+//            $output .= html_writer::start_tag('div', array('class' => 'actions-right', 'style' => 'display: none;'));
+//            $output .= html_writer::span($modicons, 'actions');
+//            $output .= html_writer::end_tag('div');
+//        }
+        
+        if($mod->completionexpected == 0) {
+          $output .= "<div class='actions-right'><input type='checkbox' name='homework[]' value='$mod->id' class='assigned' /></div>";
         }
-
         // Get further information.
         $settingname = 'coursesectionactivityfurtherinformation'. $mod->modname;
         if (isset ($PAGE->theme->settings->$settingname) && $PAGE->theme->settings->$settingname == true) {
