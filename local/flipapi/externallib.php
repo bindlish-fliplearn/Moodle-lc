@@ -303,7 +303,15 @@
 
         $exportercache = new events_related_objects_cache($events);
         $exporter = new events_exporter($events, ['cache' => $exportercache]);
-        return $exporter->export($renderer);
+        $returnArray = [];
+        $data = $exporter->export($renderer);
+          foreach ($events as $key => $value) {
+              $data->events[$key]->completionstate = $value->completionstate;
+              $data->events[$key]->completionexpected = $value->completionexpected;
+              $data->events[$key]->timemodified = $value->timemodified;
+          }
+          $array = json_decode(json_encode($data), true);
+          return $array;
     }
 
       /**
@@ -313,11 +321,8 @@
      * @return external_description
      */
     public static function get_calendar_action_completed_events_by_timesort_returns() {
-        return events_exporter::get_read_structure();
     }
-
-        
-        
+   
         /**
    * Returns description of method parameters
    * @return external_function_parameters
