@@ -94,18 +94,22 @@ function hideAssignmentPopup() {
 function assignHomework() {
     var activity = [];
     $.each($("input[name='homework[]']:checked"), function(){            
-        activity.push($(this).val());
+        var actid = $(this).val();
+        var title = $('#course_title_'+actid).val();
+        var module = $('#course_module_'+actid).val();
+        activity.push({instanceId: actid, name: title, module: module});
     });
+    console.log(activity);
     var update = {
         courseId: getUrlParameter('id'),
         assignDate: $('.assignDate').val(),
-        activityId: activity.join(",")
-    }
+        activityId: activity
+    };
     console.log(update);
     var url = window.location;
     var path = url.host;
     if(url.host == "localhost") {
-        path = url.host + "/flip-moodle-lc"
+        path = url.host + "/flip-moodle-lc";
     }
     console.log("KKKKKKKKKKKKK", url.protocol, path, url.protocol+'//'+path+"/webservice/rest/server.php?wstoken=6257f654f905c94b0d0f90fce5b9af31&wsfunction=local_flipapi_upadte_completionexpected_by_id&moodlewsrestformat=json");
     $.ajax({
@@ -114,7 +118,7 @@ function assignHomework() {
         url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken=6257f654f905c94b0d0f90fce5b9af31&wsfunction=local_flipapi_upadte_completionexpected_by_id&moodlewsrestformat=json",
         success: function (data) {
             console.log(data);
-            url.reload();
+//            url.reload();
         }
     });   
 }
@@ -130,7 +134,6 @@ setTimeout(function(){
     $(document).ready(function(){
         $('.assigned').click(function(){
             var count_checked = $("[name='homework[]']:checked").length; // count the checked rows
-            console.log(count_checked);
             if(count_checked == 0) 
             {
                 $('.assignedButton').remove();

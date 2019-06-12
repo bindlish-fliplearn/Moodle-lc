@@ -333,7 +333,11 @@
         array(
           'courseId' => new external_value(PARAM_TEXT, 'This is homework course id.'),
           'assignDate' => new external_value(PARAM_TEXT, 'This is homework assign date.'),
-          'activityId' => new external_value(PARAM_TEXT, 'This is homework cm id.')
+          'activityId' => new external_multiple_structure(new external_single_structure(array(
+            'instanceId' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+            'module' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+            'name' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+          )))
           )
       );
   }
@@ -354,16 +358,31 @@
             array(
                 'courseId' => $courseId,
                 'assignDate' => $assignDate,
-                'activityId' => $activityId,
+                'activityId' => $activityId
             )
         );
+    $contextid = get_context_instance(CONTEXT_COURSE, $courseId);
+    $ssql = "SELECT u.id
+    FROM {user} u, {role_assignments} r
+    WHERE u.id=r.userid AND r.contextid = ?";
+    $record = $DB->get_records_sql($ssql, array($contextid->id));
     $date = strtotime($assignDate);
-    $sql = "UPDATE {course_modules} SET completionexpected = $date  WHERE id IN ($activityId)";
-    $record = $DB->execute($sql);
+    $updateRecord = false;
+    if(!empty($record)) {
+      foreach($activityId as $activity) {
+        foreach($record as $row) {
+          $name = addslashes($activity['name']);
+          $userEvent = "INSERT INTO {event} SET name='{$name}', description='<div class=no-overflow><p>{$name}</div>', format='1', courseid='$courseId', userid='{$row->id}', modulename='{$activity['module']}', instance='{$activity['instanceId']}', type='1', eventtype='expectcompletionon', visible='1', sequence='1', timestart='$date', timesort='$date'";
+          $DB->execute($userEvent);
+        }
+        $sql = "UPDATE {course_modules} SET completionexpected = $date  WHERE id = '{$activity['instanceId']}'";
+        $updateRecord = $DB->execute($sql);
+      }
+    }
     $cacherev = time();
     $courseSql = "UPDATE {course} SET cacherev = (CASE WHEN cacherev IS NULL THEN $cacherev WHEN cacherev < $cacherev THEN $cacherev WHEN cacherev > $cacherev + 3600 THEN $cacherev ELSE cacherev + 1 END) WHERE id = '$courseId'";
     $DB->execute($courseSql);
-    if ($record) {
+    if ($updateRecord) {
       return ['status' => 'true'];
     } else {
       return ['status' => 'false'];
