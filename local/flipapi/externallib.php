@@ -333,7 +333,12 @@
         array(
           'courseId' => new external_value(PARAM_TEXT, 'This is homework course id.'),
           'assignDate' => new external_value(PARAM_TEXT, 'This is homework assign date.'),
-          'activityId' => new external_value(PARAM_TEXT, 'This is homework cm id.')
+          'uuid' => new external_value(PARAM_TEXT, 'This is homework assign date.'),
+          'activityId' => new external_multiple_structure(new external_single_structure(array(
+            'instanceId' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+            'module' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+            'name' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+          )))
           )
       );
   }
@@ -346,7 +351,7 @@
    * Returns welcome message
    * @return string welcome message
    */
-  public static function update_completionexpected_by_id($courseId, $assignDate, $activityId) {
+  public static function update_completionexpected_by_id($courseId, $assignDate, $uuid, $activityId) {
     global $DB;
     //REQUIRED
     self::validate_parameters(
@@ -354,16 +359,31 @@
             array(
                 'courseId' => $courseId,
                 'assignDate' => $assignDate,
-                'activityId' => $activityId,
+                'uuid' => $uuid,
+                'activityId' => $activityId
             )
         );
     $date = strtotime($assignDate);
-    $sql = "UPDATE {course_modules} SET completionexpected = $date  WHERE id IN ($activityId)";
-    $record = $DB->execute($sql);
+    $updateRecord = false;
+    if(!empty($activityId)) {
+      foreach($activityId as $activity) {
+        $courseModuleRaw = $DB->get_record  ('course_modules', array('id' => $activity['instanceId']));
+        $instanceId = $courseModuleRaw->instance;
+          $name = addslashes($activity['name']);
+          $userEvent = "INSERT INTO {event} SET name='{$name}', description='<div class=no-overflow><p>{$name}</div>', format='1', courseid='$courseId', userid='{$uuid}', modulename='{$activity['module']}', instance='{$instanceId}', type='1', eventtype='expectcompletionon', visible='1', sequence='1', timestart='$date', timesort='$date'";
+          $DB->execute($userEvent);
+        $insertBlock = "INSERT INTO {block_recent_activity} (action,timecreated,courseid,cmid,userid) VALUES('1','$date','$courseId','{$activity['instanceId']}','$uuid')";
+        $DB->execute($insertBlock);
+        $updateModules = "UPDATE {course_modules} SET completionexpected = $date  WHERE id = '{$activity['instanceId']}'";
+        $DB->execute($updateModules);
+        $updateResource = "UPDATE {resource} SET revision = '2'  WHERE id = '{$instanceId}'";
+        $updateRecord = $DB->execute($updateResource);
+      }
+    }
     $cacherev = time();
     $courseSql = "UPDATE {course} SET cacherev = (CASE WHEN cacherev IS NULL THEN $cacherev WHEN cacherev < $cacherev THEN $cacherev WHEN cacherev > $cacherev + 3600 THEN $cacherev ELSE cacherev + 1 END) WHERE id = '$courseId'";
     $DB->execute($courseSql);
-    if ($record) {
+    if ($updateRecord) {
       return ['status' => 'true'];
     } else {
       return ['status' => 'false'];
