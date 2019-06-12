@@ -359,6 +359,7 @@
             array(
                 'courseId' => $courseId,
                 'assignDate' => $assignDate,
+                'uuid' => $uuid,
                 'activityId' => $activityId
             )
         );
@@ -371,12 +372,12 @@
           $name = addslashes($activity['name']);
           $userEvent = "INSERT INTO {event} SET name='{$name}', description='<div class=no-overflow><p>{$name}</div>', format='1', courseid='$courseId', userid='{$uuid}', modulename='{$activity['module']}', instance='{$instanceId}', type='1', eventtype='expectcompletionon', visible='1', sequence='1', timestart='$date', timesort='$date'";
           $DB->execute($userEvent);
-        $insertBlock = "INSERT INTO {block_recent_activity} (action,timecreated,courseid,cmid,userid) VALUES('1','$date','$courseId','{$activity['instanceId']}','{$row->id}')";
+        $insertBlock = "INSERT INTO {block_recent_activity} (action,timecreated,courseid,cmid,userid) VALUES('1','$date','$courseId','{$activity['instanceId']}','$uuid')";
         $DB->execute($insertBlock);
         $updateModules = "UPDATE {course_modules} SET completionexpected = $date  WHERE id = '{$activity['instanceId']}'";
         $DB->execute($updateModules);
         $updateResource = "UPDATE {resource} SET revision = '2'  WHERE id = '{$instanceId}'";
-        $DB->execute($updateResource);
+        $updateRecord = $DB->execute($updateResource);
       }
     }
     $cacherev = time();
