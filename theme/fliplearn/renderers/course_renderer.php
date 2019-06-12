@@ -673,14 +673,14 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
             $modicons .= ' '. $this->course_section_cm_edit_actions($editactions, $mod, $displayoptions);
             $modicons .= $mod->afterediticons;
         }
-
+        $displayoptions['hidecompletion'] = "hide";
         $modicons .= $this->course_section_cm_completion($course, $completioninfo, $mod, $displayoptions);
 
-//        if (!empty($modicons)) {
-//            $output .= html_writer::start_tag('div', array('class' => 'actions-right', 'style' => 'display: none;'));
-//            $output .= html_writer::span($modicons, 'actions');
-//            $output .= html_writer::end_tag('div');
-//        }
+        if (!empty($modicons)) {
+            $output .= html_writer::start_tag('div', array('class' => 'actions-right'));
+            $output .= html_writer::span($modicons, 'actions');
+            $output .= html_writer::end_tag('div');
+        }
         
         // Get further information.
         $settingname = 'coursesectionactivityfurtherinformation'. $mod->modname;

@@ -370,13 +370,19 @@
     $updateRecord = false;
     if(!empty($record)) {
       foreach($activityId as $activity) {
+        $courseModuleRaw = $DB->get_record  ('course_modules', array('id' => $activity['instanceId']));
+        $instanceId = $courseModuleRaw->instance;
         foreach($record as $row) {
           $name = addslashes($activity['name']);
-          $userEvent = "INSERT INTO {event} SET name='{$name}', description='<div class=no-overflow><p>{$name}</div>', format='1', courseid='$courseId', userid='{$row->id}', modulename='{$activity['module']}', instance='{$activity['instanceId']}', type='1', eventtype='expectcompletionon', visible='1', sequence='1', timestart='$date', timesort='$date'";
+          $userEvent = "INSERT INTO {event} SET name='{$name}', description='<div class=no-overflow><p>{$name}</div>', format='1', courseid='$courseId', userid='{$row->id}', modulename='{$activity['module']}', instance='{$instanceId}', type='1', eventtype='expectcompletionon', visible='1', sequence='1', timestart='$date', timesort='$date'";
           $DB->execute($userEvent);
+        $insertBlock = "INSERT INTO {block_recent_activity} (action,timecreated,courseid,cmid,userid) VALUES('1','$date','$courseId','{$activity['instanceId']}','{$row->id}')";
+        $DB->execute($insertBlock);
         }
-        $sql = "UPDATE {course_modules} SET completionexpected = $date  WHERE id = '{$activity['instanceId']}'";
-        $updateRecord = $DB->execute($sql);
+        $updateModules = "UPDATE {course_modules} SET completionexpected = $date  WHERE id = '{$activity['instanceId']}'";
+        $DB->execute($updateModules);
+        $updateResource = "UPDATE {resource} SET revision = '2'  WHERE id = '{$instanceId}'";
+        $DB->execute($updateResource);
       }
     }
     $cacherev = time();

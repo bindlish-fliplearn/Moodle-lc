@@ -99,7 +99,6 @@ function assignHomework() {
         var module = $('#course_module_'+actid).val();
         activity.push({instanceId: actid, name: title, module: module});
     });
-    console.log(activity);
     var update = {
         courseId: getUrlParameter('id'),
         assignDate: $('.assignDate').val(),
@@ -111,14 +110,13 @@ function assignHomework() {
     if(url.host == "localhost") {
         path = url.host + "/flip-moodle-lc";
     }
-    console.log("KKKKKKKKKKKKK", url.protocol, path, url.protocol+'//'+path+"/webservice/rest/server.php?wstoken=6257f654f905c94b0d0f90fce5b9af31&wsfunction=local_flipapi_upadte_completionexpected_by_id&moodlewsrestformat=json");
     $.ajax({
         type: "POST",
         data: update,
         url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken=6257f654f905c94b0d0f90fce5b9af31&wsfunction=local_flipapi_upadte_completionexpected_by_id&moodlewsrestformat=json",
         success: function (data) {
             console.log(data);
-//            url.reload();
+            url.reload();
         }
     });   
 }
