@@ -41,7 +41,7 @@ define(['jquery', 'core/notification', 'core/templates',
 
     var TEMPLATES = {
         EVENT_LIST_ITEMS: 'block_flip_myoverview/event-list-items',
-        COURSE_EVENT_LIST_ITEMS: 'block_flip_myoverview/course-event-list-items'
+        COURSE_EVENT_LIST_ITEMS: 'block_flip_myoverview/event-list-items'
     };
 
     /**

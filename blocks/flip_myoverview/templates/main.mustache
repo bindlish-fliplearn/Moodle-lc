@@ -25,18 +25,18 @@
 
 <div id="block-flip_myoverview-{{uniqid}}" class="block-flip_myoverview" data-region="flip_myoverview">
     <ul id="block-flip_myoverview-view-choices-{{uniqid}}" class="nav nav-tabs" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link {{#viewingtimeline}}active{{/viewingtimeline}}" href="#flip_myoverview_timeline_view" role="tab" data-toggle="tab" data-tabname="scheduled">
+        <li class="nav-item {{#viewingtimeline}}active{{/viewingtimeline}}">
+            <a class="nav-link" href="#flip_myoverview_timeline_view" role="tab" data-toggle="tab" data-tabname="scheduled">
             Scheduled
             </a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link {{#viewingcourses}}active{{/viewingcourses}}" href="#flip_myoverview_completed_timeline_view" role="tab" data-toggle="tab" data-tabname="courses">
+        <li class="nav-item {{#viewingcourses}}active{{/viewingcourses}}">
+            <a class="nav-link" href="#flip_myoverview_completed_timeline_view" role="tab" data-toggle="tab" data-tabname="courses">
             Completed
             </a>
         </li>
     </ul>
-    <div class="tab-content content-centred">
+    <div class="tab-content">
         <div role="tabpanel" class="tab-pane fade {{#viewingtimeline}}in active{{/viewingtimeline}}" id="flip_myoverview_timeline_view">
             {{> block_flip_myoverview/timeline-view }}
         </div>

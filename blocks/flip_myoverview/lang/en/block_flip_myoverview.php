@@ -39,6 +39,7 @@ $string['next7days'] = 'Next 7 days';
 $string['past'] = 'Past';
 $string['pluginname'] = 'Flip Course overview';
 $string['recentlyoverdue'] = 'Recently overdue';
+$string['completedhomework'] = 'Completed Homework';
 $string['sortbycourses'] = 'Sort by courses';
 $string['sortbydates'] = 'Sort by dates';
 $string['timeline'] = 'Timeline';

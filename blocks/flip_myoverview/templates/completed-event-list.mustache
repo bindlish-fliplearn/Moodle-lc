@@ -32,7 +32,7 @@
 
     <div data-region="event-list-content">
         {{< block_flip_myoverview/event-list-group }}
-            {{$title}}{{#str}} recentlyoverdue, block_flip_myoverview {{/str}}{{/title}}
+            {{$title}}{{#str}} completedhomework, block_flip_myoverview {{/str}}{{/title}}
             {{$extratitleclasses}}text-danger{{/extratitleclasses}}
             {{$startday}}-14{{/startday}}
             {{$endday}}0{{/endday}}
@@ -80,7 +80,7 @@
     </div>
 </div>
 {{#js}}
-require(['jquery', 'block_flip_myoverview/completed_event_list'], function($, EventList) {
+require(['jquery', 'block_flip_myoverview/event_list'], function($, EventList) {
     var root = $("#event-list-container-{{$courseid}}{{/courseid}}");
     EventList.registerEventListeners(root);
 });

@@ -28,7 +28,7 @@
     </div>
 
     <div class="tab-content">
-        <div class="tab-pane active show" id="flip_myoverview_timeline_dates">
+        <div class="tab-pane active fade in" id="flip_myoverview_timeline_dates">
             {{> block_flip_myoverview/timeline-view-dates }}
         </div>
         <div class="tab-pane fade" id="flip_myoverview_timeline_courses">
@@ -36,3 +36,13 @@
         </div>
     </div>
 </div>
+{{#js}}
+require(['jquery', 'core/custom_interaction_events'], function($, customEvents) {
+    var root = $('#timeline-view-{{uniqid}}');
+    customEvents.define(root, [customEvents.events.activate]);
+    root.on(customEvents.events.activate, '[data-toggle="btns"] > .btn', function() {
+        root.find('.btn.active').removeClass('active');
+        $(this).addClass('active');
+    });
+});
+{{/js}}
