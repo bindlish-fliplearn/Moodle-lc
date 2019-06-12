@@ -625,6 +625,7 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
           $output .= "<div style='float: right;'><input type='checkbox' name='homework[]' value='$mod->id' class='assigned' /></div>";
           $name = addslashes($mod->get_formatted_name());
           $output .= '<input type="hidden" id="course_title_'.$mod->id.'" value="'.$name.'">';
+          $output .= '<input type="hidden" id="uuid" value="'.$USER->id.'">';
           $output .= '<input type="hidden" id="course_module_'.$mod->id.'" value="'.$mod->modname.'">';
         }
         

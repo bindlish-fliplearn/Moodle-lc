@@ -101,6 +101,7 @@ function assignHomework() {
     });
     var update = {
         courseId: getUrlParameter('id'),
+        userId: $('#uuid').val(),
         assignDate: $('.assignDate').val(),
         activityId: activity
     };
