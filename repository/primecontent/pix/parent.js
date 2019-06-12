@@ -117,7 +117,7 @@ function assignHomework() {
         url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken=6257f654f905c94b0d0f90fce5b9af31&wsfunction=local_flipapi_upadte_completionexpected_by_id&moodlewsrestformat=json",
         success: function (data) {
             console.log(data);
-//            url.reload();
+            url.reload();
         }
     });   
 }
