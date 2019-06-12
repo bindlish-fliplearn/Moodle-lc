@@ -17,7 +17,7 @@
 {{!
     @template block_flip_myoverview/event-list-group
 
-    This template renders a list of events for the flip_myoverview block.
+    This template renders a list of events for the myoverview block.
 
     Example context (json):
     {
@@ -66,8 +66,8 @@
      data-end-day="{{$endday}}{{/endday}}"
      class="hidden">
 
-    <h5 class="h6 m-t-1 {{$extratitleclasses}}{{/extratitleclasses}}" id="event-list-title-{{uniqid}}"><strong>{{$title}}{{/title}}</strong></h5>
-    <ul class="list-group unstyled" data-region="event-list" aria-describedby="event-list-title-{{uniqid}}">
+     <h5 class="{{$extratitleclasses}}{{/extratitleclasses}}" id="event-list-title-{{uniqid}}"><strong>{{$title}}{{/title}}</strong></h5>
+    <ul class="unstyled well well-small" data-region="event-list" aria-describedby="event-list-title-{{uniqid}}">
         {{$eventlistitems}}
             {{> block_flip_myoverview/event-list-items }}
         {{/eventlistitems}}
