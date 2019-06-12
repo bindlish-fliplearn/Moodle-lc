@@ -639,9 +639,9 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
           }
         if($mod->completionexpected <> 0) {
           if ($this->page->user_is_editing()) {
-            $output .= '<div style="float: right;margin-right: 100px; margin-top: 8px">' . date('d-M',$mod->completionexpected) . '</div>';
+            $output .= '<div style="float: right;margin-right: 100px; margin-top: 8px">Assigned for ' . date('d-M',$mod->completionexpected) . ' </div>';
           } else {
-            $output .= '<div style="float: right;margin-right: 0px; margin-top: 8px">' . date('d-M',$mod->completionexpected) . '</div>';
+            $output .= '<div style="float: right;margin-right: 0px; margin-top: 8px">Assigned for ' . date('d-M',$mod->completionexpected) . ' </div>';
           }
         }
         }
