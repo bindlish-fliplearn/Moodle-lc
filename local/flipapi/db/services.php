@@ -49,6 +49,23 @@ $functions = array(
     'classpath' => 'local/flipapi/externallib.php',
     'description' => 'Return role details by shortname.',
     'type' => 'read',
+  ),
+
+  'local_calendar_get_action_completed_events_by_timesort' => array(
+    'classname' => 'local_flipapi_external',
+    'methodname' => 'get_calendar_action_completed_events_by_timesort',
+    'classpath' => 'local/flipapi/externallib.php',
+    'description' => 'Return role details by shortname.',
+    'type' => 'read',
+    'ajax'          => true,
+  ),
+
+  'local_flipapi_upadte_completionexpected_by_id' => array(
+    'classname' => 'local_flipapi_external',
+    'methodname' => 'update_completionexpected_by_id',
+    'classpath' => 'local/flipapi/externallib.php',
+    'description' => 'Bulk update activity completion expected date.',
+    'type' => 'update',
   )
 );
 

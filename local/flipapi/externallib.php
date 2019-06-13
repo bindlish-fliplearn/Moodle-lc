@@ -21,6 +21,10 @@
    * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
    */
   require_once($CFG->libdir . "/externallib.php");
+  use \local_flipapi\api as local_api;
+  use \core_calendar\external\events_exporter;
+  use \core_calendar\external\events_related_objects_cache;
+
 
   class local_flipapi_external extends external_api {
 
@@ -239,6 +243,165 @@
                 )
             );
         }
+
+    /**
+     * Returns description of method parameters.
+     *
+     * @since Moodle 3.3
+     * @return external_function_parameters
+     */
+    public static function get_calendar_action_completed_events_by_timesort_parameters() {
+        return new external_function_parameters(
+            array(
+                'timesortfrom' => new external_value(PARAM_INT, 'Time sort from', VALUE_DEFAULT, 0),
+                'timesortto' => new external_value(PARAM_INT, 'Time sort to', VALUE_DEFAULT, null),
+                'aftereventid' => new external_value(PARAM_INT, 'The last seen event id', VALUE_DEFAULT, 0),
+                'limitnum' => new external_value(PARAM_INT, 'Limit number', VALUE_DEFAULT, 20)
+            )
+        );
+    }
+
+
+         /**
+     * Get calendar action events based on the timesort value.
+     *
+     * @since Moodle 3.3
+     * @param null|int $timesortfrom Events after this time (inclusive)
+     * @param null|int $timesortto Events before this time (inclusive)
+     * @param null|int $aftereventid Get events with ids greater than this one
+     * @param int $limitnum Limit the number of results to this value
+     * @return array
+     */
+    public static function get_calendar_action_completed_events_by_timesort($timesortfrom = 0, $timesortto = null,
+                                                       $aftereventid = 0, $limitnum = 20) {
+        global $CFG, $PAGE, $USER;
+        require_once($CFG->dirroot . '/calendar/lib.php');
+        $user = null;
+        $params = self::validate_parameters(
+            self::get_calendar_action_completed_events_by_timesort_parameters(),
+            [
+                'timesortfrom' => $timesortfrom,
+                'timesortto' => $timesortto,
+                'aftereventid' => $aftereventid,
+                'limitnum' => $limitnum,
+            ]
+        );
+        $context = \context_user::instance($USER->id);
+        self::validate_context($context);
+
+        if (empty($params['aftereventid'])) {
+            $params['aftereventid'] = null;
+        }
+
+        $renderer = $PAGE->get_renderer('core_calendar');
+        $events = local_api::get_action_events_by_timesort(
+            $params['timesortfrom'],
+            $params['timesortto'],
+            $params['aftereventid'],
+            $params['limitnum']
+        );
+
+        $exportercache = new events_related_objects_cache($events);
+        $exporter = new events_exporter($events, ['cache' => $exportercache]);
+        $returnArray = [];
+        $data = $exporter->export($renderer);
+          foreach ($events as $key => $value) {
+              $data->events[$key]->completionstate = $value->completionstate;
+              $data->events[$key]->completionexpected = $value->completionexpected;
+              $data->events[$key]->timemodified = date('M j G:i', (int) $value->timemodified);
+
+          }
+          $array = json_decode(json_encode($data), true);
+          return $array;
+    }
+
+      /**
+     * Returns description of method result value.
+     *
+     * @since Moodle 3.3
+     * @return external_description
+     */
+    public static function get_calendar_action_completed_events_by_timesort_returns() {
+    }
+   
+        /**
+   * Returns description of method parameters
+   * @return external_function_parameters
+   */
+  public static function update_completionexpected_by_id_parameters() {
+    return new external_function_parameters(
+        array(
+          'courseId' => new external_value(PARAM_TEXT, 'This is homework course id.'),
+          'assignDate' => new external_value(PARAM_TEXT, 'This is homework assign date.'),
+          'uuid' => new external_value(PARAM_TEXT, 'This is homework assign date.'),
+          'activityId' => new external_multiple_structure(new external_single_structure(array(
+            'instanceId' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+            'module' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+            'name' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+          )))
+          )
+      );
   }
+
+  /**
+   * get user details by uuid 
+   */
+
+  /**
+   * Returns welcome message
+   * @return string welcome message
+   */
+  public static function update_completionexpected_by_id($courseId, $assignDate, $uuid, $activityId) {
+    global $DB;
+    //REQUIRED
+    self::validate_parameters(
+            self::update_completionexpected_by_id_parameters(),
+            array(
+                'courseId' => $courseId,
+                'assignDate' => $assignDate,
+                'uuid' => $uuid,
+                'activityId' => $activityId
+            )
+        );
+    $date = strtotime($assignDate);
+    $updateRecord = false;
+    if(!empty($activityId)) {
+      foreach($activityId as $activity) {
+        $courseModuleRaw = $DB->get_record  ('course_modules', array('id' => $activity['instanceId']));
+        $instanceId = $courseModuleRaw->instance;
+          $name = addslashes($activity['name']);
+          $userEvent = "INSERT INTO {event} SET name='{$name}', description='<div class=no-overflow><p>{$name}</div>', format='1', courseid='$courseId', userid='{$uuid}', modulename='{$activity['module']}', instance='{$instanceId}', type='1', eventtype='expectcompletionon', visible='1', sequence='1', timestart='$date', timesort='$date'";
+          $DB->execute($userEvent);
+        $insertBlock = "INSERT INTO {block_recent_activity} (action,timecreated,courseid,cmid,userid) VALUES('1','$date','$courseId','{$activity['instanceId']}','$uuid')";
+        $DB->execute($insertBlock);
+        $updateModules = "UPDATE {course_modules} SET completionexpected = $date  WHERE id = '{$activity['instanceId']}'";
+        $DB->execute($updateModules);
+        $updateResource = "UPDATE {resource} SET revision = '2'  WHERE id = '{$instanceId}'";
+        $updateRecord = $DB->execute($updateResource);
+      }
+    }
+    $cacherev = time();
+    $courseSql = "UPDATE {course} SET cacherev = (CASE WHEN cacherev IS NULL THEN $cacherev WHEN cacherev < $cacherev THEN $cacherev WHEN cacherev > $cacherev + 3600 THEN $cacherev ELSE cacherev + 1 END) WHERE id = '$courseId'";
+    $DB->execute($courseSql);
+    if ($updateRecord) {
+      return ['status' => 'true'];
+    } else {
+      return ['status' => 'false'];
+    }
+  }
+
+  /**
+   * Returns description of method result value
+   * @return external_description
+   */
+  public static function update_completionexpected_by_id_returns() {
+    return new external_single_structure(
+      array(
+      'status' => new external_value(PARAM_TEXT, 'status')
+      )
+    );
+  }
+
+}
 
 

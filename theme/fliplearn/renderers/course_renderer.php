@@ -259,7 +259,7 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
             // End course-content.
         }
         $content .= html_writer::tag('div', '', array('class' => 'boxfooter')); // Coursecat.
-
+        
         return $content;
     }
 
@@ -580,7 +580,8 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
      * @return string
      */
     public function course_section_cm($course, &$completioninfo, cm_info $mod, $sectionreturn, $displayoptions = array()) {
-        global $PAGE, $DB;
+        global $PAGE, $DB, $USER;
+         
         $course_module_id = $mod->id;
         $output = '';
         // We return empty string (because course module will not be displayed at all) if
@@ -619,15 +620,30 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
         
         // Display the link to the module (or do nothing if module has no url).
         $cmname = $this->course_section_cm_name($mod, $displayoptions, $resultMapping->thumbnail_url);
-
+        
+        if($mod->completionexpected == 0 && !user_has_role_assignment($USER->id,5)) {
+          $output .= "<div style='float: right;'><input type='checkbox' name='homework[]' value='$mod->id' class='assigned' /></div>";
+          $name = addslashes($mod->get_formatted_name());
+          $output .= '<input type="hidden" id="course_title_'.$mod->id.'" value="'.$name.'">';
+          $output .= '<input type="hidden" id="uuid" value="'.$USER->id.'">';
+          $output .= '<input type="hidden" id="course_module_'.$mod->id.'" value="'.$mod->modname.'">';
+        }
+        
         if (!empty($cmname)) {
         // Start the div for the activity title, excluding the edit icons.
-        if ($resultMapping) {
+        if (count($resultMapping) > 0) {
           if ($this->page->user_is_editing()) {
-            $output .= '<div style="float: right;margin-right: 120px; margin-top: 8px">' . C_NAME[$resultMapping->c_type] . '</div>';
+            $output .= '<div style="float: right;margin-right: 100px; margin-top: 8px">' . C_NAME[$resultMapping->c_type] . '</div>';
           } else {
-            $output .= '<div style="float: right;margin-right: 20px; margin-top: 8px">' . C_NAME[$resultMapping->c_type] . '</div>';
+            $output .= '<div style="float: right;margin-right: 10px; margin-top: 8px">' . C_NAME[$resultMapping->c_type] . '</div>';
           }
+        if($mod->completionexpected <> 0) {
+          if ($this->page->user_is_editing()) {
+            $output .= '<div style="float: right;margin-right: 100px; margin-top: 8px">Assigned for ' . date('d-M',$mod->completionexpected) . ' </div>';
+          } else {
+            $output .= '<div style="float: right;margin-right: 10px; margin-top: 8px">Assigned for ' . date('d-M',$mod->completionexpected) . ' </div>';
+          }
+        }
         }
 
         $output .= html_writer::start_tag('div', array('class' => 'activityinstance'));
@@ -658,7 +674,7 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
             $modicons .= ' '. $this->course_section_cm_edit_actions($editactions, $mod, $displayoptions);
             $modicons .= $mod->afterediticons;
         }
-
+        $displayoptions['hidecompletion'] = "hide";
         $modicons .= $this->course_section_cm_completion($course, $completioninfo, $mod, $displayoptions);
 
         if (!empty($modicons)) {
@@ -666,7 +682,7 @@ class theme_fliplearn_core_course_renderer extends core_course_renderer {
             $output .= html_writer::span($modicons, 'actions');
             $output .= html_writer::end_tag('div');
         }
-
+        
         // Get further information.
         $settingname = 'coursesectionactivityfurtherinformation'. $mod->modname;
         if (isset ($PAGE->theme->settings->$settingname) && $PAGE->theme->settings->$settingname == true) {

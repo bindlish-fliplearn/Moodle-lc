@@ -213,12 +213,14 @@ class local_primepushnotification_observer {
               $dueDate  = date("Y-m-d", $completionexpected);
               $eventDate = date("Y-m-d\TH:i:s.511\Z", $event->timecreated);
               $eventType = $CFG->GURU_ANNOUNCEMENT;
-              if($event->other['modulename'] == 'hwork') {
+              $domainName = str_replace("https://","",$CFG->wwwroot);
+              
+              if(in_array($domainName,$CFG->domainList)) {
+                  $messageTitle = $event->other['name'];
+                  $messageText = $courseRes->intro;
+              }else {
                 $messageTitle = 'Homework assigned:'.$event->other['name'];
-                $messageText = 'Due by '.$dueDate;
-              } else {
-                $messageTitle = $event->other['name'];
-                $messageText = $courseRes->intro;
+                $messageText  = 'Due by '.$dueDate;
               }
               $courseId = $event->courseid;
               $userid = $event->userid;
@@ -249,7 +251,6 @@ class local_primepushnotification_observer {
                               array_push($uuidList, $uuid);
                         }
 
-              $domainName = str_replace("https://","",$CFG->wwwroot);
               $modulename = $event->other['modulename'];
               $clickUrl = $CFG->wwwroot."/mod/$modulename/view.php?id=".$objectid.'&forceview=1';
               if(count($uuidList)>0 && $send_notification == true){
@@ -299,14 +300,15 @@ class local_primepushnotification_observer {
               $dueDate  = date("Y-m-d", $completionexpected);
               $eventDate = date("Y-m-d\TH:i:s.511\Z", $event->timecreated);
               $eventType = $CFG->GURU_ANNOUNCEMENT;
-              if($event->other['modulename'] == 'hwork') {
+
+              $domainName = str_replace("https://","",$CFG->wwwroot);
+              if(in_array($domainName,$CFG->domainList)) {
+                    $messageTitle = $event->other['name'];
+                    $messageText = $courseRes->intro;
+              } else {
                 $messageTitle = 'Homework assigned:'.$event->other['name'];
                 $messageText = 'Due by '.$dueDate;
-              } else {
-                $messageTitle = $event->other['name'];
-                $messageText = $courseRes->intro;
               }
-
               $courseId = $event->courseid;
               $userid = $event->userid;
               $contextlevel = $CFG->CONTEXT_LEVEL;
@@ -338,7 +340,6 @@ class local_primepushnotification_observer {
               $modulename = $event->other['modulename'];
               $clickUrl = $CFG->wwwroot."/mod/$modulename/view.php?id=".$objectid.'&forceview=1';
 
-          $domainName = str_replace("https://","",$CFG->wwwroot);
 
               if(count($uuidList)>0 && $send_notification == true){
                           $serializeRequest = array('senderUuid'=>1234,
