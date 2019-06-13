@@ -73,5 +73,6 @@
     width: 42px;
     text-overflow: clip;
 }
-
-
+.span3.text-truncate {
+    margin-left: 27px !important;
+}
