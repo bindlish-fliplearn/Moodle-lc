@@ -69,3 +69,9 @@
     background-position: center;
     background-size: cover
 }
+.visible-desktop .span6 .row-fluid .hideText{
+    width: 42px;
+    text-overflow: clip;
+}
+
+
