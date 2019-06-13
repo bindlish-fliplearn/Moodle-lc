@@ -55,11 +55,9 @@
         <div class="span6">
             <div class="row-fluid">
                 <div class="span3 text-truncate hideText">
-                    {{#userdate}} {{timesort}}, {{#str}} strftimerecent {{/str}} {{/userdate}}
+                 {{^completionstate}}{{#userdate}} {{timesort}}, {{#str}} strftimerecent {{/str}} {{/userdate}}{{/completionstate}} 
                 </div>
-                <div class="span3 text-truncate">
-                      {{#completionstate}} {{timemodified}} {{/completionstate}}
-                </div>
+            
                 <div class="span6 text-truncate">
                     {{#action.actionable}}
                         <a href="{{{action.url}}}">{{action.name}}</a>
