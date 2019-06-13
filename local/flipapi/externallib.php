@@ -308,7 +308,7 @@
           foreach ($events as $key => $value) {
               $data->events[$key]->completionstate = $value->completionstate;
               $data->events[$key]->completionexpected = $value->completionexpected;
-              $data->events[$key]->timemodified = date('M j G:i', (int) $value->timemodified);
+              $data->events[$key]->timemodified = date('j M', (int) $value->timemodified);
 
           }
           $array = json_decode(json_encode($data), true);
