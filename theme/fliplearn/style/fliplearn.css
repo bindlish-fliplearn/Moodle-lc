@@ -76,3 +76,6 @@
 .span3.text-truncate {
     margin-left: 27px !important;
 }
+.visible-desktop .span6.text-truncate {
+    text-align: right;
+}
