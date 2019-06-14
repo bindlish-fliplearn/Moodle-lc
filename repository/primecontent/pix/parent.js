@@ -75,12 +75,17 @@ function delete_cookie(name) {
 };
 
 function showAssignmentPopup() {
+    var now = new Date();
+    var day = ("0" + now.getDate()).slice(-2);
+    var month = ("0" + (now.getMonth() + 1)).slice(-2);
+    var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
+
     var html = "";
     html += "<div class='assignedPopup' style='width: 100%; height: 100%; background-color: rgba(0, 0, 0, .6);  position: fixed; z-index: 9999; top: 0px;'>";
     html += "<div class='modalBoxSelectDue'>";
     html += "<a href='#' style='float: right; padding: 10px;' onclick='hideAssignmentPopup()'> close </a>";
     html += "<h3 style='padding: 20px 30px;'>Select Due Date</h3>";
-    html += '<input type="date" name="assignDate" class="assignDate" style="margin: 0px 20px 0px 30px;"> <i class="fa-calendar fa fa-fw"></i><br><br>';
+    html += '<input type="date" min="'+today+'" name="assignDate" class="assignDate" style="margin: 0px 20px 0px 30px;"> <i class="fa-calendar fa fa-fw"></i><br><br>';
     html += '<input type="submit" style="margin-left:28px;" onClick="assignHomework();" value="Assign Homework">';
     html += "</div>";
     html += "</div>";
@@ -99,27 +104,32 @@ function assignHomework() {
         var module = $('#course_module_'+actid).val();
         activity.push({instanceId: actid, name: title, module: module});
     });
+    var assignDate = $('.assignDate').val();
     var update = {
         courseId: getUrlParameter('id'),
         uuid: $('#uuid').val(),
-        assignDate: $('.assignDate').val(),
+        assignDate: assignDate,
         activityId: activity
     };
     console.log(update);
-    var url = window.location;
-    var path = url.host;
-    if(url.host == "localhost") {
-        path = url.host + "/flip-moodle-lc";
-    }
-    $.ajax({
-        type: "POST",
-        data: update,
-        url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken=6257f654f905c94b0d0f90fce5b9af31&wsfunction=local_flipapi_upadte_completionexpected_by_id&moodlewsrestformat=json",
-        success: function (data) {
-            console.log(data);
-            url.reload();
+    if(assignDate != '' && typeof assignDate !== undefined){
+        var url = window.location;
+        var path = url.host;
+        if(url.host == "localhost") {
+            path = url.host + "/flip-moodle-lc";
         }
-    });   
+        $.ajax({
+            type: "POST",
+            data: update,
+            url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken=6257f654f905c94b0d0f90fce5b9af31&wsfunction=local_flipapi_upadte_completionexpected_by_id&moodlewsrestformat=json",
+            success: function (data) {
+                console.log(data);
+                url.reload();
+            }
+        }); 
+    } else {
+        alert('Please select assign date.');
+    } 
 }
 
 function getUrlParameter(name) {
