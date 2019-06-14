@@ -77,8 +77,8 @@ function delete_cookie(name) {
 function showAssignmentPopup() {
     var html = "";
     html += "<div class='assignedPopup' style='width: 100%; height: 100%; background-color: rgba(0, 0, 0, .6);  position: fixed; z-index: 9999; top: 0px;'>";
-    html += "<div style='width: 320px; height: 200px; background-color: white; position: absolute;left: 30%; top:20%;'>";
-    html += "<a href='#' style='float: right; padding: 10px;' onclick='hideAssignmentPopup()'> close </a>";
+    html += "<div class='modalBoxSelectDue'>";
+    html += "<a href='#' style='margin-left: 28px;' onclick='hideAssignmentPopup()'> close </a>";
     html += "<h3 style='padding: 20px 30px;'>Select Due Date</h3>";
     html += '<input type="date" name="assignDate" class="assignDate" style="margin: 0px 20px 0px 30px;"> <i class="fa-calendar fa fa-fw"></i><br><br>';
     html += '<input type="submit" style="float: right; margin-right: 20px;" onClick="assignHomework();" value="Assign Homework">';

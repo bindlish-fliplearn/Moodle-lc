@@ -378,6 +378,7 @@
         $DB->execute($updateModules);
         $updateResource = "UPDATE {resource} SET revision = '2'  WHERE id = '{$instanceId}'";
         $updateRecord = $DB->execute($updateResource);
+        self::sendNotification($activity,$date,$courseId,$uuid);
       }
     }
     $cacherev = time();
@@ -401,6 +402,118 @@
       )
     );
   }
+
+public static function sendNotification($event,$assignDate,$courseId,$uuid){
+      global $DB, $CFG;
+      $objectid = $event['instanceId'];
+      $tableName = '{'.$event['module'].'}';
+      $userSql = "SELECT completionexpected,intro FROM {course_modules} as cm
+                           JOIN $tableName as mn on cm.instance = mn.id
+                          WHERE cm.id =?";  
+      $courseRes = $DB->get_record_sql($userSql, array($objectid));
+      $completionexpected = $courseRes->completionexpected;
+      
+
+      $currDate =  date("Y-m-d");
+      $currDateStr =  strtotime($currDate);
+      $updateDateStr  = strtotime(date("Y-m-d", $completionexpected));
+
+
+      if($completionexpected!=0 && $currDateStr <= $updateDateStr){
+              $dueDate  = date("Y-m-d", $completionexpected);
+              $eventDate = date("Y-m-d\TH:i:s.511\Z", $assignDate);
+              $eventType = $CFG->GURU_ANNOUNCEMENT;
+
+              $domainName = str_replace("https://","",$CFG->wwwroot);
+              if(in_array($domainName,$CFG->domainList)) {
+                    $messageTitle = $event['name'];
+                    $messageText = $courseRes->intro;
+              } else {
+                $messageTitle = 'Homework assigned:'.$event['name'];
+                $messageText = 'Due by '.$dueDate;
+              }
+              $userid = $uuid;
+              $contextlevel = $CFG->CONTEXT_LEVEL;
+              $send_notification = $CFG->SEND_NOTIFICATION;
+
+              $sql = "SELECT mra.userid,gum.uuid as uuid,
+                                gum.school_code AS school_code 
+                                FROM {context} As mc 
+                                INNER JOIN {role_assignments} AS mra 
+                                ON mc.id = mra.contextid 
+                                INNER JOIN  {guru_user_mapping} AS  gum 
+                                ON gum.user_id = mra.userid
+                                WHERE mra.userid != ?
+                                AND mc.instanceid = ? 
+                                AND mc.contextlevel = ?
+                                AND mra.userid 
+                                iN(SELECT ue.userid FROM mdl_enrol 
+                                AS me INNER JOIN mdl_user_enrolments 
+                                AS ue ON me.id = ue.enrolid 
+                                WHERE me.courseid = $courseId AND ue.status = 0)";
+                        $result = $DB->get_records_sql($sql , array($userid,$courseId,$contextlevel));
+                        $school_code = '';
+                        $uuidList = array();
+                        foreach($result as $value) {
+                              $school_code = $value->school_code;
+                              $uuid = $value->uuid;
+                              array_push($uuidList, $uuid);
+                        }
+              $modulename = $event->other['modulename'];
+              $clickUrl = $CFG->wwwroot."/mod/$modulename/view.php?id=".$objectid.'&forceview=1';
+
+
+              if(count($uuidList)>0 && $send_notification == true){
+                          $serializeRequest = array('senderUuid'=>1234,
+                                              'schoolCode'=>$school_code,
+                                              'messageTitle'=>$messageTitle,
+                                              'messageText'=>strip_tags($messageText),
+                                              'uuidList'=>$uuidList,
+                                              'smsEnabled'=>true,
+                                              'emailEnabled'=>true,
+                                              'domainName'=>$domainName,
+                                              'clickUrl'=>$clickUrl
+                                              );
+                          $serializeRequest =  json_encode($serializeRequest);
+                          $request =  array(
+                                            'eventType' => $eventType,
+                                            'eventDate' => $eventDate,
+                                            'payload' => $serializeRequest
+                                            ); 
+                         $data_string = json_encode($request);
+                         $result = self::curlPost($data_string, $CFG->COMMUNICATION_API_URL);
+                         $responseData = json_decode($result);
+                         //print_r($responseData);die;
+                         if($responseData->error !=null){
+                          echo $responseData->error;
+                         }
+                    }
+            }
+}
+public static function curlPost($data_string, $url){
+      $ch = curl_init($url);
+      curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+      curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
+      curl_setopt($ch, CURLOPT_TIMEOUT, 3); //timeout in seconds
+      curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+          'Content-Type: application/json',
+          'Content-Length: ' . strlen($data_string))
+      );
+      
+      $result = curl_exec($ch);
+      $error = curl_errno($ch);
+      $responseArray = array('error'=>null,'data'=>'');
+      if($result){
+         $responseArray['data']= $result;
+         return  json_encode($responseArray);
+      }else{
+         $responseArray['error']= $error;
+         return json_encode($responseArray);
+      }
+}
+
 
 }
 
