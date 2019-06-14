@@ -79,3 +79,11 @@
 .visible-desktop .span6.text-truncate {
     text-align: right;
 }
+.modalBoxSelectDue{
+  width: 320px;
+   height: 200px;
+   background-color: white;
+   position: relative;
+   margin-right: 0;
+   margin: 250px auto;
+}
