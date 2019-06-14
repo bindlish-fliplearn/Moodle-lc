@@ -378,7 +378,7 @@
         $DB->execute($updateModules);
         $updateResource = "UPDATE {resource} SET revision = '2'  WHERE id = '{$instanceId}'";
         $updateRecord = $DB->execute($updateResource);
-        $this->sendNotification($activity,$date);
+        self::sendNotification($activity,$date,$courseId,$uuid);
       }
     }
     $cacherev = time();
@@ -403,10 +403,9 @@
     );
   }
 
-public static function sendNotification($event,$assignDate){
-
+public static function sendNotification($event,$assignDate,$courseId,$uuid){
       global $DB, $CFG;
-      $objectid = $event['activityId'];
+      $objectid = $event['instanceId'];
       $tableName = '{'.$event['module'].'}';
       $userSql = "SELECT completionexpected,intro FROM {course_modules} as cm
                            JOIN $tableName as mn on cm.instance = mn.id
@@ -433,8 +432,7 @@ public static function sendNotification($event,$assignDate){
                 $messageTitle = 'Homework assigned:'.$event['name'];
                 $messageText = 'Due by '.$dueDate;
               }
-              $courseId = $event->courseid;
-              $userid = $event->userid;
+              $userid = $uuid;
               $contextlevel = $CFG->CONTEXT_LEVEL;
               $send_notification = $CFG->SEND_NOTIFICATION;
 
@@ -483,7 +481,7 @@ public static function sendNotification($event,$assignDate){
                                             'payload' => $serializeRequest
                                             ); 
                          $data_string = json_encode($request);
-                         $result = $this->curlPost($data_string, $CFG->COMMUNICATION_API_URL);
+                         $result = self::curlPost($data_string, $CFG->COMMUNICATION_API_URL);
                          $responseData = json_decode($result);
                          //print_r($responseData);die;
                          if($responseData->error !=null){
