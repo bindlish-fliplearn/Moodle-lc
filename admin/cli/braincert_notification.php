@@ -64,12 +64,12 @@ Example:
   die;
 }
 
-if ($options['min'] == '' ) {
-    cli_heading('Please enter minutes before class for notification.');
-    $prompt = "min (minutes)";
-    $diffMin = cli_input($prompt);
+if ($options['min'] == '') {
+  cli_heading('Please enter minutes before class for notification.');
+  $prompt = "min (minutes)";
+  $diffMin = cli_input($prompt);
 } else {
-    $diffMin = $options['min'];
+  $diffMin = $options['min'];
 }
 
 if (!$braincertClass = $DB->get_records_sql("select * from {braincert} where DATE(FROM_UNIXTIME(start_date)) = DATE(NOW())")) {
@@ -80,12 +80,13 @@ foreach ($braincertClass as $class) {
   $courseId = $class->course;
   $todayClass = date('y-m-d') . ' ' . $class->start_time;
   $classTime = date('y-m-d h:i:s A', strtotime($todayClass));
-  cli_heading("Today class time is ". $classTime.' for this class id:- '.$class->class_id);
+  cli_heading("Today class time is " . $classTime . ' for this class id:- ' . $class->class_id);
   $notificationTime = date("y-m-d h:i:s A", strtotime("-$diffMin minutes", strtotime($classTime)));
-  cli_heading("Notification sending time is ". $notificationTime.' for this class id:- '.$class->class_id);
+  cli_heading("Notification sending time is " . $notificationTime . ' for this class id:- ' . $class->class_id);
   $now = date("y-m-d h:i:s A", time());
-  if (!$braincertClassNotify = $DB->get_records('guru_braincert_notification', array('course_id' => $courseId, 'class_id' => $class->class_id, 'min' => $diffMin))) {
-    if (strtotime($notificationTime) < strtotime($now)) {
+  if (strtotime($notificationTime) < strtotime($now)) {
+    $braincertClassNotify = $DB->get_records('guru_braincert_notification', array('course_id' => $courseId, 'class_id' => $class->class_id, 'min' => $diffMin));
+    if (!$braincertClassNotify) {
       $contextlevel = $CFG->CONTEXT_LEVEL;
       $send_notification = $CFG->SEND_NOTIFICATION;
       $sql = "SELECT mra.userid, gum.uuid as uuid,
@@ -139,7 +140,7 @@ foreach ($braincertClass as $class) {
         $result = curlPost($data_string, $CFG->COMMUNICATION_API_URL);
         $responseData = json_decode($result);
         if ($responseData->error != null) {
-          cli_heading("Error while sending notification. ".json_encode($responseData));
+          cli_heading("Error while sending notification. " . json_encode($responseData));
         } else {
           $insertRecord['course_id'] = $courseId;
           $insertRecord['class_id'] = $class->class_id;

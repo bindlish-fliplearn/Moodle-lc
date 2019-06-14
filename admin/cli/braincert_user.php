@@ -82,7 +82,8 @@ foreach ($braincertClass as $class) {
     if (!empty($resp)) {
       foreach ($resp as $res) {
         if (isset($res['classId']) && !empty($res['classId'])) {
-          if (!$braincertClass = $DB->get_records('guru_braincert_user', array('class_id' => $res['classId'], 'user_id' => $res['userId']))) {
+          $braincertClass = $DB->get_record('guru_braincert_user', array('class_id' => $res['classId'], 'user_id' => $res['userId']));
+          if (!$braincertClass) {
             $insertRecord['class_id'] = $res['classId'];
             $insertRecord['user_id'] = $res['userId'];
             $insertRecord['duration'] = $res['duration'];
@@ -95,7 +96,13 @@ foreach ($braincertClass as $class) {
               cli_heading("Insert record successfully.");
             }
           } else {
-            cli_heading("Record already exists.");
+            $braincertClass->duration = $res['duration'];
+            $braincertClass->percentage = $res['percentage'];
+            $braincertClass->attendance = $res['attendance'];
+            $braincertClass->is_teacher = $res['isTeacher'];
+            $braincertClass->session = json_encode($res['session']);
+            $respQuery = $DB->update_record('guru_braincert_user', $braincertClass);
+            cli_heading("Update record successfully.");
           }
         } else {
           cli_heading("Api response don't have class id:- " . $class->class_id);

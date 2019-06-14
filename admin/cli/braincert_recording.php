@@ -74,7 +74,8 @@ foreach ($braincertClass as $class) {
   if (!empty($resp)) {
     foreach ($resp as $res) {
       if (isset($res['classroom_id']) && !empty($res['classroom_id'])) {
-        if (!$braincertClass = $DB->get_records('guru_braincert_recording', array('class_id' => $res['classroom_id'], 'user_id' => $res['userId']))) {
+        $braincertClass = $DB->get_records('guru_braincert_recording', array('class_id' => $res['classroom_id'], 'user_id' => $res['userId']));
+        if (!$braincertClass) {
           $insertRecord['class_id'] = $res['classroom_id'];
           $insertRecord['user_id'] = $res['user_id'];
           $insertRecord['name'] = $res['name'];
@@ -90,7 +91,14 @@ foreach ($braincertClass as $class) {
             cli_heading("Insert record successfully.");
           }
         } else {
-            cli_heading("Record already exists.");
+            $braincertClass['date_recorded'] = date( 'Y-m-d H:i:s', strtotime($res['date_recorded']));
+            $braincertClass['size'] = $res['size'];
+            $braincertClass['is_public'] = $res['is_public'];
+            $insertRecord['allow_download'] = $res['allow_download'];
+            $insertRecord['privatekey'] = $res['privatekey'];
+            $insertRecord['record_path'] = $res['record_path'];
+            $insertRecord['record_url'] = $res['record_url'];
+            cli_heading("Update record successfully.");
         }
       } else {
         cli_heading("Api response don't have class id:- ". $class->class_id);

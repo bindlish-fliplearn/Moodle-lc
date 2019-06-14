@@ -64,12 +64,12 @@ Example:
   die;
 }
 
-if ($options['min'] == '' ) {
-    cli_heading('Please enter minutes before class for notification.');
-    $prompt = "min (minutes)";
-    $diffMin = cli_input($prompt);
+if ($options['min'] == '') {
+  cli_heading('Please enter minutes before class for notification.');
+  $prompt = "min (minutes)";
+  $diffMin = cli_input($prompt);
 } else {
-    $diffMin = $options['min'];
+  $diffMin = $options['min'];
 }
 
 if (!$braincertClass = $DB->get_records_sql("select * from mdl_braincert where DATE(FROM_UNIXTIME(start_date)) = DATE(NOW())")) {
@@ -80,15 +80,16 @@ foreach ($braincertClass as $class) {
   $courseId = $class->course;
   $todayClass = date('y-m-d') . ' ' . $class->start_time;
   $classTime = date('y-m-d h:i:s A', strtotime($todayClass));
-  cli_heading("Today class time is ". $classTime.' for this class id:- '.$class->class_id);
+  cli_heading("Today class time is " . $classTime . ' for this class id:- ' . $class->class_id);
   $syncDataTime = date("y-m-d h:i:s A", strtotime("+$diffMin minutes", strtotime($classTime)));
-  cli_heading("Sync data time is ". $syncDataTime.' for this class id:- '.$class->class_id);
+  cli_heading("Sync data time is " . $syncDataTime . ' for this class id:- ' . $class->class_id);
   $now = date("y-m-d h:i:s A", time());
-  if (!$braincertClassNotify = $DB->get_records('guru_braincert_class', array('course_id' => $courseId, 'class_id' => $class->class_id, 'min' => $diffMin))) {
+  $braincertClassNotify = $DB->get_records('guru_braincert_class', array('course_id' => $courseId, 'class_id' => $class->class_id, 'min' => $diffMin));
+  $data['task'] = 'getclassreport';
+  $data['classId'] = $class->class_id;
+  $resp = braincert_get_curl_info($data);
+  if (!$braincertClassNotify) {
     if (strtotime($syncDataTime) > strtotime($now)) {
-      $data['task'] = 'getclassreport';
-      $data['classId'] = $class->class_id;
-      $resp = braincert_get_curl_info($data);
       $insertRecord['course_id'] = $courseId;
       $insertRecord['class_id'] = $class->class_id;
       $insertRecord['class_time'] = $resp['duration'];
