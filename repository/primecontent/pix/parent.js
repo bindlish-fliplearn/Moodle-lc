@@ -155,3 +155,51 @@ setTimeout(function(){
         })
     });
 }, 1000); 
+
+function showPtmPopup(ptmId, userId, teacherId, ptmdate, teacherremark, parentFeed) {
+    var html = "";
+    html += "<input type='hidden' class='ptmId' name='ptmId' value='"+ptmId+"'>"; 
+    html += "<input type='hidden' class='userId' name='userId' value='"+userId+"'>"; 
+    html += "<input type='hidden' class='teacherId' name='teacherId' value='"+teacherId+"'>"; 
+    html += "<div class='ptmPopup' style='width: 100%; height: 100%; background-color: rgba(0, 0, 0, .6);  position: fixed; z-index: 9999; top: 0px;'>";
+    html += "<div style='width: 450px; height: 300px; background-color: white; position: absolute;left: 30%; top:20%;'>";
+    html += "<a href='#' style='float: right; padding: 10px;' onclick='hideptmPopup()'> close </a>";
+    html += "<h3 style='padding: 20px 30px;'>PTM Remark</h3><br>";
+    html += 'Date: <input type="date" name="ptmdate" class="ptmdate" value="'+ptmdate+'" style="margin: 0px 20px 0px 30px;"><br>';
+    html += 'Teacher Remark: <input type="text" name="teacherremark" value="'+teacherremark+'" class="teacherremark" style="margin: 0px 20px 0px 30px;"><br>';
+    html += 'Parent Feedback: <input type="text" name="parentFeed" value="'+parentFeed+'" class="parentFeed" style="margin: 0px 20px 0px 30px;"><br>';
+    html += '<input type="submit" style="float: right; margin-right: 20px;" onClick="submitPTM();" value="Assign Homework">';
+    html += "</div>";
+    html += "</div>";
+    $('body').append(html);
+}
+
+function hideptmPopup() {
+    $('.ptmPopup').remove();
+}
+
+function submitPTM() {
+    var request = {
+        ptmId: $('.ptmId').val(),
+        userId: $('.userId').val(),
+        teacherId: $('.teacherId').val(),
+        ptmDate: $('.ptmdate').val(),
+        teacherRemark: $('.teacherremark').val(),
+        parentFeedback: $('.parentFeed').val()
+    };
+    console.log(request);
+    var url = window.location;
+    var path = url.host;
+    if(url.host == "localhost") {
+        path = url.host + "/flip-moodle-lc";
+    }
+    $.ajax({
+        type: "POST",
+        data: request,
+        url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken=6257f654f905c94b0d0f90fce5b9af31&wsfunction=local_flipapi_add_update_ptm&moodlewsrestformat=json",
+        success: function (data) {
+            console.log(data);
+            url.reload();
+        }
+    });   
+}

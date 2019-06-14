@@ -29,7 +29,7 @@ $functions = array(
     'description' => 'Return fliplearn user details.',
     'type' => 'read',
   ),
-    'local_flipapi_flip_user_mapping' => array(
+  'local_flipapi_flip_user_mapping' => array(
     'classname' => 'local_flipapi_external',
     'methodname' => 'flip_user_mapping',
     'classpath' => 'local/flipapi/externallib.php',
@@ -50,21 +50,26 @@ $functions = array(
     'description' => 'Return role details by shortname.',
     'type' => 'read',
   ),
-
   'local_calendar_get_action_completed_events_by_timesort' => array(
     'classname' => 'local_flipapi_external',
     'methodname' => 'get_calendar_action_completed_events_by_timesort',
     'classpath' => 'local/flipapi/externallib.php',
     'description' => 'Return role details by shortname.',
     'type' => 'read',
-    'ajax'          => true,
+    'ajax' => true,
   ),
-
   'local_flipapi_upadte_completionexpected_by_id' => array(
     'classname' => 'local_flipapi_external',
     'methodname' => 'update_completionexpected_by_id',
     'classpath' => 'local/flipapi/externallib.php',
     'description' => 'Bulk update activity completion expected date.',
+    'type' => 'update',
+  ),
+  'local_flipapi_add_update_ptm' => array(
+    'classname' => 'local_flipapi_external',
+    'methodname' => 'add_update_ptm',
+    'classpath' => 'local/flipapi/externallib.php',
+    'description' => 'Add Update ptm.',
     'type' => 'update',
   )
 );

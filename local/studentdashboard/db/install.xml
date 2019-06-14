@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/studentdashboard/db" VERSION="20120122" COMMENT="XMLDB file for Moodle local/studentdashboard"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="guru_user_ptm" COMMENT="Default comment for ptm please edit me">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true" NEXT="user_id"/>
+        <FIELD NAME="user_id" TYPE="int" LENGTH="11" NOTNULL="true"  SEQUENCE="false" PREVIOUS="id" NEXT="teacher_id"/>
+        <FIELD NAME="teacher_id" TYPE="int" LENGTH="11" NOTNULL="true"  SEQUENCE="false" PREVIOUS="user_id" NEXT="ptm_date"/>
+        <FIELD NAME="ptm_date" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="teacher_id" NEXT="teacher_remark"/>
+        <FIELD NAME="teacher_remark" TYPE="text" NOTNULL="true" SEQUENCE="false" PREVIOUS="ptm_date" NEXT="parent_feedback"/>
+        <FIELD NAME="parent_feedback" TYPE="text" NOTNULL="true" SEQUENCE="false" PREVIOUS="teacher_remark" NEXT="status"/>
+        <FIELD NAME="status" TYPE="int" LENGTH="2" DEFAULT="1" NOTNULL="true"  SEQUENCE="false" PREVIOUS="parent_feedback"/>        
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="user_id" UNIQUE="false" FIELDS="user_id"/>
+        <INDEX NAME="teacher_id" UNIQUE="false" FIELDS="teacher_id"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>
