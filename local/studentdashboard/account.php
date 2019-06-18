@@ -35,6 +35,10 @@ $coursies = enrol_get_all_users_courses($id);
 $schoolCity = "";
 $class10Marks = "";
 $class11Marks = "";
+$studentAspirations = "";
+$parentAspirations = "";
+$studentInterest = "";
+$teacherRemark = "";
 if (isset($USER->profile['schoolCity']) && !empty($USER->profile['schoolCity'])) {
   $schoolCity = $USER->profile['schoolCity'];
 } if (isset($USER->profile['class10Marks']) && !empty($USER->profile['class10Marks'])) {
@@ -55,7 +59,7 @@ if (isset($USER->profile['schoolCity']) && !empty($USER->profile['schoolCity']))
 $courseId = [];
 $courseName = [];
 foreach ($coursies as $course) {
-  $programName = $course->shortname . ', ';
+  $programName .= $course->shortname . ', ';
   $courseId[] = $course->id;
   $courseName[] = $course->fullname;
 }
@@ -77,7 +81,7 @@ echo $OUTPUT->heading("$USER->firstname $USER->lastname: " . get_string('account
 echo $OUTPUT->heading("Profile Summary", 4);
 
 $studenttable = new html_table();
-$studenttable->data[] = ['Name', $USER->firstname.' '.$USER->lastname];
+$studenttable->data[] = ['Name', $USER->firstname . ' ' . $USER->lastname];
 $studenttable->data[] = ['School/City', $schoolCity];
 $studenttable->data[] = ['Program', $programName];
 $studenttable->data[] = ['Class 10 Marks', $class10Marks];
@@ -97,21 +101,21 @@ echo $OUTPUT->heading();
 echo $OUTPUT->heading("PTM Remarks", 4);
 
 echo html_writer::start_tag('div', array('class' => 'no-overflow'));
-echo html_writer::start_tag('a', array('class' => 'btn btn-success', 'src' => '#0','onClick' => "showPtmPopup('1  ',$id,'10');"));
+echo html_writer::start_tag('a', array('class' => 'btn btn-success', 'src' => '#0', 'onClick' => "showPtmPopup('1  ',$id,'10');"));
 echo "Add PTM Remark";
 echo html_writer::end_tag('a');
 echo html_writer::end_tag('div');
 
 
 $ptmtable = new html_table();
-$ptmtable->head = array ();
+$ptmtable->head = array();
 $ptmtable->head[] = 'Date';
 $ptmtable->head[] = 'Teacher Remark for Student/Parent';
 $ptmtable->head[] = 'Parent Feedback';
 
 $ptmRecord = $DB->get_records('guru_user_ptm', array('user_id' => $id));
-if(!empty($ptmRecord)) {
-  foreach($ptmRecord as $remark) {
+if (!empty($ptmRecord)) {
+  foreach ($ptmRecord as $remark) {
     $row = array();
     $row[] = $remark->ptm_date;
     $row[] = $remark->teacher_remark;
@@ -136,27 +140,67 @@ echo $OUTPUT->heading();
 echo $OUTPUT->heading("Test Performance", 4);
 
 $testTable = new html_table();
-$testTable->head = array ();
+$testTable->head = array();
 $testTable->head[] = 'Test';
-foreach($courseName as $name) {
+foreach ($courseName as $name) {
   $testTable->head[] = $name;
 }
-$course = implode(",", $courseId);
-$quizSql = "SELECT q.id, q.course, q.name, qa.userid, qa.attempt 
-FROM {quiz} as q
-left join {quiz_attempts} as qa on qa.quiz = q.id and qa.attempt = 1 and qa.userid = ? 
-where q.course in ($course)";
-$quizRecord = $DB->get_records_sql($quizSql, array($id));
 
-foreach($quizRecord as $quiz) {
+$course = implode(",", $courseId);
+$quizAttempt = "SELECT q.id, q.course, q.name, qa1.*
+FROM {quiz} as q
+left join (select t1.*, count(qs.id) as totalQue,  ((t1.rightAns/count(qs.id))*100) as quizPercent 
+from {quiz_slots} as qs
+inner join (SELECT qa.userid, qa.uniqueid, qa.quiz, qua.questionusageid, (qa.timefinish-qa.timestart)
+   AS timetaken, sum(case
+   when qas.state='gradedwrong'
+   then 1 else 0 end) as wrongAns,
+   sum(case when qas.state ='gradedright'
+   then 1 else 0 end) as rightAns
+FROM {quiz_attempts} as qa
+inner join {question_attempts} as qua on qua.questionusageid = qa.uniqueid and qa.attempt = 1 and qa.userid = $id
+inner join {question_attempt_steps} As qas ON qas.questionattemptid = qua.id
+where qua.responsesummary != 'null' group by qa.quiz) as t1  on qs.quizid = t1.quiz group by t1.quiz) as qa1 on q.id = qa1.quiz
+where q.course in ($course)";
+
+$quizAttemptRecord = $DB->get_records_sql($quizAttempt);
+
+foreach ($quizAttemptRecord as $quiz) {
   $quizRow = array();
   $quizRow[] = $quiz->name;
+  foreach ($courseId as $cid) {
+    if ($quiz->course == $cid) {
+      if ($quiz->quizpercent) {
+        $quizRow[] = round($quiz->quizpercent).'%';
+      } else {
+        $quizRow[] = 'No Attempted';
+      }
+    } else {
+      $quizRow[] = 'No Attempted';
+    }
+  }
   $testTable->data[] = $quizRow;
 }
 
 if (!empty($testTable)) {
   echo html_writer::start_tag('div', array('class' => 'no-overflow display-table attendeestable'));
   echo html_writer::table($testTable);
+  echo html_writer::end_tag('div');
+}
+
+
+echo $OUTPUT->heading();
+echo $OUTPUT->heading("Attendance", 4);
+
+$attendance = new html_table();
+$attendance->head = array();
+$attendance->head[] = 'Month';
+$attendance->head[] = 'Live Classes';
+$attendance->head[] = 'Online Lectures';
+
+if (!empty($attendance)) {
+  echo html_writer::start_tag('div', array('class' => 'no-overflow display-table attendeestable'));
+  echo html_writer::table($attendance);
   echo html_writer::end_tag('div');
 }
 
