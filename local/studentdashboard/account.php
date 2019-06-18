@@ -69,7 +69,8 @@ $PAGE->set_pagelayout('incourse');
 
 $PAGE->navbar->add(get_string('accountheading', 'local_studentdashboard'));
 
-echo $OUTPUT->heading('');
+echo $OUTPUT->header();
+
 echo $OUTPUT->heading("$USER->firstname $USER->lastname: " . get_string('accountheading', 'local_studentdashboard'));
 echo $OUTPUT->heading("Profile Summary", 4);
 $studenttable = new html_table();
@@ -85,7 +86,6 @@ if (!empty($studenttable)) {
   echo html_writer::end_tag('div');
 }
 
-echo $OUTPUT->heading('');
 echo $OUTPUT->heading("PTM Remarks", 4);
 
 echo html_writer::start_tag('div', array('class' => 'no-overflow'));
@@ -95,95 +95,93 @@ echo html_writer::end_tag('a');
 echo html_writer::end_tag('div');
 
 
-$ptmtable = new html_table();
-$ptmtable->head = array();
-$ptmtable->head[] = 'Date';
-$ptmtable->head[] = 'Teacher Remark for Student/Parent';
-$ptmtable->head[] = 'Parent Feedback';
+//$ptmtable = new html_table();
+//$ptmtable->head = array();
+//$ptmtable->head[] = 'Date';
+//$ptmtable->head[] = 'Teacher Remark for Student/Parent';
+//$ptmtable->head[] = 'Parent Feedback';
+//
+//$ptmRecord = $DB->get_records('guru_user_ptm', array('user_id' => $id));
+//if (!empty($ptmRecord)) {
+//  foreach ($ptmRecord as $remark) {
+//    $row = array();
+//    $row[] = $remark->ptm_date;
+//    $row[] = $remark->teacher_remark;
+//    $row[] = $remark->parent_feedback;
+//    $ptmtable->data[] = $row;
+//  }
+//} else {
+//  $row = array();
+//  $row[] = "";
+//  $row[] = "No Record Found.";
+//  $row[] = "";
+//  $ptmtable->data[] = $row;
+//}
+//
+//if (!empty($ptmtable)) {
+//  echo html_writer::start_tag('div', array('class' => 'no-overflow display-table attendeestable'));
+//  echo html_writer::table($ptmtable);
+//  echo html_writer::end_tag('div');
+//}
 
-$ptmRecord = $DB->get_records('guru_user_ptm', array('user_id' => $id));
-if (!empty($ptmRecord)) {
-  foreach ($ptmRecord as $remark) {
-    $row = array();
-    $row[] = $remark->ptm_date;
-    $row[] = $remark->teacher_remark;
-    $row[] = $remark->parent_feedback;
-    $ptmtable->data[] = $row;
-  }
-} else {
-  $row = array();
-  $row[] = "";
-  $row[] = "No Record Found.";
-  $row[] = "";
-  $ptmtable->data[] = $row;
-}
-
-if (!empty($ptmtable)) {
-  echo html_writer::start_tag('div', array('class' => 'no-overflow display-table attendeestable'));
-  //echo html_writer::table($ptmtable);
-  echo html_writer::end_tag('div');
-}
-
-echo $OUTPUT->heading('');
 //echo $OUTPUT->heading("Test Performance", 4);
-
-$testTable = new html_table();
-$testTable->head = array();
-$testTable->head[] = 'Test';
-foreach ($courseName as $name) {
-  $testTable->head[] = $name;
-}
-
+//
+//$testTable = new html_table();
+//$testTable->head = array();
+//$testTable->head[] = 'Test';
+//foreach ($courseName as $name) {
+//  $testTable->head[] = $name;
+//}
+//
 $course = implode(",", $courseId);
-if (!empty($course)) {
-  $quizAttempt = "SELECT q.id, q.course, q.name, qa1.*
-FROM {quiz} as q
-left join (select t1.*, count(qs.id) as totalQue,  ((t1.rightAns/count(qs.id))*100) as quizPercent 
-from {quiz_slots} as qs
-inner join (SELECT qa.userid, qa.uniqueid, qa.quiz, qua.questionusageid, (qa.timefinish-qa.timestart)
-   AS timetaken, sum(case
-   when qas.state='gradedwrong'
-   then 1 else 0 end) as wrongAns,
-   sum(case when qas.state ='gradedright'
-   then 1 else 0 end) as rightAns
-FROM {quiz_attempts} as qa
-inner join {question_attempts} as qua on qua.questionusageid = qa.uniqueid and qa.attempt = 1 and qa.userid = $id
-inner join {question_attempt_steps} As qas ON qas.questionattemptid = qua.id
-where qua.responsesummary != 'null' group by qa.quiz) as t1  on qs.quizid = t1.quiz group by t1.quiz) as qa1 on q.id = qa1.quiz
-where q.course in ($course)";
+//if (!empty($course)) {
+//  $quizAttempt = "SELECT q.id, q.course, q.name, qa1.*
+//FROM {quiz} as q
+//left join (select t1.*, count(qs.id) as totalQue,  ((t1.rightAns/count(qs.id))*100) as quizPercent 
+//from {quiz_slots} as qs
+//inner join (SELECT qa.userid, qa.uniqueid, qa.quiz, qua.questionusageid, (qa.timefinish-qa.timestart)
+//   AS timetaken, sum(case
+//   when qas.state='gradedwrong'
+//   then 1 else 0 end) as wrongAns,
+//   sum(case when qas.state ='gradedright'
+//   then 1 else 0 end) as rightAns
+//FROM {quiz_attempts} as qa
+//inner join {question_attempts} as qua on qua.questionusageid = qa.uniqueid and qa.attempt = 1 and qa.userid = $id
+//inner join {question_attempt_steps} As qas ON qas.questionattemptid = qua.id
+//where qua.responsesummary != 'null' group by qa.quiz) as t1  on qs.quizid = t1.quiz group by t1.quiz) as qa1 on q.id = qa1.quiz
+//where q.course in ($course)";
+//
+//  $quizAttemptRecord = $DB->get_records_sql($quizAttempt);
+//
+//  foreach ($quizAttemptRecord as $quiz) {
+//    $quizRow = array();
+//    $quizRow[] = $quiz->name;
+//    foreach ($courseId as $cid) {
+//      if ($quiz->course == $cid) {
+//        if ($quiz->quizpercent) {
+//          $quizRow[] = round($quiz->quizpercent) . '%';
+//        } else {
+//          $quizRow[] = 'No Attempted';
+//        }
+//      } else {
+//        $quizRow[] = 'No Attempted';
+//      }
+//    }
+//    $testTable->data[] = $quizRow;
+//  }
+//} else {
+//  $row = array();
+//  $row[] = "No Record Found.";
+//  $testTable->data[] = $row;
+//}
+//
+//if (!empty($testTable)) {
+//  echo html_writer::start_tag('div', array('class' => 'no-overflow display-table attendeestable'));
+//  echo html_writer::table($testTable);
+//  echo html_writer::end_tag('div');
+//}
 
-  $quizAttemptRecord = $DB->get_records_sql($quizAttempt);
 
-  foreach ($quizAttemptRecord as $quiz) {
-    $quizRow = array();
-    $quizRow[] = $quiz->name;
-    foreach ($courseId as $cid) {
-      if ($quiz->course == $cid) {
-        if ($quiz->quizpercent) {
-          $quizRow[] = round($quiz->quizpercent) . '%';
-        } else {
-          $quizRow[] = 'No Attempted';
-        }
-      } else {
-        $quizRow[] = 'No Attempted';
-      }
-    }
-    $testTable->data[] = $quizRow;
-  }
-} else {
-  $row = array();
-  $row[] = "No Record Found.";
-  $testTable->data[] = $row;
-}
-
-if (!empty($testTable)) {
-  echo html_writer::start_tag('div', array('class' => 'no-overflow display-table attendeestable'));
-  //echo html_writer::table($testTable);
-  echo html_writer::end_tag('div');
-}
-
-
-echo $OUTPUT->heading('');
 echo $OUTPUT->heading("Attendance", 4);
 
 $attendance = new html_table();
@@ -193,13 +191,13 @@ $attendance->head[] = 'Live Classes';
 $attendance->head[] = 'Online Lectures';
 
 if (!empty($course)) {
-  $classCountSql = "SELECT count(b.id) as classCount, DA  TE_FORMAT(DATE(FROM_UNIXTIME(b.start_date)), '%Y-%m') as month
+  $classCountSql = "SELECT count(b.id) as classCount, DATE_FORMAT(DATE(FROM_UNIXTIME(b.start_date)), '%Y-%m') as month
                     FROM `{braincert}` as b
                     WHERE b.course in ($course)
-                    GROUP BY DATE_FORMAT(DATE(FROM_UNIXTIME(b.start_date)), '%Y-%m');";
+                    GROUP BY DATE_FORMAT(DATE(FROM_UNIXTIME(b.start_date)), '%Y-%m')";
   $classCountRecord = $DB->get_records_sql($classCountSql);
 
-  $userCountSql = "SELECT count(b.id) as classacount,DATE_FORMAT(DATE(FROM_UNIXTIME(b.start_date)), '%Y-%m') as month
+  $userCountSql = "SELECT count(b.id) as classacount, DATE_FORMAT(DATE(FROM_UNIXTIME(b.start_date)), '%Y-%m') as month
                   FROM `mdl_braincert` as b
                   JOIN mdl_guru_braincert_user as gbu on b.class_id=gbu.class_id
                   WHERE gbu.user_id=$id and b.course in ($course)
@@ -220,11 +218,12 @@ if (!empty($course)) {
       $attendance->data[] = $row;
     }
   }
-  if (!empty($attendance)) {
-    echo html_writer::start_tag('div', array('class' => 'no-overflow display-table attendeestable'));
-    echo html_writer::table($attendance);
-    echo html_writer::end_tag('div');
-  }
+}
+
+if (!empty($attendance)) {
+  echo html_writer::start_tag('div', array('class' => 'no-overflow display-table attendeestable'));
+  echo html_writer::table($attendance);
+  echo html_writer::end_tag('div');
 }
 
 echo $OUTPUT->footer();
