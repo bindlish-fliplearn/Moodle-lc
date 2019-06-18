@@ -29,7 +29,9 @@ require_once('../../course/lib.php');
 global $USER;
 $userid = $USER->id;
 $courseid = $_GET['courseid'];
-
+if(!$courseid){
+  $courseid = 148;
+}
 require_login();
 $coursies = enrol_get_all_users_courses($id);
 
@@ -89,7 +91,7 @@ if(!empty($teacherrecord)) {
       $courseIds[] = $course->id;
       $courseName[] = $course->fullname;
     }
-    $programName = implode($courseName);
+    $programName = implode(', ',$courseName);
     $score = getCourseScore($courseIds);
     $row = array();
     $row[] = $data->firstname;
