@@ -26,35 +26,29 @@ require_once('../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once('locallib.php');
 require_once('../../course/lib.php');
-global $USER;
-$id = $USER->id;
+
+$id = optional_param('id', null, PARAM_INT);
+if (empty($id)) {
+  global $USER;
+  $id = $USER->id;
+}
+
+$checkUserSql = "SELECT count(id) as count FROM {user} WHERE id=?";
+$userCount = $DB->get_record_sql($checkUserSql, array($id));
+
+if ($userCount->count == 0) {
+  print_error("User id not valid.");
+}
+
 require_login();
 
 $coursies = enrol_get_all_users_courses($id);
 
-$schoolCity = "";
-$class10Marks = "";
-$class11Marks = "";
-$studentAspirations = "";
-$parentAspirations = "";
-$studentInterest = "";
-$teacherRemark = "";
-if (isset($USER->profile['schoolCity']) && !empty($USER->profile['schoolCity'])) {
-  $schoolCity = $USER->profile['schoolCity'];
-} if (isset($USER->profile['class10Marks']) && !empty($USER->profile['class10Marks'])) {
-  $class10Marks = $USER->profile['class10Marks'];
-} if (isset($USER->profile['class11Marks']) && !empty($USER->profile['class11Marks'])) {
-  $class11Marks = $USER->profile['class11Marks'];
-} if (isset($USER->profile['studentAspirations']) && !empty($USER->profile['studentAspirations'])) {
-  $studentAspirations = $USER->profile['studentAspirations'];
-} if (isset($USER->profile['parentAspirations']) && !empty($USER->profile['parentAspirations'])) {
-  $parentAspirations = $USER->profile['parentAspirations'];
-} if (isset($USER->profile['studentInterest']) && !empty($USER->profile['studentInterest'])) {
-  $studentInterest = $USER->profile['studentInterest'];
-} if (isset($USER->profile['teacherRemark']) && !empty($USER->profile['teacherRemark'])) {
-  $teacherRemark = $USER->profile['teacherRemark'];
-}
-
+$userSql = "SELECT uif.shortname,uif.name, uid.data
+         FROM {user_info_field} AS uif 
+         LEFT JOIN {user_info_data} AS uid 
+         ON uid.fieldid = uif.id AND uid.userid = $id";
+$userDetails = $DB->get_records_sql($userSql);
 
 $courseId = [];
 $courseName = [];
@@ -75,21 +69,15 @@ $PAGE->set_pagelayout('incourse');
 
 $PAGE->navbar->add(get_string('accountheading', 'local_studentdashboard'));
 
-echo $OUTPUT->header();
+echo $OUTPUT->heading('');
 echo $OUTPUT->heading("$USER->firstname $USER->lastname: " . get_string('accountheading', 'local_studentdashboard'));
-
 echo $OUTPUT->heading("Profile Summary", 4);
-
 $studenttable = new html_table();
 $studenttable->data[] = ['Name', $USER->firstname . ' ' . $USER->lastname];
-$studenttable->data[] = ['School/City', $schoolCity];
 $studenttable->data[] = ['Program', $programName];
-$studenttable->data[] = ['Class 10 Marks', $class10Marks];
-$studenttable->data[] = ['Class 11 Marks', $class11Marks];
-$studenttable->data[] = ['Student Aspirations', $studentAspirations];
-$studenttable->data[] = ['Parent Aspirations', $parentAspirations];
-$studenttable->data[] = ['Student Interest and Activities', $studentInterest];
-$studenttable->data[] = ['Teacher Remark', $teacherRemark];
+foreach ($userDetails as $userData) {
+  $studenttable->data[] = [$userData->name, $userData->data];
+}
 
 if (!empty($studenttable)) {
   echo html_writer::start_tag('div', array('class' => 'no-overflow display-table attendeestable'));
@@ -97,7 +85,7 @@ if (!empty($studenttable)) {
   echo html_writer::end_tag('div');
 }
 
-echo $OUTPUT->heading();
+echo $OUTPUT->heading('');
 echo $OUTPUT->heading("PTM Remarks", 4);
 
 echo html_writer::start_tag('div', array('class' => 'no-overflow'));
@@ -132,12 +120,12 @@ if (!empty($ptmRecord)) {
 
 if (!empty($ptmtable)) {
   echo html_writer::start_tag('div', array('class' => 'no-overflow display-table attendeestable'));
-  echo html_writer::table($ptmtable);
+  //echo html_writer::table($ptmtable);
   echo html_writer::end_tag('div');
 }
 
-echo $OUTPUT->heading();
-echo $OUTPUT->heading("Test Performance", 4);
+echo $OUTPUT->heading('');
+//echo $OUTPUT->heading("Test Performance", 4);
 
 $testTable = new html_table();
 $testTable->head = array();
@@ -147,7 +135,8 @@ foreach ($courseName as $name) {
 }
 
 $course = implode(",", $courseId);
-$quizAttempt = "SELECT q.id, q.course, q.name, qa1.*
+if (!empty($course)) {
+  $quizAttempt = "SELECT q.id, q.course, q.name, qa1.*
 FROM {quiz} as q
 left join (select t1.*, count(qs.id) as totalQue,  ((t1.rightAns/count(qs.id))*100) as quizPercent 
 from {quiz_slots} as qs
@@ -163,33 +152,38 @@ inner join {question_attempt_steps} As qas ON qas.questionattemptid = qua.id
 where qua.responsesummary != 'null' group by qa.quiz) as t1  on qs.quizid = t1.quiz group by t1.quiz) as qa1 on q.id = qa1.quiz
 where q.course in ($course)";
 
-$quizAttemptRecord = $DB->get_records_sql($quizAttempt);
+  $quizAttemptRecord = $DB->get_records_sql($quizAttempt);
 
-foreach ($quizAttemptRecord as $quiz) {
-  $quizRow = array();
-  $quizRow[] = $quiz->name;
-  foreach ($courseId as $cid) {
-    if ($quiz->course == $cid) {
-      if ($quiz->quizpercent) {
-        $quizRow[] = round($quiz->quizpercent).'%';
+  foreach ($quizAttemptRecord as $quiz) {
+    $quizRow = array();
+    $quizRow[] = $quiz->name;
+    foreach ($courseId as $cid) {
+      if ($quiz->course == $cid) {
+        if ($quiz->quizpercent) {
+          $quizRow[] = round($quiz->quizpercent) . '%';
+        } else {
+          $quizRow[] = 'No Attempted';
+        }
       } else {
         $quizRow[] = 'No Attempted';
       }
-    } else {
-      $quizRow[] = 'No Attempted';
     }
+    $testTable->data[] = $quizRow;
   }
-  $testTable->data[] = $quizRow;
+} else {
+  $row = array();
+  $row[] = "No Record Found.";
+  $testTable->data[] = $row;
 }
 
 if (!empty($testTable)) {
   echo html_writer::start_tag('div', array('class' => 'no-overflow display-table attendeestable'));
-  echo html_writer::table($testTable);
+  //echo html_writer::table($testTable);
   echo html_writer::end_tag('div');
 }
 
 
-echo $OUTPUT->heading();
+echo $OUTPUT->heading('');
 echo $OUTPUT->heading("Attendance", 4);
 
 $attendance = new html_table();
@@ -198,10 +192,39 @@ $attendance->head[] = 'Month';
 $attendance->head[] = 'Live Classes';
 $attendance->head[] = 'Online Lectures';
 
-if (!empty($attendance)) {
-  echo html_writer::start_tag('div', array('class' => 'no-overflow display-table attendeestable'));
-  echo html_writer::table($attendance);
-  echo html_writer::end_tag('div');
+if (!empty($course)) {
+  $classCountSql = "SELECT count(b.id) as classCount, DA  TE_FORMAT(DATE(FROM_UNIXTIME(b.start_date)), '%Y-%m') as month
+                    FROM `{braincert}` as b
+                    WHERE b.course in ($course)
+                    GROUP BY DATE_FORMAT(DATE(FROM_UNIXTIME(b.start_date)), '%Y-%m');";
+  $classCountRecord = $DB->get_records_sql($classCountSql);
+
+  $userCountSql = "SELECT count(b.id) as classacount,DATE_FORMAT(DATE(FROM_UNIXTIME(b.start_date)), '%Y-%m') as month
+                  FROM `mdl_braincert` as b
+                  JOIN mdl_guru_braincert_user as gbu on b.class_id=gbu.class_id
+                  WHERE gbu.user_id=$id and b.course in ($course)
+                  GROUP BY DATE_FORMAT(DATE(FROM_UNIXTIME(b.start_date)), '%Y-%m')";
+  $userClassCountRecord = $DB->get_records_sql($userCountSql);
+  if (!empty($classCountRecord)) {
+    foreach ($classCountRecord as $classRecord) {
+      foreach ($userClassCountRecord as $userRecord) {
+        $attendanceCount = 0;
+        if ($classRecord->month == $userRecord->month) {
+          $attendanceCount = $userRecord->classacount;
+          break;
+        }
+      }
+      $row = array();
+      $row[] = $classRecord->month;
+      $row[] = $attendanceCount . '/' . $classRecord->classcount;
+      $attendance->data[] = $row;
+    }
+  }
+  if (!empty($attendance)) {
+    echo html_writer::start_tag('div', array('class' => 'no-overflow display-table attendeestable'));
+    echo html_writer::table($attendance);
+    echo html_writer::end_tag('div');
+  }
 }
 
 echo $OUTPUT->footer();
