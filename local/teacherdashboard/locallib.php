@@ -22,7 +22,7 @@
           where q.course in ($courseIdsString)) as t2 group by t2.userid";
     $teacherrecord = $DB->get_record_sql($sql);
     if($teacherrecord){
-      return $teacherrecord->totalQuizPer;
+      return $teacherrecord->totalquizper;
     }else {
       return 0;
     }

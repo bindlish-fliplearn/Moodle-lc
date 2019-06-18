@@ -82,9 +82,11 @@
         $score = 0;
         $score = getCourseScore($courseIds,$id);
         $userInfo = getUserProfile($id);
+        $attendance = '';
         $row   = array();
         $row[] = $data->firstname;
         $row[] = $programName;
+        $row[] = $attendance;
         foreach ($userInfo as $infokey => $userValue) {
            $row[] = $userValue->data ;
         }
