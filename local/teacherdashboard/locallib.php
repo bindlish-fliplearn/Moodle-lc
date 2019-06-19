@@ -51,4 +51,22 @@
         return array();
       }
   }
+  function getAttendence($userid,$courseIds){
+     global $DB;
+         $courseIdsString = implode(',', $courseIds);
+    $attendancesql = "SELECT count(b.id) as totalClass, 
+                  count(gbu.user_id) as totalAttendClass, 
+                  ROUND((count(gbu.user_id)/count(b.id)*100),2) as attendanceper 
+            FROM mdl_braincert as b
+            Left JOIN mdl_guru_braincert_user as gbu 
+            on b.class_id=gbu.class_id and gbu.user_id=$userid
+            WHERE b.course in ($courseIdsString)";
+      $attendanceInfo = $DB->get_record_sql($attendancesql);
+    if($userInfo){
+        return $attendanceInfo;
+      }else {
+        return array();
+      }
+
+  }
   ?>

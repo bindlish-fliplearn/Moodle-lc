@@ -80,9 +80,10 @@
         }
         $programName = implode(', ',$courseName);
         $score = 0;
-       // $score = getCourseScore($courseIds,$id);
-        $userInfo = getUserProfile($id);
         $attendance = '';
+        $score = getCourseScore($courseIds,$id);
+        $userInfo = getUserProfile($id);
+        $attendance =  getAttendence($courseIds,$id,);
         $returnurl = new moodle_url('/local/studentdashboard/account.php', array('id'=>$id));
         $row   = array();
         $row[] = "<a href = '".$returnurl."' target = '_blank'>".$data->firstname."</a>";
