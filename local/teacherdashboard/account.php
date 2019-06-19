@@ -83,7 +83,9 @@
         $attendance = '';
         $score = getCourseScore($courseIds,$id);
         $userInfo = getUserProfile($id);
-        $attendance =  getAttendence($courseIds,$id,);
+        $attendance =  getAttendence($id,$courseIds);
+
+        
         $returnurl = new moodle_url('/local/studentdashboard/account.php', array('id'=>$id));
         $row   = array();
         $row[] = "<a href = '".$returnurl."' target = '_blank'>".$data->firstname."</a>";
