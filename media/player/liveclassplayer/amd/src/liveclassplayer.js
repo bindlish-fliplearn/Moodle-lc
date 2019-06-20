@@ -26,7 +26,7 @@ define(['liveclassplayer', 'jquery', 'core/config', 'core/yui', 'core/log', 'mod
     // Private functions and variables.
     /** @var {int} logcontext Moodle page context id. */
     var logcontext = null;
-
+     var sendRequest = 1;
     /**
      * Event logging. Called when player event is triggered.
      *
@@ -53,7 +53,9 @@ define(['liveclassplayer', 'jquery', 'core/config', 'core/yui', 'core/log', 'mod
                 }
             }
         };
+    
         setInterval(function(){ 
+            sendRequest = 1;
              playerinstance.on('time', function (response) {
                    console.log('response',response);
                    var currentTime = response.currentTime;
@@ -71,15 +73,18 @@ define(['liveclassplayer', 'jquery', 'core/config', 'core/yui', 'core/log', 'mod
                     if(url.host == "localhost") {
                         path = url.host + "/flip_moodle";
                     }
-                    $.ajax({
-                        type: "POST",
-                        data: update,
-                        url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken=6257f654f905c94b0d0f90fce5b9af31&wsfunction=local_flipapi_guru_vedio_view&moodlewsrestformat=json",
-                        success: function (data) {
-                            console.log(data);
-                            url.reload();
-                        }
-                    });
+                    if(sendRequest==1){
+                        sendRequest = 0;
+                        $.ajax({
+                            type: "POST",
+                            data: update,
+                            url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken=6257f654f905c94b0d0f90fce5b9af31&wsfunction=local_flipapi_guru_vedio_view&moodlewsrestformat=json",
+                            success: function (data) {
+                                console.log(data);
+                               
+                            }
+                        });
+                    }
                 });
          }, 30000);
 

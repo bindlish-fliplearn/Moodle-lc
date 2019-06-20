@@ -612,7 +612,7 @@ class local_flipapi_external extends external_api {
   public static function guru_vedio_view($view_time, $duration, $context_id, $title, $file) {
     global $DB;
     global $USER;
-
+    $userid = $_COOKIE['currentLoginUser'];
     //REQUIRED
     self::validate_parameters(
       self::guru_vedio_view_parameters(), array(
@@ -628,7 +628,6 @@ class local_flipapi_external extends external_api {
               on cm.id = c.instanceid where c.id = $context_id";
       $courseResult = $DB->get_record_sql($getCoursesql);
       $courseid = $courseResult->course;
-      $userid = $USER->id;
       $insertRecord = [];
       $insertRecord['view_time'] = $view_time;
       $insertRecord['duration'] = $duration;

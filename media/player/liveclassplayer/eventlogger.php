@@ -38,7 +38,9 @@ $position = optional_param('position', null, PARAM_TEXT);
 $quality = json_decode(optional_param('qualitylevel', null, PARAM_TEXT));
 $audiotracks = json_decode(optional_param('audiotracks', null, PARAM_TEXT));
 $captions = json_decode(optional_param('captions', null, PARAM_TEXT));
-
+ global $USER;
+ $userId = $USER->id;
+setcookie("currentLoginUser", $userId, time()+3600, "/","", 0);
 // Security requirements.
 list($context, $course, $cm) = get_context_info_array($contextid);
 $PAGE->set_context($context);
