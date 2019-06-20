@@ -27,6 +27,8 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once('locallib.php');
 require_once('../../course/lib.php');
 
+$hideForStu = array("studentAspirations","parentAspirations","studentInterest", "teacherRemark");
+
 $id = optional_param('id', null, PARAM_INT);
 if (empty($id)) {
   global $USER;
@@ -77,7 +79,11 @@ $studenttable = new html_table();
 $studenttable->data[] = ['Name', $USER->firstname . ' ' . $USER->lastname];
 $studenttable->data[] = ['Program', $programName];
 foreach ($userDetails as $userData) {
-  $studenttable->data[] = [$userData->name, $userData->data];
+  if(user_has_role_assignment($USER->id,5) && in_array($userData->shortname, $hideForStu)) {
+    $studenttable->data[] = [$userData->name, $userData->data];
+  } else {
+    $studenttable->data[] = [$userData->name, $userData->data];
+  }
 }
 
 if (!empty($studenttable)) {
@@ -89,7 +95,7 @@ if (!empty($studenttable)) {
 echo $OUTPUT->heading("PTM Remarks", 4);
 
 echo html_writer::start_tag('div', array('class' => 'no-overflow'));
-echo html_writer::start_tag('a', array('class' => 'btn btn-success', 'src' => '#0', 'onClick' => "showPtmPopup('1  ',$id,'10');"));
+echo html_writer::start_tag('a', array('class' => 'btn btn-success', 'src' => '#0', 'onClick' => "showPtmPopup('', $id, $USER->id );"));
 echo "Add PTM Remark";
 echo html_writer::end_tag('a');
 echo html_writer::end_tag('div');
@@ -100,14 +106,20 @@ $ptmtable->head = array();
 $ptmtable->head[] = 'Date';
 $ptmtable->head[] = 'Teacher Remark for Student/Parent';
 $ptmtable->head[] = 'Parent Feedback';
+if(user_has_role_assignment($USER->id,5)) {
+  $ptmtable->head[] = 'Action';
+}
 
-$ptmRecord = $DB->get_records('guru_user_ptm', array('user_id' => $id));
+$ptmRecord = $DB->get_records('guru_user_ptm', array('user_id' => $id, 'teacher_id' => $USER->id));
 if (!empty($ptmRecord)) {
   foreach ($ptmRecord as $remark) {
     $row = array();
     $row[] = $remark->ptm_date;
     $row[] = $remark->teacher_remark;
     $row[] = $remark->parent_feedback;
+    if(user_has_role_assignment($USER->id,5)) {
+    $row[] = "<a href='#0' onclick='showPtmPopup(\"$remark->id\", \"$remark->user_id\", \"$USER->id\", \"$remark->ptm_date\", \"$remark->teacher_remark\", \"$remark->parent_feedback\")'>Edit</a>"; 
+    }
     $ptmtable->data[] = $row;
   }
 } else {
