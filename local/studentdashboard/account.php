@@ -27,6 +27,8 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once('locallib.php');
 require_once('../../course/lib.php');
 
+$hideForStu = array("studentAspirations","parentAspirations","studentInterest", "teacherRemark");
+
 $id = optional_param('id', null, PARAM_INT);
 if (empty($id)) {
   global $USER;
@@ -77,7 +79,11 @@ $studenttable = new html_table();
 $studenttable->data[] = ['Name', $USER->firstname . ' ' . $USER->lastname];
 $studenttable->data[] = ['Program', $programName];
 foreach ($userDetails as $userData) {
-  $studenttable->data[] = [$userData->name, $userData->data];
+  if(user_has_role_assignment($USER->id,5) && in_array($userData->shortname, $hideForStu)) {
+    $studenttable->data[] = [$userData->name, $userData->data];
+  } else {
+    $studenttable->data[] = [$userData->name, $userData->data];
+  }
 }
 
 if (!empty($studenttable)) {
@@ -89,97 +95,103 @@ if (!empty($studenttable)) {
 echo $OUTPUT->heading("PTM Remarks", 4);
 
 echo html_writer::start_tag('div', array('class' => 'no-overflow'));
-echo html_writer::start_tag('a', array('class' => 'btn btn-success', 'src' => '#0', 'onClick' => "showPtmPopup('1  ',$id,'10');"));
+echo html_writer::start_tag('a', array('class' => 'btn btn-success', 'src' => '#0', 'onClick' => "showPtmPopup('', $id, $USER->id );"));
 echo "Add PTM Remark";
 echo html_writer::end_tag('a');
 echo html_writer::end_tag('div');
 
 
-//$ptmtable = new html_table();
-//$ptmtable->head = array();
-//$ptmtable->head[] = 'Date';
-//$ptmtable->head[] = 'Teacher Remark for Student/Parent';
-//$ptmtable->head[] = 'Parent Feedback';
-//
-//$ptmRecord = $DB->get_records('guru_user_ptm', array('user_id' => $id));
-//if (!empty($ptmRecord)) {
-//  foreach ($ptmRecord as $remark) {
-//    $row = array();
-//    $row[] = $remark->ptm_date;
-//    $row[] = $remark->teacher_remark;
-//    $row[] = $remark->parent_feedback;
-//    $ptmtable->data[] = $row;
-//  }
-//} else {
-//  $row = array();
-//  $row[] = "";
-//  $row[] = "No Record Found.";
-//  $row[] = "";
-//  $ptmtable->data[] = $row;
-//}
-//
-//if (!empty($ptmtable)) {
-//  echo html_writer::start_tag('div', array('class' => 'no-overflow display-table attendeestable'));
-//  echo html_writer::table($ptmtable);
-//  echo html_writer::end_tag('div');
-//}
+$ptmtable = new html_table();
+$ptmtable->head = array();
+$ptmtable->head[] = 'Date';
+$ptmtable->head[] = 'Teacher Remark for Student/Parent';
+$ptmtable->head[] = 'Parent Feedback';
+if(user_has_role_assignment($USER->id,5)) {
+  $ptmtable->head[] = 'Action';
+}
 
-//echo $OUTPUT->heading("Test Performance", 4);
-//
-//$testTable = new html_table();
-//$testTable->head = array();
-//$testTable->head[] = 'Test';
-//foreach ($courseName as $name) {
-//  $testTable->head[] = $name;
-//}
-//
+$ptmRecord = $DB->get_records('guru_user_ptm', array('user_id' => $id, 'teacher_id' => $USER->id));
+if (!empty($ptmRecord)) {
+  foreach ($ptmRecord as $remark) {
+    $row = array();
+    $row[] = $remark->ptm_date;
+    $row[] = $remark->teacher_remark;
+    $row[] = $remark->parent_feedback;
+    if(user_has_role_assignment($USER->id,5)) {
+    $row[] = "<a href='#0' onclick='showPtmPopup(\"$remark->id\", \"$remark->user_id\", \"$USER->id\", \"$remark->ptm_date\", \"$remark->teacher_remark\", \"$remark->parent_feedback\")'>Edit</a>"; 
+    }
+    $ptmtable->data[] = $row;
+  }
+} else {
+  $row = array();
+  $row[] = "";
+  $row[] = "No Record Found.";
+  $row[] = "";
+  $ptmtable->data[] = $row;
+}
+
+if (!empty($ptmtable)) {
+  echo html_writer::start_tag('div', array('class' => 'no-overflow display-table attendeestable'));
+  echo html_writer::table($ptmtable);
+  echo html_writer::end_tag('div');
+}
+
+echo $OUTPUT->heading("Test Performance", 4);
+
+$testTable = new html_table();
+$testTable->head = array();
+$testTable->head[] = 'Test';
+foreach ($courseName as $name) {
+  $testTable->head[] = $name;
+}
+
 $course = implode(",", $courseId);
-//if (!empty($course)) {
-//  $quizAttempt = "SELECT q.id, q.course, q.name, qa1.*
-//FROM {quiz} as q
-//left join (select t1.*, count(qs.id) as totalQue,  ((t1.rightAns/count(qs.id))*100) as quizPercent 
-//from {quiz_slots} as qs
-//inner join (SELECT qa.userid, qa.uniqueid, qa.quiz, qua.questionusageid, (qa.timefinish-qa.timestart)
-//   AS timetaken, sum(case
-//   when qas.state='gradedwrong'
-//   then 1 else 0 end) as wrongAns,
-//   sum(case when qas.state ='gradedright'
-//   then 1 else 0 end) as rightAns
-//FROM {quiz_attempts} as qa
-//inner join {question_attempts} as qua on qua.questionusageid = qa.uniqueid and qa.attempt = 1 and qa.userid = $id
-//inner join {question_attempt_steps} As qas ON qas.questionattemptid = qua.id
-//where qua.responsesummary != 'null' group by qa.quiz) as t1  on qs.quizid = t1.quiz group by t1.quiz) as qa1 on q.id = qa1.quiz
-//where q.course in ($course)";
-//
-//  $quizAttemptRecord = $DB->get_records_sql($quizAttempt);
-//
-//  foreach ($quizAttemptRecord as $quiz) {
-//    $quizRow = array();
-//    $quizRow[] = $quiz->name;
-//    foreach ($courseId as $cid) {
-//      if ($quiz->course == $cid) {
-//        if ($quiz->quizpercent) {
-//          $quizRow[] = round($quiz->quizpercent) . '%';
-//        } else {
-//          $quizRow[] = 'No Attempted';
-//        }
-//      } else {
-//        $quizRow[] = 'No Attempted';
-//      }
-//    }
-//    $testTable->data[] = $quizRow;
-//  }
-//} else {
-//  $row = array();
-//  $row[] = "No Record Found.";
-//  $testTable->data[] = $row;
-//}
-//
-//if (!empty($testTable)) {
-//  echo html_writer::start_tag('div', array('class' => 'no-overflow display-table attendeestable'));
-//  echo html_writer::table($testTable);
-//  echo html_writer::end_tag('div');
-//}
+if (!empty($course)) {
+  $quizAttempt = "SELECT q.id, q.course, q.name, qa1.*
+FROM {quiz} as q
+left join (select t1.*, count(qs.id) as totalQue,  ((t1.rightAns/count(qs.id))*100) as quizPercent 
+from {quiz_slots} as qs
+inner join (SELECT qa.userid, qa.uniqueid, qa.quiz, qua.questionusageid, (qa.timefinish-qa.timestart)
+   AS timetaken, sum(case
+   when qas.state='gradedwrong'
+   then 1 else 0 end) as wrongAns,
+   sum(case when qas.state ='gradedright'
+   then 1 else 0 end) as rightAns
+FROM {quiz_attempts} as qa
+inner join {question_attempts} as qua on qua.questionusageid = qa.uniqueid and qa.attempt = 1 and qa.userid = $id
+inner join {question_attempt_steps} As qas ON qas.questionattemptid = qua.id
+where qua.responsesummary != 'null' group by qa.quiz) as t1  on qs.quizid = t1.quiz group by t1.quiz) as qa1 on q.id = qa1.quiz
+where q.course in ($course)";
+
+  $quizAttemptRecord = $DB->get_records_sql($quizAttempt);
+
+  foreach ($quizAttemptRecord as $quiz) {
+    $quizRow = array();
+    $quizRow[] = $quiz->name;
+    foreach ($courseId as $cid) {
+      if ($quiz->course == $cid) {
+        if ($quiz->quizpercent) {
+          $quizRow[] = round($quiz->quizpercent) . '%';
+        } else {
+          $quizRow[] = 'No Attempted';
+        }
+      } else {
+        $quizRow[] = 'No Attempted';
+      }
+    }
+    $testTable->data[] = $quizRow;
+  }
+} else {
+  $row = array();
+  $row[] = "No Record Found.";
+  $testTable->data[] = $row;
+}
+
+if (!empty($testTable)) {
+  echo html_writer::start_tag('div', array('class' => 'no-overflow display-table attendeestable'));
+  echo html_writer::table($testTable);
+  echo html_writer::end_tag('div');
+}
 
 
 echo $OUTPUT->heading("Attendance", 4);
