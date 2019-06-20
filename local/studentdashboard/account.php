@@ -215,7 +215,7 @@ $attendance->head[] = 'Live Classes';
 $attendance->head[] = 'Online Lectures';
 
 if (!empty($course)) {
-  $classCountSql = "SELECT count(b.id) as classCount, DATE_FORMAT(DATE(FROM_UNIXTIME(b.start_date)), '%Y-%m') as month
+  $classCountSql = "SELECT b.id,count(b.id) as classCount, DATE_FORMAT(DATE(FROM_UNIXTIME(b.start_date)), '%Y-%m') as month
                     FROM `{braincert}` as b
                     WHERE b.course in ($course)
                     GROUP BY DATE_FORMAT(DATE(FROM_UNIXTIME(b.start_date)), '%Y-%m')";
@@ -245,6 +245,7 @@ if (!empty($course)) {
         $attendanceCount = 0;
         if ($classRecord->month == $userRecord->month) {
           $attendanceCount = $userRecord->classacount;
+          break;
         }
       }
       $row = array();
