@@ -91,9 +91,9 @@ $studenttable = new html_table();
 $studenttable->data[] = ['Name', $USER->firstname . ' ' . $USER->lastname];
 $studenttable->data[] = ['Program', $programName];
 foreach ($userDetails as $userData) {
-  if(user_has_role_assignment($USER->id,5) && in_array($userData->shortname, $hideForStu)) {
+  if(in_array($userData->shortname, $hideForStu) && !user_has_role_assignment($USER->id,5)) {
     $studenttable->data[] = [$userData->name, $userData->data];
-  } else {
+  } else if(!in_array($userData->shortname, $hideForStu)) {
     $studenttable->data[] = [$userData->name, $userData->data];
   }
 }
@@ -105,20 +105,20 @@ if (!empty($studenttable)) {
 }
 
 echo $OUTPUT->heading("PTM Remarks", 4);
-
-echo html_writer::start_tag('div', array('class' => 'no-overflow'));
-echo html_writer::start_tag('a', array('class' => 'btn btn-success', 'src' => '#0', 'onClick' => "showPtmPopup('', $id, $USER->id );"));
-echo "Add PTM Remark";
-echo html_writer::end_tag('a');
-echo html_writer::end_tag('div');
-
+if(!user_has_role_assignment($USER->id,5)) {
+  echo html_writer::start_tag('div', array('class' => 'no-overflow'));
+  echo html_writer::start_tag('a', array('class' => 'btn btn-success', 'src' => '#0', 'onClick' => "showPtmPopup('', $id, $USER->id );"));
+  echo "Add PTM Remark";
+  echo html_writer::end_tag('a');
+  echo html_writer::end_tag('div');
+}
 
 $ptmtable = new html_table();
 $ptmtable->head = array();
 $ptmtable->head[] = 'Date';
 $ptmtable->head[] = 'Teacher Remark for Student/Parent';
 $ptmtable->head[] = 'Parent Feedback';
-if(user_has_role_assignment($USER->id,5)) {
+if(!user_has_role_assignment($USER->id,5)) {
   $ptmtable->head[] = 'Action';
 }
 
@@ -129,7 +129,7 @@ if (!empty($ptmRecord)) {
     $row[] = $remark->ptm_date;
     $row[] = $remark->teacher_remark;
     $row[] = $remark->parent_feedback;
-    if(user_has_role_assignment($USER->id,5)) {
+    if(!user_has_role_assignment($USER->id,5)) {
     $row[] = "<a href='#0' onclick='showPtmPopup(\"$remark->id\", \"$remark->user_id\", \"$USER->id\", \"$remark->ptm_date\", \"$remark->teacher_remark\", \"$remark->parent_feedback\")'>Edit</a>"; 
     }
     $ptmtable->data[] = $row;
@@ -239,6 +239,7 @@ if (!empty($course)) {
                   GROUP BY DATE_FORMAT(DATE(FROM_UNIXTIME(gvv.create_date)), '%Y-%m')";
   $liveClassCountUserRecord = $DB->get_record_sql($liveClassCountSql);
   $classLecture = number_format(($liveClassCountRecord->lecturesum/60)/24,2);
+  $classLectureUser = number_format(($liveClassCountUserRecord->classacount/60)/24,2);
   if (!empty($classCountRecord)) {
     foreach ($classCountRecord as $classRecord) {
       foreach ($userClassCountRecord as $userRecord) {
@@ -251,7 +252,7 @@ if (!empty($course)) {
       $row = array();
       $row[] = $classRecord->month;
       $row[] = $attendanceCount . '/' . $classRecord->classcount;
-      $row[] = $attendanceCount . '/' . $classLecture." hours";
+      $row[] = $classLectureUser . '/' . $classLecture." hours";
       $attendance->data[] = $row;
     }
   }
