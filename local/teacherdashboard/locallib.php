@@ -65,7 +65,7 @@
     if($userInfo){
         return $attendanceInfo->attendanceper;
       }else {
-        return '';
+        return 0;
       }
 
   }
