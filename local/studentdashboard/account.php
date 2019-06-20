@@ -28,15 +28,17 @@ require_once('locallib.php');
 require_once('../../course/lib.php');
 
 $hideForStu = array("studentAspirations","parentAspirations","studentInterest", "teacherRemark");
-
-$id = optional_param('id', null, PARAM_INT);
-if (empty($id)) {
-  global $USER;
-  $id = $USER->id;
+global $USER;
+$userId = optional_param('id', null, PARAM_INT);
+if (empty($userId)) {  
+  $userId = $USER->id;
+  $id = $userId;
+} else {
+  $id = $userId;
 }
 
 $checkUserSql = "SELECT count(id) as count FROM {user} WHERE id=?";
-$userCount = $DB->get_record_sql($checkUserSql, array($id));
+$userCount = $DB->get_record_sql($checkUserSql, array($userId));
 
 if ($userCount->count == 0) {
   print_error("User id not valid.");
@@ -52,6 +54,7 @@ $userSql = "SELECT uif.shortname,uif.name, uid.data
          ON uid.fieldid = uif.id AND uid.userid = $id";
 $userDetails = $DB->get_records_sql($userSql);
 
+
 $courseId = [];
 $courseName = [];
 foreach ($coursies as $course) {
@@ -63,8 +66,17 @@ foreach ($coursies as $course) {
 $programName = rtrim($programName, ', ');
 
 $PAGE->set_url('/local/sudenttdashboard/account.php');
-$PAGE->set_title("$USER->firstname $USER->lastname: " . get_string('accountheading', 'local_studentdashboard'));
-$PAGE->set_heading("$USER->firstname $USER->lastname: " . get_string('accountheading', 'local_studentdashboard'));
+if(empty($userId)) {
+  $PAGE->set_title("$userDetails->firstname $USER->lastname: " . get_string('accountheading', 'local_studentdashboard'));
+  $PAGE->set_heading("$USER->firstname $USER->lastname: " . get_string('accountheading', 'local_studentdashboard'));
+} else {
+  $userNameSql = "SELECT u.firstname,u.lastname
+         FROM {user} AS u
+         WHERE u.id = $userId";
+  $userName = $DB->get_record_sql($userNameSql);
+  $PAGE->set_title("$userName->firstname $userName->lastname: " . get_string('accountheading', 'local_studentdashboard'));
+  $PAGE->set_heading("$userName->firstname $userName->lastname: " . get_string('accountheading', 'local_studentdashboard'));
+}
 
 $PAGE->set_pagelayout('incourse');
 
@@ -79,9 +91,9 @@ $studenttable = new html_table();
 $studenttable->data[] = ['Name', $USER->firstname . ' ' . $USER->lastname];
 $studenttable->data[] = ['Program', $programName];
 foreach ($userDetails as $userData) {
-  if(user_has_role_assignment($USER->id,5) && in_array($userData->shortname, $hideForStu)) {
+  if(in_array($userData->shortname, $hideForStu) && !user_has_role_assignment($USER->id,5)) {
     $studenttable->data[] = [$userData->name, $userData->data];
-  } else {
+  } else if(!in_array($userData->shortname, $hideForStu)) {
     $studenttable->data[] = [$userData->name, $userData->data];
   }
 }
@@ -93,20 +105,20 @@ if (!empty($studenttable)) {
 }
 
 echo $OUTPUT->heading("PTM Remarks", 4);
-
-echo html_writer::start_tag('div', array('class' => 'no-overflow'));
-echo html_writer::start_tag('a', array('class' => 'btn btn-success', 'src' => '#0', 'onClick' => "showPtmPopup('', $id, $USER->id );"));
-echo "Add PTM Remark";
-echo html_writer::end_tag('a');
-echo html_writer::end_tag('div');
-
+if(!user_has_role_assignment($USER->id,5)) {
+  echo html_writer::start_tag('div', array('class' => 'no-overflow'));
+  echo html_writer::start_tag('a', array('class' => 'btn btn-success', 'src' => '#0', 'onClick' => "showPtmPopup('', $id, $USER->id );"));
+  echo "Add PTM Remark";
+  echo html_writer::end_tag('a');
+  echo html_writer::end_tag('div');
+}
 
 $ptmtable = new html_table();
 $ptmtable->head = array();
 $ptmtable->head[] = 'Date';
 $ptmtable->head[] = 'Teacher Remark for Student/Parent';
 $ptmtable->head[] = 'Parent Feedback';
-if(user_has_role_assignment($USER->id,5)) {
+if(!user_has_role_assignment($USER->id,5)) {
   $ptmtable->head[] = 'Action';
 }
 
@@ -117,7 +129,7 @@ if (!empty($ptmRecord)) {
     $row[] = $remark->ptm_date;
     $row[] = $remark->teacher_remark;
     $row[] = $remark->parent_feedback;
-    if(user_has_role_assignment($USER->id,5)) {
+    if(!user_has_role_assignment($USER->id,5)) {
     $row[] = "<a href='#0' onclick='showPtmPopup(\"$remark->id\", \"$remark->user_id\", \"$USER->id\", \"$remark->ptm_date\", \"$remark->teacher_remark\", \"$remark->parent_feedback\")'>Edit</a>"; 
     }
     $ptmtable->data[] = $row;
@@ -173,10 +185,10 @@ where q.course in ($course)";
         if ($quiz->quizpercent) {
           $quizRow[] = round($quiz->quizpercent) . '%';
         } else {
-          $quizRow[] = 'No Attempted';
+          $quizRow[] = 'Not Attempted';
         }
       } else {
-        $quizRow[] = 'No Attempted';
+        $quizRow[] = 'Not Attempted';
       }
     }
     $testTable->data[] = $quizRow;
@@ -203,18 +215,31 @@ $attendance->head[] = 'Live Classes';
 $attendance->head[] = 'Online Lectures';
 
 if (!empty($course)) {
-  $classCountSql = "SELECT count(b.id) as classCount, DATE_FORMAT(DATE(FROM_UNIXTIME(b.start_date)), '%Y-%m') as month
+  $classCountSql = "SELECT b.id,count(b.id) as classCount, DATE_FORMAT(DATE(FROM_UNIXTIME(b.start_date)), '%Y-%m') as month
                     FROM `{braincert}` as b
                     WHERE b.course in ($course)
                     GROUP BY DATE_FORMAT(DATE(FROM_UNIXTIME(b.start_date)), '%Y-%m')";
   $classCountRecord = $DB->get_records_sql($classCountSql);
 
   $userCountSql = "SELECT count(b.id) as classacount, DATE_FORMAT(DATE(FROM_UNIXTIME(b.start_date)), '%Y-%m') as month
-                  FROM `mdl_braincert` as b
-                  JOIN mdl_guru_braincert_user as gbu on b.class_id=gbu.class_id
+                  FROM `{braincert}` as b
+                  JOIN {guru_braincert_user} as gbu on b.class_id=gbu.class_id
                   WHERE gbu.user_id=$id and b.course in ($course)
                   GROUP BY DATE_FORMAT(DATE(FROM_UNIXTIME(b.start_date)), '%Y-%m')";
   $userClassCountRecord = $DB->get_records_sql($userCountSql);
+  
+  $liveClassCountSql = "SELECT sum(glm.duration) as lectureSum
+                    FROM `{guru_liveclass_mapping}` as glm
+                    WHERE glm.course_id in ($course)";
+  $liveClassCountRecord = $DB->get_record_sql($liveClassCountSql);
+  
+  $liveClassCountUserSql = "SELECT sum(gvv.view_time) as classacount, DATE_FORMAT(DATE(FROM_UNIXTIME(gvv.start_date)), '%Y-%m') as month
+                  FROM `{guru_video_view}` as gvv
+                  WHERE gvv.user_id=$id and gvv.course_id in ($course)
+                  GROUP BY DATE_FORMAT(DATE(FROM_UNIXTIME(gvv.create_date)), '%Y-%m')";
+  $liveClassCountUserRecord = $DB->get_record_sql($liveClassCountSql);
+  $classLecture = number_format(($liveClassCountRecord->lecturesum/60)/24,2);
+  $classLectureUser = number_format(($liveClassCountUserRecord->classacount/60)/24,2);
   if (!empty($classCountRecord)) {
     foreach ($classCountRecord as $classRecord) {
       foreach ($userClassCountRecord as $userRecord) {
@@ -227,6 +252,7 @@ if (!empty($course)) {
       $row = array();
       $row[] = $classRecord->month;
       $row[] = $attendanceCount . '/' . $classRecord->classcount;
+      $row[] = $classLectureUser . '/' . $classLecture." hours";
       $attendance->data[] = $row;
     }
   }

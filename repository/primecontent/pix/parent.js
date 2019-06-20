@@ -27,6 +27,7 @@ function addFile(title, icon) {
     $('.fp-content').show();
     $('.fp-content').html(html);
 }
+
 function getAttemptedId(attemptId) {
         window.webkit.messageHandlers.attemptId.postMessage(attemptId);
     }
