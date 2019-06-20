@@ -62,7 +62,7 @@
             on b.class_id=gbu.class_id and gbu.user_id=$userid
             WHERE b.course in ($courseIdsString)";
       $attendanceInfo = $DB->get_record_sql($attendancesql);
-    if($userInfo){
+    if($attendanceInfo){
         return $attendanceInfo->attendanceper;
       }else {
         return 0;
