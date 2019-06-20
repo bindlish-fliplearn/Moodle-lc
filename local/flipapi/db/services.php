@@ -71,6 +71,13 @@ $functions = array(
     'classpath' => 'local/flipapi/externallib.php',
     'description' => 'Add Update ptm.',
     'type' => 'update',
+  ),
+   'local_flipapi_guru_vedio_view' => array(
+    'classname' => 'local_flipapi_external',
+    'methodname' => 'guru_vedio_view',
+    'classpath' => 'local/flipapi/externallib.php',
+    'description' => 'View guru vedio.',
+    'type' => 'update',
   )
 );
 

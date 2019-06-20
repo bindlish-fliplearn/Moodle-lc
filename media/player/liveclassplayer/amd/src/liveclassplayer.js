@@ -62,9 +62,9 @@ define(['liveclassplayer', 'jquery', 'core/config', 'core/yui', 'core/log', 'mod
                     var url = window.location;
                     var path = url.host;
                     var update = {
-                            currentTime: currentTime,
+                            view_time: currentTime,
                             duration: duration,
-                            contextId: contextId,
+                            context_id: contextId,
                             title: playerinstance.getPlaylistItem().title,
                             file:playerinstance.getPlaylistItem().file
                         };
@@ -74,7 +74,7 @@ define(['liveclassplayer', 'jquery', 'core/config', 'core/yui', 'core/log', 'mod
                     $.ajax({
                         type: "POST",
                         data: update,
-                        url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken=6257f654f905c94b0d0f90fce5b9af31&wsfunction=local_flipapi_upadte_completionexpected_by_id&moodlewsrestformat=json",
+                        url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken=6257f654f905c94b0d0f90fce5b9af31&wsfunction=local_flipapi_guru_vedio_view&moodlewsrestformat=json",
                         success: function (data) {
                             console.log(data);
                             url.reload();
@@ -104,7 +104,6 @@ define(['liveclassplayer', 'jquery', 'core/config', 'core/yui', 'core/log', 'mod
         // log.debug(config.data);
         Y.io(mdlconfig.wwwroot + '/media/player/liveclassplayer/eventlogger.php', config);
     };
-
     /**
      * Error logging. Called when player error event is triggered.
      *

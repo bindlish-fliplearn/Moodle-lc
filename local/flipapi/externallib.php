@@ -589,4 +589,83 @@ class local_flipapi_external extends external_api {
     );
   }
 
+    /**
+   * Returns description of method parameters
+   * @return external_function_parameters
+   */
+  public static function guru_vedio_view_parameters() {
+    return new external_function_parameters(
+      array(
+      'view_time' => new external_value(PARAM_NUMBER, 'This is view time.'),
+      'duration' => new external_value(PARAM_NUMBER, 'This is vedio duration.'),
+      'context_id' => new external_value(PARAM_INT, 'This is context id .'),
+      'title' => new external_value(PARAM_TEXT, 'This is vedio title  .'),
+      'file' => new external_value(PARAM_TEXT, 'This is play vedio file  .'),
+      )
+    );
+  }
+
+  /**
+   * Returns welcome message
+   * @return string welcome message
+   */
+  public static function guru_vedio_view($view_time, $duration, $context_id, $title, $file) {
+    global $DB;
+    global $USER;
+
+    //REQUIRED
+    self::validate_parameters(
+      self::guru_vedio_view_parameters(), array(
+      'view_time' => $view_time,
+      'duration' => $duration,
+      'context_id' => $context_id,
+      'title' => $title,
+      'file'=>$file
+      )
+    );
+      $getCoursesql = "SELECT cm.course as course FROM {context} as c 
+              JOIN {course_modules} as cm 
+              on cm.id = c.instanceid where c.id = $context_id";
+      $courseResult = $DB->get_record_sql($getCoursesql);
+      $courseid = $courseResult->course;
+      $userid = $USER->id;
+      $insertRecord = [];
+      $insertRecord['view_time'] = $view_time;
+      $insertRecord['duration'] = $duration;
+      $insertRecord['context_id'] = $context_id;
+      $insertRecord['title'] = $title;
+      $insertRecord['file'] = $file;
+      $insertRecord['course_id'] = $courseid;
+      $insertRecord['user_id'] = $userid;
+
+      $checkTimeSql = "SELECT view_time from {guru_video_view} 
+                      WHERE context_id = $context_id 
+                      AND user_id = $userid";
+
+      $timeResult = $DB->get_record_sql($checkTimeSql);
+      if($timeResult){
+          $old_view_time = $timeResult->view_time;
+          if($old_view_time < $view_time){
+            $updateSql = "UPDATE {guru_video_view} SET view_time = $view_time WHERE context_id = $context_id AND user_id = $userid ";
+            $DB->execute($updateSql);
+            return ['status' => 'true'];
+          }else {
+             return ['status' => 'true'];
+          }
+      }else{
+        $DB->insert_record('guru_video_view', $insertRecord);
+        return ['status' => 'true'];
+      }
+  }
+   /**
+   * Returns description of method result value
+   * @return external_description
+   */
+  public static function guru_vedio_view_returns() {
+    return new external_single_structure(
+      array(
+      'status' => new external_value(PARAM_TEXT, 'status')
+      )
+    );
+  }
 }
