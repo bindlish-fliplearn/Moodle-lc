@@ -194,7 +194,9 @@ if (!$viewobj->quizhasquestions) {
 } else {
     if ($unfinished) {
         if ($canattempt) {
-            $viewobj->buttontext = get_string('continueattemptquiz', 'quiz');
+            //$viewobj->buttontext = get_string('continueattemptquiz', 'quiz');
+        redirect(new moodle_url('/mod/quiz/startattempt.php', array('cmid' => $cm->id, 'sesskey' => sesskey())));
+
         } else if ($canpreview) {
             $viewobj->buttontext = get_string('continuepreview', 'quiz');
         }
@@ -206,7 +208,10 @@ if (!$viewobj->quizhasquestions) {
             if ($viewobj->preventmessages) {
                 $viewobj->buttontext = '';
             } else if ($viewobj->numattempts == 0) {
-                $viewobj->buttontext = get_string('attemptquiznow', 'quiz');
+                //$viewobj->buttontext = get_string('attemptquiznow', 'quiz');
+
+            redirect(new moodle_url('/mod/quiz/startattempt.php', array('cmid' => $cm->id, 'sesskey' => sesskey())));
+
             } else {
                 $viewobj->buttontext = get_string('reattemptquiz', 'quiz');
             }
