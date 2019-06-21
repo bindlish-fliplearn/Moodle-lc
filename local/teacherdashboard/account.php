@@ -82,7 +82,7 @@
         }
         $programName = implode(', ',$courseName);
         $score = 0;
-        $attendance = '';
+        $attendance = 0;
         $score = getCourseScore($courseIds,$id);
         $userInfo = getUserProfile($id);
         $attendance =  getAttendence($id,$courseIds);
