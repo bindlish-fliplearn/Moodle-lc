@@ -101,7 +101,9 @@
                $row[] = $userValue->data;
             }
           }else{
-              $row[] = $userValue->data ;
+              if($userValue->shortname!='parentMobile'){
+                 $row[] = $userValue->data ;   
+              }
           }
         }
         $row[] = $score.'%';

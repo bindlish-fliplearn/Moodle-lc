@@ -70,7 +70,7 @@ if(empty($userId)) {
   $PAGE->set_title("$USER->firstname $USER->lastname: " . get_string('accountheading', 'local_studentdashboard'));
   $PAGE->set_heading("$USER->firstname $USER->lastname: " . get_string('accountheading', 'local_studentdashboard'));
 } else {
-  $userNameSql = "SELECT u.firstname,u.lastname
+  $userNameSql = "SELECT u.firstname,u.lastname,u.phone2
          FROM {user} AS u
          WHERE u.id = $userId";
   $userName = $DB->get_record_sql($userNameSql);
@@ -94,8 +94,12 @@ echo $OUTPUT->heading("Profile Summary", 4);
 $studenttable = new html_table();
 if(empty($userId)) {
   $studenttable->data[] = ['Name', $USER->firstname . ' ' . $USER->lastname];
+    $studenttable->data[] = ['Mobile No
+', $USER->phone2];
 }else {
   $studenttable->data[] = ['Name', $userName->firstname . ' ' . $userName->lastname];
+      $studenttable->data[] = ['Mobile No
+', $userName->phone2];
 }
 $studenttable->data[] = ['Program', $programName];
 
