@@ -67,7 +67,7 @@ $programName = rtrim($programName, ', ');
 
 $PAGE->set_url('/local/sudenttdashboard/account.php');
 if(empty($userId)) {
-  $PAGE->set_title("$userDetails->firstname $USER->lastname: " . get_string('accountheading', 'local_studentdashboard'));
+  $PAGE->set_title("$USER->firstname $USER->lastname: " . get_string('accountheading', 'local_studentdashboard'));
   $PAGE->set_heading("$USER->firstname $USER->lastname: " . get_string('accountheading', 'local_studentdashboard'));
 } else {
   $userNameSql = "SELECT u.firstname,u.lastname
@@ -84,12 +84,21 @@ $PAGE->set_pagelayout('incourse');
 $PAGE->navbar->add(get_string('accountheading', 'local_studentdashboard'));
 
 echo $OUTPUT->header();
-
+if(empty($userId)) {
 echo $OUTPUT->heading("$USER->firstname $USER->lastname: " . get_string('accountheading', 'local_studentdashboard'));
+}else {
+  echo $OUTPUT->heading("$userName->firstname $userName->lastname: " . get_string('accountheading', 'local_studentdashboard'));
+}
+
 echo $OUTPUT->heading("Profile Summary", 4);
 $studenttable = new html_table();
-$studenttable->data[] = ['Name', $USER->firstname . ' ' . $USER->lastname];
+if(empty($userId)) {
+  $studenttable->data[] = ['Name', $USER->firstname . ' ' . $USER->lastname];
+}else {
+  $studenttable->data[] = ['Name', $userName->firstname . ' ' . $userName->lastname];
+}
 $studenttable->data[] = ['Program', $programName];
+
 foreach ($userDetails as $userData) {
   if(in_array($userData->shortname, $hideForStu) && !user_has_role_assignment($USER->id,5)) {
     $studenttable->data[] = [$userData->name, $userData->data];
@@ -118,17 +127,26 @@ $ptmtable->head = array();
 $ptmtable->head[] = 'Date';
 $ptmtable->head[] = 'Teacher Remark for Student/Parent';
 $ptmtable->head[] = 'Parent Feedback';
+$ptmtable->head[] = 'Teacher Name';
 if(!user_has_role_assignment($USER->id,5)) {
   $ptmtable->head[] = 'Action';
 }
 
-$ptmRecord = $DB->get_records('guru_user_ptm', array('user_id' => $id, 'teacher_id' => $USER->id));
+$ptmsql = "SELECT gup.*, u.firstname, u.lastname 
+            FROM {guru_user_ptm} as gup 
+            JOIN {user} AS u ON u.id = gup.teacher_id 
+            AND gup.user_id = $id";
+$ptmRecord = $DB->get_records_sql($ptmsql);            
+
 if (!empty($ptmRecord)) {
   foreach ($ptmRecord as $remark) {
     $row = array();
     $row[] = $remark->ptm_date;
     $row[] = $remark->teacher_remark;
     $row[] = $remark->parent_feedback;
+    $teacherName = $remark->firstname;
+    $teacherName = ($remark->lastname != null)?$teacherName.' '.$remark->lastname : $teacherName;
+    $row[] = $remark->firstname;
     if(!user_has_role_assignment($USER->id,5)) {
     $row[] = "<a href='#0' onclick='showPtmPopup(\"$remark->id\", \"$remark->user_id\", \"$USER->id\", \"$remark->ptm_date\", \"$remark->teacher_remark\", \"$remark->parent_feedback\")'>Edit</a>"; 
     }
