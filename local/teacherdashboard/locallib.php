@@ -30,8 +30,8 @@
   function getUserProfile($userid){
     global $DB; 
       $userInfoSql = "SELECT uif.shortname,uif.name, uid.data 
-                      FROM mdl_user_info_field AS uif 
-                      LEFT JOIN mdl_user_info_data AS uid
+                      FROM {user_info_field} AS uif 
+                      LEFT JOIN {user_info_data} AS uid
                       ON uif.id= uid.fieldid AND uid.userid = $userid";
         $userInfo = $DB->get_records_sql($userInfoSql);
       if($userInfo){
@@ -42,8 +42,8 @@
   }
   function getUserProfileHead(){
       global $DB;
-       $userInfoSql = "SELECT name, name 
-                      FROM mdl_user_info_field";
+       $userInfoSql = "SELECT name 
+                      FROM {user_info_field}";
         $userInfo = $DB->get_records_sql($userInfoSql);
       if($userInfo){
         return $userInfo;
@@ -57,8 +57,8 @@
     $attendancesql = "SELECT count(b.id) as totalClass, 
                   count(gbu.user_id) as totalAttendClass, 
                   ROUND((count(gbu.user_id)/count(b.id)*100),2) as attendanceper 
-            FROM mdl_braincert as b
-            Left JOIN mdl_guru_braincert_user as gbu 
+            FROM {braincert} as b
+            Left JOIN {guru_braincert_user} as gbu 
             on b.class_id=gbu.class_id and gbu.user_id=$userid
             WHERE b.course in ($courseIdsString)";
       $attendanceInfo = $DB->get_record_sql($attendancesql);

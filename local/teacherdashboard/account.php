@@ -45,6 +45,8 @@
   echo html_writer::end_tag('a');
   echo html_writer::end_tag('div');
 
+  $headArray = array('class10Marks','class11Marks');
+
   $heads = getUserProfileHead();
   $teachertable = new html_table();
   $teachertable->head = array ();
@@ -58,11 +60,11 @@
   global $DB;
    $getSql = "SELECT DISTINCT ue.userid, u.firstname
           FROM mdl_enrol 
-          AS me INNER JOIN mdl_user_enrolments 
+          AS me INNER JOIN {user_enrolments} 
           AS ue ON me.id = ue.enrolid 
-          INNER JOIN mdl_user as u
+          INNER JOIN {user} as u
           ON u.id = ue.userid
-          INNER JOIN mdl_role_assignments as ra 
+          INNER JOIN {role_assignments} as ra 
           ON ra.userid = u.id
           WHERE me.courseid = $courseid 
           AND ue.status = 0 AND ra.roleid = 5";
@@ -90,11 +92,15 @@
         $row   = array();
         $row[] = "<a href = '".$returnurl."' target = '_blank'>".$data->firstname."</a>";
         $row[] = $programName;
-        $row[] = $attendance;
+        $row[] = $attendance.'%';
         foreach ($userInfo as $infokey => $userValue) {
-           $row[] = $userValue->data ;
+          if(in_array($userValue->shortname, $headArray)){
+           $row[] = $userValue->data.'%' ;
+          }else{
+              $row[] = $userValue->data ;
+          }
         }
-        $row[] = $score;
+        $row[] = $score.'%';
         $teachertable->data[] = $row;
     }
   } else {
