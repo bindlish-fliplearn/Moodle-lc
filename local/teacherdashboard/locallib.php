@@ -42,7 +42,7 @@
   }
   function getUserProfileHead(){
       global $DB;
-       $userInfoSql = "SELECT name 
+       $userInfoSql = "SELECT name,shortname 
                       FROM {user_info_field}";
         $userInfo = $DB->get_records_sql($userInfoSql);
       if($userInfo){
