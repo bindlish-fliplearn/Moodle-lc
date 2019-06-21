@@ -147,7 +147,7 @@ if (!empty($ptmRecord)) {
     $teacherName = $remark->firstname;
     $teacherName = ($remark->lastname != null)?$teacherName.' '.$remark->lastname : $teacherName;
     $row[] = $remark->firstname;
-    if(!user_has_role_assignment($USER->id,5)) {
+    if(!user_has_role_assignment($USER->id,5) && $USER->id == $remark->teacher_id ) {
     $row[] = "<a href='#0' onclick='showPtmPopup(\"$remark->id\", \"$remark->user_id\", \"$USER->id\", \"$remark->ptm_date\", \"$remark->teacher_remark\", \"$remark->parent_feedback\")'>Edit</a>"; 
     }
     $ptmtable->data[] = $row;
