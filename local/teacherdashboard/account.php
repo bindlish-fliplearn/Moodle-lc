@@ -95,7 +95,11 @@
         $row[] = $attendance.'%';
         foreach ($userInfo as $infokey => $userValue) {
           if(in_array($userValue->shortname, $headArray)){
-           $row[] = $userValue->data.'%' ;
+            if($userValue->data!=''){
+               $row[] = $userValue->data.'%' ;
+            }else {
+               $row[] = $userValue->data;
+            }
           }else{
               $row[] = $userValue->data ;
           }

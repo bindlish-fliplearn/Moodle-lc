@@ -63,7 +63,12 @@
             WHERE b.course in ($courseIdsString)";
       $attendanceInfo = $DB->get_record_sql($attendancesql);
     if($attendanceInfo){
-        return $attendanceInfo->attendanceper;
+         if($attendanceInfo->attendanceper == ''){
+            return 0;
+         }
+         else{
+            return $attendanceInfo->attendanceper;
+          }
       }else {
         return 0;
       }
