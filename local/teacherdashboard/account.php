@@ -54,7 +54,9 @@
   $teachertable->head[] = 'Program';
   $teachertable->head[] = 'Attendance';
   foreach ($heads as $key => $value) {
-    $teachertable->head[] = $value->name;
+      if($value->shortname!='parentMobile'){
+                $teachertable->head[] = $value->name;   
+              } 
   }
   $teachertable->head[] = 'Guru Test Score';
   global $DB;
