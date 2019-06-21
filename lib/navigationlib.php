@@ -2698,6 +2698,12 @@ class global_navigation extends navigation_node {
 
         $navoptions = course_get_user_navigation_options($this->page->context, $course);
 
+        // Add teacher dashboard for fliplearn.
+         $teachrerdashboard = $coursenode->add('Teacher Dashboard', new moodle_url('/local/teacherdashboard/account.php?courseid='.$course->id),
+                self::TYPE_CONTAINER, 'Teacher Dashboard', 'Teacher Dashboard', new pix_icon('i/users', ''));
+
+         // End here for fliplearn teacher dashboard.
+
         //Participants
         if ($navoptions->participants) {
             $participants = $coursenode->add(get_string('participants'), new moodle_url('/user/index.php?id='.$course->id),

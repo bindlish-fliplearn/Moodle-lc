@@ -28,9 +28,9 @@
   global $USER;
   $userid = $USER->id;
   $courseid = $_GET['courseid'];
-  if(!$courseid){
-    $courseid = 148;
-  }
+  // if(!$courseid){
+  //   $courseid = 148;
+  // }
   require_login();
   $coursies = enrol_get_all_users_courses($id);
   $PAGE->set_url('/local/teacherdashboard/account.php');
