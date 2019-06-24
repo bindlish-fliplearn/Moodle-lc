@@ -163,14 +163,15 @@ function showPtmPopup(ptmId="", userId, teacherId, ptmdate, teacherremark="", pa
     html += "<input type='hidden' class='userId' name='userId' value='"+userId+"'>"; 
     html += "<input type='hidden' class='teacherId' name='teacherId' value='"+teacherId+"'>"; 
     html += "<div class='ptmPopup' style='width: 100%; height: 100%; background-color: rgba(0, 0, 0, .6);  position: fixed; z-index: 9999; top: 0px;'>";
-    html += "<div style='width: 450px; height: 300px; background-color: white; position: absolute;left: 30%; top:20%;'>";
+    html += "<div style='width: 40%; height: auto; background-color: white; position: absolute;left: 30%; top:20%;'>";
     html += "<a href='#0' style='float: right; padding: 10px;' onclick='hideptmPopup()'> close </a>";
-    html += "<h3 style='padding: 20px 30px;'>PTM Remark</h3><br>";
-    html += 'Date: <input type="date" name="ptmdate" class="ptmdate" value="'+ptmdate+'" style="margin: 0px 20px 0px 30px;"><br>';
-    html += 'Teacher Remark: <textarea class="teacherremark" name="teacherremark">'+teacherremark+'</textarea><br>';
-    html += 'Parent Feedback: <textarea class="parentFeed" name="parentFeed">'+parentFeed+'</textarea><br>';
-    html += '<input type="submit" style="float: right; margin-right: 20px;" onClick="submitPTM();" value="Add PTM">';
-    html += "</div>";
+    html += "<h3 style='padding: 10px 20px 0px; border-bottom: solid 1px #CCC'>PTM Remark</h3><div class='row' style='padding: 0px 20px;'>";
+    html += "<div class='span5 ptm-error' style='text-align:center;  margin-bottom: 20px; color: red;'></div>";
+    html += '<div class="span2">Date:</div> <div class="span3"><input type="date" name="ptmdate" class="ptmdate" value="'+ptmdate+'"></div>';
+    html += '<div class="span2">Teacher Remark:</div> <div class="span3"><textarea class="teacherremark" name="teacherremark">'+teacherremark+'</textarea></div>';
+    html += '<div class="span2">Parent Feedback:</div> <div class="span3"><textarea class="parentFeed" name="parentFeed">'+parentFeed+'</textarea></div>';
+    html += '<div class="span2">&nbsp;</div><div class="span3"><input type="submit" onClick="submitPTM();" value="Add PTM"></div>';
+    html += "</div></div>";
     html += "</div>";
     $('body').append(html);
 }
@@ -180,6 +181,16 @@ function hideptmPopup() {
 }
 
 function submitPTM() {
+    if(!$('.ptmdate').val()) {
+        $('.ptm-error').html("Please Enter ptm date.");
+        return false;
+    } if(!$('.teacherremark').val()) {
+        $('.ptm-error').html("Please Enter teacher remark.");
+        return false;
+    } if(!$('.parentFeed').val()) {
+        $('.ptm-error').html("Please Enter parent feed.");
+        return false;
+    }
     var request = {
         ptmId: $('.ptmId').val(),
         userId: $('.userId').val(),
