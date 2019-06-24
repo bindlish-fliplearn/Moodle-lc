@@ -87,3 +87,8 @@
    margin-right: 0;
    margin: 250px auto;
 }
+.tdOverFlowScroll{
+    overflow-y: auto;
+    height: 70px;
+    display: block;
+}
