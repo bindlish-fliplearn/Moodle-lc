@@ -2466,7 +2466,7 @@ EOT;
      * @return string
      */
     protected function render_custom_menu(custom_menu $menu, $wrappre = '', $wrappost = '') {
-        global $CFG;
+        global $CFG, $USER;
 
         // TODO: eliminate this duplicated logic, it belongs in core, not
         // here. See MDL-39565.
@@ -2485,6 +2485,9 @@ EOT;
         $content = '<ul class="nav navbar-nav">';
         foreach ($menu->get_children() as $item) {
             $content .= $this->render_custom_menu_item($item, 1);
+        }
+        if(user_has_role_assignment($USER->id,5)) {
+          $content .= '<li><a title="My Dashboard" href="'.$CFG->wwwroot.'/local/studentdashboard/account.php">My Dashboard</a></li>';
         }
         $content = $wrappre . $content . '</ul>' . $wrappost;
         return $content;

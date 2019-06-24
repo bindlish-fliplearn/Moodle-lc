@@ -28,6 +28,9 @@ file name: /lib/navigationlib.php
 function name : add_course_essentials
 
 
+Add Check for student role
+file name: theme/adaptable/renderers.php
+function name : render_custom_menu
 
 
 
