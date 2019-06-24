@@ -161,6 +161,8 @@ if (!empty($ptmRecord)) {
   $row[] = "";
   $row[] = "No Record Found.";
   $row[] = "";
+  $row[] = "";
+  $row[] = "";
   $ptmtable->data[] = $row;
 }
 

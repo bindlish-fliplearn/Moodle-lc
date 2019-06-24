@@ -77,12 +77,14 @@
         $coursies = enrol_get_all_users_courses($id);
         $courseIds = [];
         $courseName = [];
+        $shortname = [];
         foreach ($coursies as $course) {
-          $programName = $course->shortname . ', ';
+          $shortname[] = $course->shortname ;
           $courseIds[] = $course->id;
           $courseName[] = $course->fullname;
         }
-        $programName = implode(', ',$courseName);
+      
+        $programName = implode(', ',$shortname);
         $score = 0;
         $attendance = 0;
         $score = getCourseScore($courseIds,$id);
@@ -110,6 +112,7 @@
         }
         $row[] = $score.'%';
         $teachertable->data[] = $row;
+        $teachertable->colclasses[1] = 'tdOverFlowScroll';
     }
   } else {
     $row = array();
