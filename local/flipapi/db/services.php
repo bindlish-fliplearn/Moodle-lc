@@ -78,6 +78,20 @@ $functions = array(
     'classpath' => 'local/flipapi/externallib.php',
     'description' => 'View guru vedio.',
     'type' => 'update',
+     ),
+  'local_flipapi_get_live_classes' => array(
+    'classname' => 'local_flipapi_external',
+    'methodname' => 'get_live_classes',
+    'classpath' => 'local/flipapi/externallib.php',
+    'description' => 'Get Live classes for user by class id and user id.',
+    'type' => 'read',
+  ),
+  'local_flipapi_add_reminder_live_class' => array(
+    'classname' => 'local_flipapi_external',
+    'methodname' => 'add_reminder_live_class',
+    'classpath' => 'local/flipapi/externallib.php',
+    'description' => 'Get Live classes for user by class id and user id.',
+    'type' => 'read',
   )
 );
 

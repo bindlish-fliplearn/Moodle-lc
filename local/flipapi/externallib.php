@@ -1,5 +1,4 @@
 <?php
-
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
@@ -12,7 +11,6 @@
 //
   // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
 /**
  * External Web Service Template
  *
@@ -21,13 +19,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require_once($CFG->libdir . "/externallib.php");
-
 use \local_flipapi\api as local_api;
 use \core_calendar\external\events_exporter;
 use \core_calendar\external\events_related_objects_cache;
-
 class local_flipapi_external extends external_api {
-
   /**
    * Returns description of method parameters
    * @return external_function_parameters
@@ -37,7 +32,6 @@ class local_flipapi_external extends external_api {
       array('uuid' => new external_value(PARAM_TEXT, 'This is fliplearn uuid.'))
     );
   }
-
   /**
    * Returns welcome message
    * @return string welcome message
@@ -59,7 +53,6 @@ class local_flipapi_external extends external_api {
     }
     return ['uuid' => $resp];
   }
-
   /**
    * Returns description of method result value
    * @return external_description
@@ -73,7 +66,6 @@ class local_flipapi_external extends external_api {
       )
     );
   }
-
   public static function flip_user_mapping_parameters() {
     return new external_function_parameters(
       array(
@@ -95,13 +87,11 @@ class local_flipapi_external extends external_api {
       )
     );
   }
-
   public static function flip_user_mapping($parms) {
     global $DB;
     $resp = array();
     $params = self::validate_parameters(self::flip_user_mapping_parameters(), array('userDetails' => $parms));
     $userDetails = $params['userDetails'][0];
-
     $userObj = new stdClass();
     $userObj->user_id = $userDetails['user_id'];
     $userObj->uuid = $userDetails['uuid'];
@@ -117,7 +107,6 @@ class local_flipapi_external extends external_api {
     $resp[] = $id;
     return ['user_mapping_id' => $resp];
   }
-
   /**
    * Returns description of method result value
    * @return external_description
@@ -131,7 +120,6 @@ class local_flipapi_external extends external_api {
       )
     );
   }
-
   /**
    * Returns description of method parameters
    * @return external_function_parameters
@@ -141,11 +129,9 @@ class local_flipapi_external extends external_api {
       array('uuid' => new external_value(PARAM_TEXT, 'This is fliplearn uuid.'))
     );
   }
-
   /**
    * get user details by uuid 
    */
-
   /**
    * Returns welcome message
    * @return string welcome message
@@ -165,13 +151,11 @@ class local_flipapi_external extends external_api {
       return ['result' => array("id" => '', "user_id" => "", "uuid" => "", "login_id" => "", "firstname" => "", "lastname" => "", "email" => "", "role" => "", "is_enrolled" => "", "school_code" => "", "ayid" => ""), "status" => "false"];
     }
   }
-
   /**
    * Returns description of method result value
    * @return external_description
    */
   public static function get_user_by_uuid_returns() {
-
     return new external_single_structure(
       array(
       "result" => new external_single_structure(
@@ -193,7 +177,6 @@ class local_flipapi_external extends external_api {
       )
     );
   }
-
   /**
    * Returns description of method parameters
    * @return external_function_parameters
@@ -203,11 +186,9 @@ class local_flipapi_external extends external_api {
       array('shortname' => new external_value(PARAM_TEXT, 'This is fliplearn role   shortname.'))
     );
   }
-
   /**
    * get user details by uuid 
    */
-
   /**
    * Returns welcome message
    * @return string welcome message
@@ -227,7 +208,6 @@ class local_flipapi_external extends external_api {
       return ['result' => array("id" => '', "name" => "", "shortname" => "", "description" => ""), 'status' => 'false'];
     }
   }
-
   /**
    * Returns description of method result value
    * @return external_description
@@ -247,7 +227,6 @@ class local_flipapi_external extends external_api {
       )
     );
   }
-
   /**
    * Returns description of method parameters.
    *
@@ -264,7 +243,6 @@ class local_flipapi_external extends external_api {
       )
     );
   }
-
   /**
    * Get calendar action events based on the timesort value.
    *
@@ -289,16 +267,13 @@ class local_flipapi_external extends external_api {
     );
     $context = \context_user::instance($USER->id);
     self::validate_context($context);
-
     if (empty($params['aftereventid'])) {
       $params['aftereventid'] = null;
     }
-
     $renderer = $PAGE->get_renderer('core_calendar');
     $events = local_api::get_action_events_by_timesort(
         $params['timesortfrom'], $params['timesortto'], $params['aftereventid'], $params['limitnum']
     );
-
     $exportercache = new events_related_objects_cache($events);
     $exporter = new events_exporter($events, ['cache' => $exportercache]);
     $returnArray = [];
@@ -311,7 +286,6 @@ class local_flipapi_external extends external_api {
     $array = json_decode(json_encode($data), true);
     return $array;
   }
-
   /**
    * Returns description of method result value.
    *
@@ -321,7 +295,6 @@ class local_flipapi_external extends external_api {
   public static function get_calendar_action_completed_events_by_timesort_returns() {
     
   }
-
   /**
    * Returns description of method parameters
    * @return external_function_parameters
@@ -340,11 +313,9 @@ class local_flipapi_external extends external_api {
       )
     );
   }
-
   /**
    * get user details by uuid 
    */
-
   /**
    * Returns welcome message
    * @return string welcome message
@@ -387,7 +358,6 @@ class local_flipapi_external extends external_api {
       return ['status' => 'false'];
     }
   }
-
   /**
    * Returns description of method result value
    * @return external_description
@@ -399,7 +369,6 @@ class local_flipapi_external extends external_api {
       )
     );
   }
-
   public static function sendNotification($event, $assignDate, $courseId, $uuid) {
     global $DB, $CFG;
     $objectid = $event['instanceId'];
@@ -409,18 +378,13 @@ class local_flipapi_external extends external_api {
                           WHERE cm.id =?";
     $courseRes = $DB->get_record_sql($userSql, array($objectid));
     $completionexpected = $courseRes->completionexpected;
-
-
     $currDate = date("Y-m-d");
     $currDateStr = strtotime($currDate);
     $updateDateStr = strtotime(date("Y-m-d", $completionexpected));
-
-
     if ($completionexpected != 0 && $currDateStr <= $updateDateStr) {
       $dueDate = date("Y-m-d", $completionexpected);
       $eventDate = date("Y-m-d\TH:i:s.511\Z", $assignDate);
       $eventType = $CFG->GURU_ANNOUNCEMENT;
-
       $domainName = str_replace("https://", "", $CFG->wwwroot);
       if (in_array($domainName, $CFG->domainList)) {
         $messageTitle = $event['name'];
@@ -432,7 +396,6 @@ class local_flipapi_external extends external_api {
       $userid = $uuid;
       $contextlevel = $CFG->CONTEXT_LEVEL;
       $send_notification = $CFG->SEND_NOTIFICATION;
-
       $sql = "SELECT mra.userid,gum.uuid as uuid,
               gum.school_code AS school_code 
               FROM {context} As mc 
@@ -458,8 +421,6 @@ class local_flipapi_external extends external_api {
       }
       $modulename = $event->other['modulename'];
       $clickUrl = $CFG->wwwroot . "/mod/$modulename/view.php?id=" . $objectid . '&forceview=1';
-
-
       if (count($uuidList) > 0 && $send_notification == true) {
         $serializeRequest = array('senderUuid' => 1234,
           'schoolCode' => $school_code,
@@ -487,7 +448,6 @@ class local_flipapi_external extends external_api {
       }
     }
   }
-
   public static function curlPost($data_string, $url) {
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
@@ -499,7 +459,6 @@ class local_flipapi_external extends external_api {
       'Content-Type: application/json',
       'Content-Length: ' . strlen($data_string))
     );
-
     $result = curl_exec($ch);
     $error = curl_errno($ch);
     $responseArray = array('error' => null, 'data' => '');
@@ -511,7 +470,6 @@ class local_flipapi_external extends external_api {
       return json_encode($responseArray);
     }
   }
-
   /**
    * Returns description of method parameters
    * @return external_function_parameters
@@ -528,11 +486,9 @@ class local_flipapi_external extends external_api {
       )
     );
   }
-
   /**
    * get user details by uuid 
    */
-
   /**
    * Returns welcome message
    * @return string welcome message
@@ -576,7 +532,6 @@ class local_flipapi_external extends external_api {
       return ['status' => 'false'];
     }
   }
-
   /**
    * Returns description of method result value
    * @return external_description
@@ -588,7 +543,6 @@ class local_flipapi_external extends external_api {
       )
     );
   }
-
     /**
    * Returns description of method parameters
    * @return external_function_parameters
@@ -604,7 +558,6 @@ class local_flipapi_external extends external_api {
       )
     );
   }
-
   /**
    * Returns welcome message
    * @return string welcome message
@@ -636,11 +589,9 @@ class local_flipapi_external extends external_api {
       $insertRecord['file'] = $file;
       $insertRecord['course_id'] = $courseid;
       $insertRecord['user_id'] = $userid;
-
       $checkTimeSql = "SELECT view_time from {guru_video_view} 
                       WHERE context_id = $context_id 
                       AND user_id = $userid";
-
       $timeResult = $DB->get_record_sql($checkTimeSql);
       if($timeResult){
           $old_view_time = $timeResult->view_time;
@@ -661,6 +612,115 @@ class local_flipapi_external extends external_api {
    * @return external_description
    */
   public static function guru_vedio_view_returns() {
+    return new external_single_structure(
+      array(
+      'status' => new external_value(PARAM_TEXT, 'status')
+      )
+    );
+  }
+  
+  /**
+   * Returns description of method parameters
+   * @return external_function_parameters
+   */
+  public static function add_reminder_live_class_parameters() {
+    return new external_function_parameters(
+      array(
+      'class_id' => new external_value(PARAM_TEXT, 'This is homework course id.'),
+      'user_id' => new external_value(PARAM_TEXT, 'This is homework assign date.'),
+      'class_time' => new external_value(PARAM_TEXT, 'This is homework assign date.')
+      )
+    );
+  }
+
+  /**
+   * get user details by uuid 
+   */
+
+  /**
+   * Returns welcome message
+   * @return string welcome message
+   */
+  public static function add_reminder_live_class($class_id, $user_id, $class_time) {
+    global $DB;
+    //REQUIRED
+    self::validate_parameters(
+      self::add_reminder_live_class_parameters(), array(
+      'class_id' => $class_id,
+      'user_id' => $user_id,
+      'class_time' => $class_time
+      )
+    );
+    $date = time();
+    $reminderCreated = false;
+    if (!empty($class_id) && !empty($user_id) && !empty($class_time)) {
+      $reminderCreated = "INSERT INTO {guru_reminder} SET class_id='{$class_id}', user_id='{$user_id}', class_time='{$class_time}',timecreated='$date'";
+      $DB->execute($reminderCreated);
+    }
+    if ($reminderCreated) {
+      return ['status' => 'true'];
+    } else {
+      return ['status' => 'false'];
+    }
+  }
+
+  /**
+   * Returns description of method result value
+   * @return external_description
+   */
+  public static function add_reminder_live_class_returns() {
+    return new external_single_structure(
+      array(
+      'status' => new external_value(PARAM_TEXT, 'status')
+      )
+    );
+  }
+  
+  /**
+   * Returns description of method parameters
+   * @return external_function_parameters
+   */
+  public static function get_live_classes_parameters() {
+    return new external_function_parameters(
+      array(
+      'class_level_id' => new external_value(PARAM_TEXT, 'User class level id.'),
+      'user_id' => new external_value(PARAM_TEXT, 'User id.'),
+      )
+    );
+  }
+
+  /**
+   * get user details by uuid 
+   */
+
+  /**
+   * Returns welcome message
+   * @return string welcome message
+   */
+  public static function get_live_classes($class_level_id, $user_id) {
+    global $DB;
+    //REQUIRED
+    self::validate_parameters(
+      self::get_live_classes_parameters(), array(
+      'class_level_id' => $class_level_id,
+      'user_id' => $user_id
+      )
+    );
+    $date = time();
+    $return = false;
+    
+    if ($return) {
+      return ['status' => 'true'];
+    } else {
+      return ['status' => 'false'];
+    }
+  }
+
+  /**
+   * Returns description of method result value
+   * @return external_description
+   */
+  public static function get_live_classes_returns() {
     return new external_single_structure(
       array(
       'status' => new external_value(PARAM_TEXT, 'status')

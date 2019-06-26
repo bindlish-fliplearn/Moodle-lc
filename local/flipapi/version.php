@@ -13,8 +13,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 
-$plugin->version  = 2011101324;  
-
+$plugin->version  = 2011101325;  
  // The (date) version of this module + 2 extra digital for daily versions
                                   // This version number is displayed into /admin/forms.php
                                   // TODO: if ever this plugin get branched, the old branch number
