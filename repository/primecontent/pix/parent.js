@@ -158,6 +158,9 @@ setTimeout(function(){
 }, 1000); 
 
 function showPtmPopup(ptmId="", userId, teacherId, ptmdate, teacherremark="", parentFeed="") {
+
+   var teacherremark = teacherremark.replace(/~/g, "'");
+   var parentFeed = parentFeed.replace(/~/g, "'");
     var html = "";
     html += "<input type='hidden' class='ptmId' name='ptmId' value='"+ptmId+"'>"; 
     html += "<input type='hidden' class='userId' name='userId' value='"+userId+"'>"; 
@@ -191,6 +194,7 @@ function submitPTM() {
         $('.ptm-error').html("Please Enter parent feed.");
         return false;
     }
+
     var request = {
         ptmId: $('.ptmId').val(),
         userId: $('.userId').val(),
@@ -203,7 +207,7 @@ function submitPTM() {
     var url = window.location;
     var path = url.host;
     if(url.host == "localhost") {
-        path = url.host + "/flip-moodle-lc";
+        path = url.host + "/flip_moodle";
     }
     $.ajax({
         type: "POST",
