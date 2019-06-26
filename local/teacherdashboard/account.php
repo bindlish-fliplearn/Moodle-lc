@@ -94,26 +94,23 @@
         $returnurl = new moodle_url('/local/studentdashboard/account.php', array('id'=>$id));
         $row   = array();
         $row[] = "<a href = '".$returnurl."' target = '_blank'>".$data->firstname."</a>";
-        $row[] = $programName;
-        $row[] = $attendance.'%';
+        $row[] = '<div class = "tdOverFlowScroll">'.$programName.'</div>';
+        $row[] = '<div class = "tdOverFlowScroll">'.$attendance.'% </div>';
         foreach ($userInfo as $infokey => $userValue) {
           if(in_array($userValue->shortname, $headArray)){
             if($userValue->data!=''){
-               $row[] = $userValue->data.'%' ;
+               $row[] = '<div class = "tdOverFlowScroll">'.$userValue->data.'% </div>' ;
             }else {
-               $row[] = $userValue->data;
+               $row[] = '<div class = "tdOverFlowScroll">'.$userValue->data.'</div>';
             }
           }else{
               if($userValue->shortname!='parentMobile'){
-                 $row[] = $userValue->data ;   
+                 $row[] = '<div class = "tdOverFlowScroll">'.$userValue->data.'</div>' ;   
               }
           }
         }
-        $row[] = $score.'%';
+        $row[] = '<div class = "tdOverFlowScroll">'.$score.'%</div>';
         $teachertable->data[] = $row;
-        $teachertable->colclasses[1] = 'tdOverFlowScroll';
-
-
     }
   } else {
     $row = array();
