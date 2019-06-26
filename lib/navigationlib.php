@@ -2698,8 +2698,10 @@ class global_navigation extends navigation_node {
 
         $navoptions = course_get_user_navigation_options($this->page->context, $course);
 
+
+
         // Add teacher dashboard for fliplearn.
-         if(!user_has_role_assignment($USER->id,5)) {
+         if(!user_has_role_assignment($USER->id,5) && $CFG->wwwroot == 'https://guru.fliplearn.com') {
          $teachrerdashboard = $coursenode->add('Teacher Dashboard', new moodle_url('/local/teacherdashboard/account.php?courseid='.$course->id),
                 self::TYPE_CONTAINER, 'Teacher Dashboard', 'Teacher Dashboard', new pix_icon('i/users', ''));
         }
