@@ -2685,7 +2685,7 @@ class global_navigation extends navigation_node {
      * @return bool returns true on successful addition of a node.
      */
     public function add_course_essentials($coursenode, stdClass $course) {
-        global $CFG, $SITE;
+        global $CFG, $SITE,$USER;
         require_once($CFG->dirroot . '/course/lib.php');
 
         if ($course->id == $SITE->id) {
@@ -2699,8 +2699,10 @@ class global_navigation extends navigation_node {
         $navoptions = course_get_user_navigation_options($this->page->context, $course);
 
         // Add teacher dashboard for fliplearn.
+         if(!user_has_role_assignment($USER->id,5)) {
          $teachrerdashboard = $coursenode->add('Teacher Dashboard', new moodle_url('/local/teacherdashboard/account.php?courseid='.$course->id),
                 self::TYPE_CONTAINER, 'Teacher Dashboard', 'Teacher Dashboard', new pix_icon('i/users', ''));
+        }
 
          // End here for fliplearn teacher dashboard.
 

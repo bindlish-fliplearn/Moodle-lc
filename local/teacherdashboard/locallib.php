@@ -22,9 +22,9 @@
           where q.course in ($courseIdsString)) as t2 group by t2.userid";
     $teacherrecord = $DB->get_record_sql($sql);
     if($teacherrecord){
-      return $teacherrecord->totalquizper;
+      return number_format($teacherrecord->totalquizper,2);
     }else {
-      return 0;
+      return '0.00';
     }
   }
   function getUserProfile($userid){
@@ -64,13 +64,13 @@
       $attendanceInfo = $DB->get_record_sql($attendancesql);
     if($attendanceInfo){
          if($attendanceInfo->attendanceper == ''){
-            return 0;
+            return '0.00';
          }
          else{
-            return $attendanceInfo->attendanceper;
+            return number_format($attendanceInfo->attendanceper,2);
           }
       }else {
-        return 0;
+        return '0.00';
       }
 
   }

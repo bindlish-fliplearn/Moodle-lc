@@ -34,8 +34,8 @@
   require_login();
   $coursies = enrol_get_all_users_courses($id);
   $PAGE->set_url('/local/teacherdashboard/account.php');
-  $PAGE->set_title("$USER->firstname $USER->lastname: " . get_string('accountheading', 'local_teacherdashboard'));
-  $PAGE->set_heading("$USER->firstname $USER->lastname: " . get_string('accountheading', 'local_teacherdashboard'));
+  $PAGE->set_title("$USER->firstname : " . get_string('accountheading', 'local_teacherdashboard'));
+  $PAGE->set_heading("$USER->firstname : " . get_string('accountheading', 'local_teacherdashboard'));
   $PAGE->set_pagelayout('incourse');
   $PAGE->navbar->add(get_string('accountheading', 'local_teacherdashboard'));
   echo $OUTPUT->header();
@@ -85,13 +85,12 @@
         }
       
         $programName = implode(', ',$shortname);
-        $score = 0;
-        $attendance = 0;
+        $score = 0.00;
+        $attendance = 0.00;
         $score = getCourseScore($courseIds,$id);
         $userInfo = getUserProfile($id);
         $attendance =  getAttendence($id,$courseIds);
 
-        
         $returnurl = new moodle_url('/local/studentdashboard/account.php', array('id'=>$id));
         $row   = array();
         $row[] = "<a href = '".$returnurl."' target = '_blank'>".$data->firstname."</a>";
@@ -113,6 +112,8 @@
         $row[] = $score.'%';
         $teachertable->data[] = $row;
         $teachertable->colclasses[1] = 'tdOverFlowScroll';
+
+
     }
   } else {
     $row = array();
