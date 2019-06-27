@@ -456,7 +456,7 @@ class local_flipapi_external extends external_api {
         $uuid = $value->uuid;
         array_push($uuidList, $uuid);
       }
-      $modulename = $event->other['modulename'];
+      $modulename = $event['module'];
       $clickUrl = $CFG->wwwroot . "/mod/$modulename/view.php?id=" . $objectid . '&forceview=1';
 
 
