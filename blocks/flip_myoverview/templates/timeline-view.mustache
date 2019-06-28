@@ -48,7 +48,7 @@ require(['jquery', 'core/custom_interaction_events'], function($, customEvents) 
             $(this).html(newResult)
         }
     });
-    }, 3000);
+    }, 1000);
 
     var root = $('#timeline-view-{{uniqid}}');
     customEvents.define(root, [customEvents.events.activate]);
