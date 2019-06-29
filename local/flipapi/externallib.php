@@ -350,7 +350,7 @@ class local_flipapi_external extends external_api {
    * @return string welcome message
    */
   public static function update_completionexpected_by_id($courseId, $assignDate, $uuid, $activityId) {
-    global $DB;
+    global $DB,$CFG;
     //REQUIRED
     self::validate_parameters(
       self::update_completionexpected_by_id_parameters(), array(
@@ -375,7 +375,9 @@ class local_flipapi_external extends external_api {
         $DB->execute($updateModules);
         $updateResource = "UPDATE {resource} SET revision = '2'  WHERE id = '{$instanceId}'";
         $updateRecord = $DB->execute($updateResource);
-        self::sendNotification($activity, $date, $courseId, $uuid);
+        if($CFG->wwwroot != 'https://guru.fliplearn.com') {
+          self::sendNotification($activity, $date, $courseId, $uuid);
+        }
       }
     }
     $cacherev = time();

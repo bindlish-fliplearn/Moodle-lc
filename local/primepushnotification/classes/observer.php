@@ -104,7 +104,9 @@ class local_primepushnotification_observer {
 
                         //print_r($request); die();
                          $data_string = json_encode($request);
-                         $result = curlPost($data_string, $CFG->COMMUNICATION_API_URL);
+                         if($CFG->wwwroot != 'https://guru.fliplearn.com') {
+                          $result = curlPost($data_string, $CFG->COMMUNICATION_API_URL);
+                         }
                          $responseData = json_decode($result);
 
                          //print_r($responseData); die();
@@ -186,7 +188,9 @@ class local_primepushnotification_observer {
                           // $myfile = fopen($CFG->dirroot . '/local/primepushnotification/classes/log.text', "w") or die("Unable to open file!");
                           
                           // fwrite($myfile, $data_string);
-                          $result = curlPost($data_string, $serverurl);
+                          if($CFG->wwwroot != 'https://guru.fliplearn.com') {
+                            $result = curlPost($data_string, $serverurl);
+                          }
                           $responseData = json_decode($result);
                           $outPutdata = json_decode($responseData->data);
                           $attemptId = $outPutdata->attemptId;
@@ -271,7 +275,9 @@ class local_primepushnotification_observer {
                                             'payload' => $serializeRequest
                                             ); 
                          $data_string = json_encode($request);
-                         $result = curlPost($data_string, $CFG->COMMUNICATION_API_URL);
+                         if($CFG->wwwroot != 'https://guru.fliplearn.com') {
+                          $result = curlPost($data_string, $CFG->COMMUNICATION_API_URL);
+                         }
                          $responseData = json_decode($result);
                          if($responseData->error !=null){
                           echo $responseData->error;
@@ -359,7 +365,9 @@ class local_primepushnotification_observer {
                                             'payload' => $serializeRequest
                                             ); 
                          $data_string = json_encode($request);
-                         $result = curlPost($data_string, $CFG->COMMUNICATION_API_URL);
+                         if($CFG->wwwroot != 'https://guru.fliplearn.com') {
+                          $result = curlPost($data_string, $CFG->COMMUNICATION_API_URL);
+                         }
                          $responseData = json_decode($result);
                          //print_r($responseData);die;
                          if($responseData->error !=null){
