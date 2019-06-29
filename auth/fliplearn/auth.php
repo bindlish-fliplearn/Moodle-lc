@@ -47,17 +47,10 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
   }
 
   public function complete_login(core\oauth2\client $client, $redirecturl, $cmid, $attemptId) {
-    global $CFG, $SESSION, $PAGE,$DB;
+    global $CFG, $SESSION, $PAGE;
 
    $userMappingData = $userinfo = $this->get_userinfo($client);
-   $uuid = $userMappingData['uuid'];
-   $userMappingSql = "SELECT user_id as id FROM {guru_user_mapping}
-                            WHERE uuid =?";
-   if(!empty($userMappingSql)) {
-    $moodleuser = $DB->get_record_sql($userMappingSql, array($uuid));
-    $issuer = $client->get_issuer();
-    \auth_oauth2\api::link_login($userinfo, $issuer, $moodleuser->id, true);
-   }
+   
     if (!$userinfo) {
       // Trigger login failed event.
       $failurereason = AUTH_LOGIN_NOUSER;
