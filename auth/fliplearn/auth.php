@@ -56,8 +56,8 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
    if(!empty($userMappingSql)) {
     $moodleuser = $DB->get_record_sql($userMappingSql, array($uuid));
     $issuer = $client->get_issuer();
-   }
     \auth_oauth2\api::link_login($userinfo, $issuer, $moodleuser->id, true);
+   }
     if (!$userinfo) {
       // Trigger login failed event.
       $failurereason = AUTH_LOGIN_NOUSER;
