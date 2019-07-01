@@ -669,4 +669,173 @@ class local_flipapi_external extends external_api {
       )
     );
   }
+  
+  /**
+   * Returns description of method parameters
+   * @return external_function_parameters
+   */
+  public static function add_reminder_live_class_parameters() {
+    return new external_function_parameters(
+      array(
+      'live_class_id' => new external_value(PARAM_TEXT, 'This is homework course id.'),
+      'user_id' => new external_value(PARAM_TEXT, 'This is homework assign date.'),
+      'class_time' => new external_value(PARAM_TEXT, 'This is homework assign date.')
+      )
+    );
+  }
+
+  /**
+   * get user details by uuid 
+   */
+
+  /**
+   * Returns welcome message
+   * @return string welcome message
+   */
+  public static function add_reminder_live_class($live_class_id, $user_id, $class_time) {
+    global $DB;
+    //REQUIRED
+    self::validate_parameters(
+      self::add_reminder_live_class_parameters(), array(
+      'live_class_id' => $live_class_id,
+      'user_id' => $user_id,
+      'class_time' => $class_time
+      )
+    );
+    $date = time();
+    $reminderCreated = false;
+    if (!empty($live_class_id) && !empty($user_id) && !empty($class_time)) {
+      $reminderCreated = "INSERT INTO {guru_reminder} SET live_class_id='{$live_class_id}', user_id='{$user_id}', class_time='{$class_time}',timecreated='$date'";
+      $DB->execute($reminderCreated);
+    }
+    if ($reminderCreated) {
+      return ['status' => 'true'];
+    } else {
+      return ['status' => 'false'];
+    }
+  }
+
+  /**
+   * Returns description of method result value
+   * @return external_description
+   */
+  public static function add_reminder_live_class_returns() {
+    return new external_single_structure(
+      array(
+      'status' => new external_value(PARAM_TEXT, 'status')
+      )
+    );
+  }
+  
+  /**
+   * Returns description of method parameters
+   * @return external_function_parameters
+   */
+  public static function get_live_classes_parameters() {
+    return new external_function_parameters(
+      array(
+      'class_level_id' => new external_value(PARAM_TEXT, 'User class level id.'),
+      'user_id' => new external_value(PARAM_TEXT, 'User id.'),
+      )
+    );
+  }
+
+  /**
+   * get user details by uuid 
+   */
+
+  /**
+   * Returns welcome message
+   * @return string welcome message
+   */
+  public static function get_live_classes($class_level_id, $user_id) {
+    global $DB,$CFG;
+    $return = true;
+    //REQUIRED
+    self::validate_parameters(
+      self::get_live_classes_parameters(), array(
+      'class_level_id' => $class_level_id,
+      'user_id' => $user_id
+      )
+    );
+    $date = time();
+    $userObj = $DB->get_record("user", array("id" => $user_id));
+    if(empty($userObj)) {
+      $return = false;
+    }
+    $coursies = enrol_get_all_users_courses($user_id);
+    foreach ($coursies as $course) {
+      $courseId[] = $course->id;
+    }
+    $course = implode(",", $courseId);
+    $getCourseModuleSql = "SELECT cm.*,m.name as modulename,m.id as moduleid FROM {modules} as m join {course_modules} as cm on m.id=cm.module WHERE m.name in ('braincert','wiziq') AND cm.course in ($course)";
+    $courseResult = $DB->get_records_sql($getCourseModuleSql);
+    $response = [];
+    foreach($courseResult as $activity) {
+      $resp = [];
+      $modulename = '{'.$activity->modulename.'}';
+      $instance = $activity->instance;
+      $classDetailsSql = "SELECT * from $modulename WHERE id=$instance";
+      $classResult = $DB->get_record_sql($classDetailsSql);
+      $role = $DB->get_record('role', array('shortname' => 'editingteacher'));
+      $context = get_context_instance(CONTEXT_COURSE, $activity->course);
+      $teachers = get_role_users($role->id, $context);
+      if(!empty($teachers)) {
+        foreach($teachers as $teacher) {
+          $teachersDetails = [];
+          $teacherD['id'] = $teacher->id;
+          $teacherD['name'] = $teacher->firstname;
+          $teacherD['picture'] = $CFG->wwwroot.'/user/pix.php/'.$teacher->id.'/f1.jpg';
+          $teachersDetails[] = $teacherD;
+        }
+      }
+      $resp['courseid'] = $classResult->course;
+      $resp['classid'] = $classResult->class_id;
+      $resp['teachers'] = $teachersDetails;
+      if($activity->modulename == "wiziq") {
+        $resp['title'] = $classResult->name;
+        $resp['duration'] = $classResult->duration;
+        $resp['starton'] = date('h:m A, d M', $classResult->wiziq_datetime);
+        $resp['startin'] = $classResult->wiziq_datetime;
+        $resp['joinurl'] = $classResult->presenter_url;
+      } else {
+        $resp['title'] = $classResult->name;
+        $resp['duration'] = $classResult->duration;
+        $resp['startin'] = $classResult->wiziq_datetime;
+        $resp['joinurl'] = $classResult->presenter_url;
+      }
+      $response[] = $resp;
+    }
+    if ($return) {
+      return ['status' => 'true','liveclass' => $response ];
+    } else {
+      return ['status' => 'false','liveclass' => $response];
+    }
+  }
+
+  /**
+   * Returns description of method result value
+   * @return external_description
+   */
+  public static function get_live_classes_returns() {
+    return new external_single_structure(
+      array(
+      'status' => new external_value(PARAM_TEXT, 'status'),
+      'liveclass' => new external_multiple_structure(new external_single_structure(array(
+      'courseid' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+      'classid' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+        'teachers' => new external_multiple_structure(new external_single_structure(array(
+        'id' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+        'name' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+        'picture' => new external_value(PARAM_TEXT, 'This is homework cm id.')
+        ))),
+      'title' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+      'duration' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+      'starton' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+      'startin' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+      'joinurl' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+      )))
+      )
+    );
+  }
 }
