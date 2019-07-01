@@ -749,8 +749,8 @@ class local_flipapi_external extends external_api {
    * @return string welcome message
    */
   public static function get_live_classes($class_level_id, $user_id) {
-    global $DB,$CFG;
-    $return = true;
+    global $DB, $CFG;
+    $return = false;
     //REQUIRED
     self::validate_parameters(
       self::get_live_classes_parameters(), array(
@@ -760,56 +760,58 @@ class local_flipapi_external extends external_api {
     );
     $date = time();
     $userObj = $DB->get_record("user", array("id" => $user_id));
-    if(empty($userObj)) {
-      $return = false;
-    }
-    $coursies = enrol_get_all_users_courses($user_id);
-    foreach ($coursies as $course) {
-      $courseId[] = $course->id;
-    }
-    $course = implode(",", $courseId);
-    $getCourseModuleSql = "SELECT cm.*,m.name as modulename,m.id as moduleid FROM {modules} as m join {course_modules} as cm on m.id=cm.module WHERE m.name in ('braincert','wiziq') AND cm.course in ($course)";
-    $courseResult = $DB->get_records_sql($getCourseModuleSql);
-    $response = [];
-    foreach($courseResult as $activity) {
-      $resp = [];
-      $modulename = '{'.$activity->modulename.'}';
-      $instance = $activity->instance;
-      $classDetailsSql = "SELECT * from $modulename WHERE id=$instance";
-      $classResult = $DB->get_record_sql($classDetailsSql);
-      $role = $DB->get_record('role', array('shortname' => 'editingteacher'));
-      $context = get_context_instance(CONTEXT_COURSE, $activity->course);
-      $teachers = get_role_users($role->id, $context);
-      if(!empty($teachers)) {
-        foreach($teachers as $teacher) {
-          $teachersDetails = [];
-          $teacherD['id'] = $teacher->id;
-          $teacherD['name'] = $teacher->firstname;
-          $teacherD['picture'] = $CFG->wwwroot.'/user/pix.php/'.$teacher->id.'/f1.jpg';
-          $teachersDetails[] = $teacherD;
+    if (!empty($userObj)) {
+      $coursies = enrol_get_all_users_courses($user_id);
+      if (!empty($coursies)) {
+        foreach ($coursies as $course) {
+          $courseId[] = $course->id;
         }
+        $course = implode(",", $courseId);
+        $getCourseModuleSql = "SELECT cm.*,m.name as modulename,m.id as moduleid FROM {modules} as m join {course_modules} as cm on m.id=cm.module WHERE m.name in ('braincert','wiziq') AND cm.course in ($course)";
+        $courseResult = $DB->get_records_sql($getCourseModuleSql);
+        $response = [];
+        foreach ($courseResult as $activity) {
+          $resp = [];
+          $modulename = '{' . $activity->modulename . '}';
+          $instance = $activity->instance;
+          $classDetailsSql = "SELECT * from $modulename WHERE id=$instance";
+          $classResult = $DB->get_record_sql($classDetailsSql);
+          $role = $DB->get_record('role', array('shortname' => 'editingteacher'));
+          $context = get_context_instance(CONTEXT_COURSE, $activity->course);
+          $teachers = get_role_users($role->id, $context);
+          if (!empty($teachers)) {
+            foreach ($teachers as $teacher) {
+              $teachersDetails = [];
+              $teacherD['id'] = $teacher->id;
+              $teacherD['name'] = $teacher->firstname;
+              $teacherD['picture'] = $CFG->wwwroot . '/user/pix.php/' . $teacher->id . '/f1.jpg';
+              $teachersDetails[] = $teacherD;
+            }
+          }
+          $resp['courseid'] = $classResult->course;
+          $resp['classid'] = $classResult->class_id;
+          $resp['teachers'] = $teachersDetails;
+          if ($activity->modulename == "wiziq") {
+            $resp['title'] = $classResult->name;
+            $resp['duration'] = $classResult->duration;
+            $resp['starton'] = date('h:m A, d M', $classResult->wiziq_datetime);
+            $resp['startin'] = $classResult->wiziq_datetime;
+            $resp['joinurl'] = $classResult->presenter_url;
+          } else {
+            $resp['title'] = $classResult->name;
+            $resp['duration'] = $classResult->duration;
+            $resp['startin'] = $classResult->wiziq_datetime;
+            $resp['joinurl'] = $classResult->presenter_url;
+          }
+          $response[] = $resp;
+        }
+        $return = true;
       }
-      $resp['courseid'] = $classResult->course;
-      $resp['classid'] = $classResult->class_id;
-      $resp['teachers'] = $teachersDetails;
-      if($activity->modulename == "wiziq") {
-        $resp['title'] = $classResult->name;
-        $resp['duration'] = $classResult->duration;
-        $resp['starton'] = date('h:m A, d M', $classResult->wiziq_datetime);
-        $resp['startin'] = $classResult->wiziq_datetime;
-        $resp['joinurl'] = $classResult->presenter_url;
-      } else {
-        $resp['title'] = $classResult->name;
-        $resp['duration'] = $classResult->duration;
-        $resp['startin'] = $classResult->wiziq_datetime;
-        $resp['joinurl'] = $classResult->presenter_url;
-      }
-      $response[] = $resp;
     }
     if ($return) {
-      return ['status' => 'true','liveclass' => $response ];
+      return ['status' => 'true', 'liveclass' => $response];
     } else {
-      return ['status' => 'false','liveclass' => $response];
+      return ['status' => 'false', 'liveclass' => array()];
     }
   }
 
