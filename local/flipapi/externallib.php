@@ -800,9 +800,9 @@ class local_flipapi_external extends external_api {
           $teachers = get_role_users($role->id, $context);
           if (!empty($classResult)) {
             $isteacher = 0;
+            $teachersDetails = [];
             if (!empty($teachers)) {
               foreach ($teachers as $teacher) {
-                $teachersDetails = [];
                 $teacherD['id'] = $teacher->id;
                 $teacherD['name'] = $teacher->firstname;
                 $teacherD['picture'] = $CFG->wwwroot . '/user/pix.php/' . $teacher->id . '/f1.jpg';
@@ -812,7 +812,6 @@ class local_flipapi_external extends external_api {
                 }
               }
             } else {
-              $teachersDetails = [];
               $teacherD['id'] = "";
               $teacherD['name'] = "";
               $teacherD['picture'] = "";
