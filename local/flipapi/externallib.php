@@ -772,18 +772,19 @@ class local_flipapi_external extends external_api {
       } else {
         $course = $course_id;
       }
+      $where = "";
       if(!empty($class_id)) {
-        $where = "and m.class_id=$class_id";
+        $where = "AND class_id=$class_id";
       }
       if (!empty($course)) {
-        $getCourseModuleSql = "SELECT cm.*,m.name as modulename,m.id as moduleid FROM {modules} as m join {course_modules} as cm on m.id=cm.module WHERE m.name in ('braincert','wiziq') AND cm.course in ($course) $where";
+        $getCourseModuleSql = "SELECT cm.*,m.name as modulename,m.id as moduleid FROM {modules} as m join {course_modules} as cm on m.id=cm.module WHERE m.name in ('braincert','wiziq') AND cm.course in ($course) ";
         $courseResult = $DB->get_records_sql($getCourseModuleSql);
         $response = [];
         foreach ($courseResult as $activity) {
           $resp = [];
           $modulename = '{' . $activity->modulename . '}';
           $instance = $activity->instance;
-          $classDetailsSql = "SELECT * from $modulename WHERE id=$instance";
+          $classDetailsSql = "SELECT * from $modulename WHERE id=$instance $where";
           $classResult = $DB->get_record_sql($classDetailsSql);
           $role = $DB->get_record('role', array('shortname' => 'editingteacher'));
           $context = get_context_instance(CONTEXT_COURSE, $activity->course);
