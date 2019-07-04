@@ -760,11 +760,11 @@ class local_flipapi_external extends external_api {
       'user_id' => $user_id,
       'class_id' => $class_id
       )
-    ); 
+    );
     $userSql = "SELECT u.id as id,u.firstname as firstname from {user} u join {guru_user_mapping} um on u.id=um.user_id where um.uuid=$user_id";
     $userObj = $DB->get_record_sql($userSql);
     if (!empty($userObj)) {
-      if(empty($course_id)) {
+      if (empty($course_id)) {
         $coursies = enrol_get_all_users_courses($userObj->id);
         foreach ($coursies as $course) {
           $courseId[] = $course->id;
@@ -774,7 +774,7 @@ class local_flipapi_external extends external_api {
         $course = $course_id;
       }
       $where = "";
-      if(!empty($class_id)) {
+      if (!empty($class_id)) {
         $where = "AND class_id=$class_id";
       }
       if (!empty($course)) {
@@ -790,54 +790,56 @@ class local_flipapi_external extends external_api {
           $role = $DB->get_record('role', array('shortname' => 'editingteacher'));
           $context = get_context_instance(CONTEXT_COURSE, $activity->course);
           $teachers = get_role_users($role->id, $context);
-          $isteacher = 0;
-          if (!empty($teachers)) {
-            foreach ($teachers as $teacher) {
-              $teachersDetails = [];
-              $teacherD['id'] = $teacher->id;
-              $teacherD['name'] = $teacher->firstname;
-              $teacherD['picture'] = $CFG->wwwroot . '/user/pix.php/' . $teacher->id . '/f1.jpg';
-              $teachersDetails[] = $teacherD;
-              if($userObj->id == $teacher->id) {
-                $isteacher = 1;
+          if (!empty($classResult)) {
+            $isteacher = 0;
+            if (!empty($teachers)) {
+              foreach ($teachers as $teacher) {
+                $teachersDetails = [];
+                $teacherD['id'] = $teacher->id;
+                $teacherD['name'] = $teacher->firstname;
+                $teacherD['picture'] = $CFG->wwwroot . '/user/pix.php/' . $teacher->id . '/f1.jpg';
+                $teachersDetails[] = $teacherD;
+                if ($userObj->id == $teacher->id) {
+                  $isteacher = 1;
+                }
               }
+            } else {
+              $teachersDetails = [];
+              $teacherD['id'] = "";
+              $teacherD['name'] = "";
+              $teacherD['picture'] = "";
+              $teachersDetails[] = $teacherD;
             }
-          } else {
-            $teachersDetails = [];
-            $teacherD['id'] = "";
-            $teacherD['name'] = "";
-            $teacherD['picture'] = "";
-            $teachersDetails[] = $teacherD;
-          }
-          $resp['courseid'] = $classResult->course;
-          $resp['classid'] = $classResult->class_id;  
-          $resp['teachers'] = $teachersDetails;
-          
-          if ($activity->modulename == "wiziq") {
-            $resp['title'] = $classResult->name;
-            $resp['starton'] = date('h:m A, d M', $classResult->wiziq_datetime);
-            $resp['startin'] = $classResult->wiziq_datetime;
-            $resp['duration'] = $classResult->duration;
-            $resp['joinurl'] = $classResult->presenter_url;
-          } else {
-            $item = array();
-            $item['userid']    = $userObj->id;
-            $item['username']  = $userObj->firstname;
-            $item['classname'] = $classResult->name;
-            $item['isteacher'] = $isteacher;
-            $item['classid']   = $classResult->class_id;
-            $getlaunchurl = braincert_get_launch_url($item);
-            $launchurl = "";
-            if ($getlaunchurl['status'] == "ok") {
-              $launchurl = $getlaunchurl['launchurl'];
+            $resp['courseid'] = $classResult->course;
+            $resp['classid'] = $classResult->class_id;
+            $resp['teachers'] = $teachersDetails;
+
+            if ($activity->modulename == "wiziq") {
+              $resp['title'] = $classResult->name;
+              $resp['starton'] = date('h:m A, d M', $classResult->wiziq_datetime);
+              $resp['startin'] = $classResult->wiziq_datetime;
+              $resp['duration'] = $classResult->duration;
+              $resp['joinurl'] = $classResult->presenter_url;
+            } else {
+              $item = array();
+              $item['userid'] = $userObj->id;
+              $item['username'] = $userObj->firstname;
+              $item['classname'] = $classResult->name;
+              $item['isteacher'] = $isteacher;
+              $item['classid'] = $classResult->class_id;
+              $getlaunchurl = braincert_get_launch_url($item);
+              $launchurl = "";
+              if ($getlaunchurl['status'] == "ok") {
+                $launchurl = $getlaunchurl['launchurl'];
+              }
+              $resp['title'] = $classResult->name;
+              $resp['starton'] = date('h:m A, d M', $classResult->start_date);
+              $resp['startin'] = $classResult->start_date;
+              $resp['duration'] = $classResult->duration;
+              $resp['joinurl'] = $launchurl;
             }
-            $resp['title'] = $classResult->name;
-            $resp['starton'] = date('h:m A, d M', $classResult->start_date);
-            $resp['startin'] = $classResult->start_date;
-            $resp['duration'] = $classResult->duration;
-            $resp['joinurl'] = $launchurl;
-          }
           $response[] = $resp;
+          }
         }
         $return = true;
       }
