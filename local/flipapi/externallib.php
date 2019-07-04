@@ -21,6 +21,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require_once($CFG->libdir . "/externallib.php");
+require_once($CFG->dirroot . "/mod/braincert/locallib.php");
 
 use \local_flipapi\api as local_api;
 use \core_calendar\external\events_exporter;
@@ -764,7 +765,7 @@ class local_flipapi_external extends external_api {
     $userObj = $DB->get_record_sql($userSql);
     if (!empty($userObj)) {
       if(empty($course_id)) {
-        $coursies = enrol_get_all_users_courses($user_id);
+        $coursies = enrol_get_all_users_courses($userObj->id);
         foreach ($coursies as $course) {
           $courseId[] = $course->id;
         }
@@ -801,6 +802,12 @@ class local_flipapi_external extends external_api {
                 $isteacher = 1;
               }
             }
+          } else {
+            $teachersDetails = [];
+            $teacherD['id'] = "";
+            $teacherD['name'] = "";
+            $teacherD['picture'] = "";
+            $teachersDetails[] = $teacherD;
           }
           $resp['courseid'] = $classResult->course;
           $resp['classid'] = $classResult->class_id;  
