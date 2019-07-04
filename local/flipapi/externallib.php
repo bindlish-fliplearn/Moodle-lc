@@ -705,7 +705,7 @@ class local_flipapi_external extends external_api {
     $date = time();
     $reminderCreated = false;
     if (!empty($live_class_id) && !empty($user_id) && !empty($class_time)) {
-      $reminderCreated = "INSERT INTO {guru_reminder} SET live_class_id='{$live_class_id}', user_id='{$user_id}', class_time='{$class_time}',timecreated='$date'";
+      $reminderCreated = "INSERT INTO {guru_reminder} SET class_id='{$live_class_id}', user_id='{$user_id}', class_time='{$class_time}',timecreated='$date'";
       $DB->execute($reminderCreated);
     }
     if ($reminderCreated) {
@@ -736,6 +736,7 @@ class local_flipapi_external extends external_api {
       array(
       'course_id' => new external_value(PARAM_TEXT, 'User course id.'),
       'user_id' => new external_value(PARAM_TEXT, 'User id.'),
+      'class_id' => new external_value(PARAM_TEXT, 'Class id.'),
       )
     );
   }
@@ -748,17 +749,19 @@ class local_flipapi_external extends external_api {
    * Returns welcome message
    * @return string welcome message
    */
-  public static function get_live_classes($course_id, $user_id) {
+  public static function get_live_classes($course_id, $user_id, $class_id) {
     global $DB, $CFG;
     $return = false;
     //REQUIRED
     self::validate_parameters(
       self::get_live_classes_parameters(), array(
       'course_id' => $course_id,
-      'user_id' => $user_id
+      'user_id' => $user_id,
+      'class_id' => $class_id
       )
-    );
-    $userObj = $DB->get_record("user", array("id" => $user_id));
+    ); 
+    $userSql = "SELECT u.id as id,u.firstname as firstname from {user} u join {guru_user_mapping} um on u.id=um.user_id where um.uuid=$user_id";
+    $userObj = $DB->get_record_sql($userSql);
     if (!empty($userObj)) {
       if(empty($course_id)) {
         $coursies = enrol_get_all_users_courses($user_id);
@@ -769,8 +772,11 @@ class local_flipapi_external extends external_api {
       } else {
         $course = $course_id;
       }
+      if(!empty($class_id)) {
+        $where = "and m.class_id=$class_id";
+      }
       if (!empty($course)) {
-        $getCourseModuleSql = "SELECT cm.*,m.name as modulename,m.id as moduleid FROM {modules} as m join {course_modules} as cm on m.id=cm.module WHERE m.name in ('braincert','wiziq') AND cm.course in ($course)";
+        $getCourseModuleSql = "SELECT cm.*,m.name as modulename,m.id as moduleid FROM {modules} as m join {course_modules} as cm on m.id=cm.module WHERE m.name in ('braincert','wiziq') AND cm.course in ($course) $where";
         $courseResult = $DB->get_records_sql($getCourseModuleSql);
         $response = [];
         foreach ($courseResult as $activity) {
@@ -782,6 +788,7 @@ class local_flipapi_external extends external_api {
           $role = $DB->get_record('role', array('shortname' => 'editingteacher'));
           $context = get_context_instance(CONTEXT_COURSE, $activity->course);
           $teachers = get_role_users($role->id, $context);
+          $isteacher = 0;
           if (!empty($teachers)) {
             foreach ($teachers as $teacher) {
               $teachersDetails = [];
@@ -789,11 +796,15 @@ class local_flipapi_external extends external_api {
               $teacherD['name'] = $teacher->firstname;
               $teacherD['picture'] = $CFG->wwwroot . '/user/pix.php/' . $teacher->id . '/f1.jpg';
               $teachersDetails[] = $teacherD;
+              if($userObj->id == $teacher->id) {
+                $isteacher = 1;
+              }
             }
           }
           $resp['courseid'] = $classResult->course;
-          $resp['classid'] = $classResult->class_id;
+          $resp['classid'] = $classResult->class_id;  
           $resp['teachers'] = $teachersDetails;
+          
           if ($activity->modulename == "wiziq") {
             $resp['title'] = $classResult->name;
             $resp['starton'] = date('h:m A, d M', $classResult->wiziq_datetime);
@@ -801,11 +812,22 @@ class local_flipapi_external extends external_api {
             $resp['duration'] = $classResult->duration;
             $resp['joinurl'] = $classResult->presenter_url;
           } else {
+            $item = array();
+            $item['userid']    = $userObj->id;
+            $item['username']  = $userObj->firstname;
+            $item['classname'] = $classResult->name;
+            $item['isteacher'] = $isteacher;
+            $item['classid']   = $classResult->class_id;
+            $getlaunchurl = braincert_get_launch_url($item);
+            $launchurl = "";
+            if ($getlaunchurl['status'] == "ok") {
+              $launchurl = $getlaunchurl['launchurl'];
+            }
             $resp['title'] = $classResult->name;
             $resp['starton'] = date('h:m A, d M', $classResult->start_date);
             $resp['startin'] = $classResult->start_date;
             $resp['duration'] = $classResult->duration;
-            $resp['joinurl'] = $classResult->presenter_url;
+            $resp['joinurl'] = $launchurl;
           }
           $response[] = $resp;
         }
