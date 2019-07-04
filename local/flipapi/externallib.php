@@ -777,15 +777,23 @@ class local_flipapi_external extends external_api {
       if (!empty($class_id)) {
         $where = "AND class_id=$class_id";
       }
+      $now = time();
+      $mod_date = strtotime("+15 days",$now);
       if (!empty($course)) {
-        $getCourseModuleSql = "SELECT cm.*,m.name as modulename,m.id as moduleid FROM {modules} as m join {course_modules} as cm on m.id=cm.module WHERE m.name in ('braincert','wiziq') AND cm.course in ($course) ";
+        $getCourseModuleSql = "SELECT cm.*,m.name as modulename,m.id as moduleid FROM {modules} as m join {course_modules} as cm on m.id=cm.module WHERE m.name in ('braincert','wiziq') AND cm.course in ($course) ORDER BY id DESC";
         $courseResult = $DB->get_records_sql($getCourseModuleSql);
         $response = [];
         foreach ($courseResult as $activity) {
           $resp = [];
           $modulename = '{' . $activity->modulename . '}';
           $instance = $activity->instance;
-          $classDetailsSql = "SELECT * from $modulename WHERE id=$instance $where";
+          $whereTime = "";
+          if($activity->modulename == "wiziq") {
+            $whereTime = " AND wiziq_datetime BETWEEN $now AND $mod_date";
+          } else if($activity->modulename == "braincert") {
+            $whereTime = " AND start_date BETWEEN $now AND $mod_date";
+          }
+          $classDetailsSql = "SELECT * from $modulename WHERE id=$instance $whereTime $where LIMIT 15";
           $classResult = $DB->get_record_sql($classDetailsSql);
           $role = $DB->get_record('role', array('shortname' => 'editingteacher'));
           $context = get_context_instance(CONTEXT_COURSE, $activity->course);
@@ -835,7 +843,9 @@ class local_flipapi_external extends external_api {
               $resp['title'] = $classResult->name;
               $resp['starton'] = date('h:m A, d M', $classResult->start_date);
               $resp['startin'] = $classResult->start_date;
-              $resp['duration'] = $classResult->duration;
+              $to_time = strtotime(date('y-m-d').$classResult->start_time);
+              $from_time = strtotime(date('y-m-d').$classResult->end_time);
+              $resp['duration'] = round(abs($to_time - $from_time) / 60,2);
               $resp['joinurl'] = $launchurl;
             }
           $response[] = $resp;
