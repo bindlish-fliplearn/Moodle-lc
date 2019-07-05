@@ -447,7 +447,7 @@ class media_liveclassplayer_plugin extends core_media_player {
         $sources = array();
         $streams = array();
         $playersetupdata = array();
-        $playersetupdata['playbackRateControls'] = [0.5, 1.0, 1.5, 2.0, 2.5];
+        $playersetupdata['playbackRateControls'] = [0.5, 1.0, 1.5, 2.0, 2.5, 3];
 
         foreach ($urls as $url) {
             // Add the details for this source.
