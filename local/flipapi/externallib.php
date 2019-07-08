@@ -789,11 +789,11 @@ class local_flipapi_external extends external_api {
           $instance = $activity->instance;
           $whereTime = "";
           if($activity->modulename == "wiziq") {
-            $whereTime = " AND wiziq_datetime BETWEEN $now AND $mod_date";
+            $whereTime = " AND m.wiziq_datetime BETWEEN $now AND $mod_date";
           } else if($activity->modulename == "braincert") {
-            $whereTime = " AND start_date BETWEEN $now AND $mod_date";
+            $whereTime = " AND m.start_date BETWEEN $now AND $mod_date";
           }
-          $classDetailsSql = "SELECT * from $modulename WHERE id=$instance $whereTime $where LIMIT 15";
+          $classDetailsSql = "SELECT m.*,gr.id as remiderid from $modulename m left join {guru_reminder} gr on m.class_id=gr.class_id and gr.user_id='$userObj->id' WHERE m.id=$instance $whereTime $where LIMIT 15";
           $classResult = $DB->get_record_sql($classDetailsSql);
           $role = $DB->get_record('role', array('shortname' => 'editingteacher'));
           $context = get_context_instance(CONTEXT_COURSE, $activity->course);
@@ -820,7 +820,8 @@ class local_flipapi_external extends external_api {
             $resp['courseid'] = $classResult->course;
             $resp['classid'] = $classResult->class_id;
             $resp['teachers'] = $teachersDetails;
-
+            $resp['addreminder'] = (!empty($classResult->remiderid)?'true':'false');
+            
             if ($activity->modulename == "wiziq") {
               $resp['title'] = $classResult->name;
               $resp['starton'] = date('h:m A, d M', $classResult->wiziq_datetime);
@@ -870,6 +871,7 @@ class local_flipapi_external extends external_api {
       'status' => new external_value(PARAM_TEXT, 'status'),
       'liveclass' => new external_multiple_structure(new external_single_structure(array(
       'courseid' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+      'addreminder' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
       'classid' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
         'teachers' => new external_multiple_structure(new external_single_structure(array(
         'id' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
