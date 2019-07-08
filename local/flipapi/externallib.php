@@ -707,7 +707,9 @@ class local_flipapi_external extends external_api {
     $reminderCreated = false;
     $userSql = "SELECT u.id as id,u.firstname as firstname from {user} u join {guru_user_mapping} um on u.id=um.user_id where um.uuid=$user_id";
     $userObj = $DB->get_record_sql($userSql);
-    if (!empty($live_class_id) && !empty($userObj) && !empty($class_time)) {
+    $checkRemider = "SELECT id from {guru_reminder} where user_id='{$userObj->id}' AND class_id='{$live_class_id}'";
+    $remiderObj = $DB->get_record_sql($checkRemider);
+    if (empty($remiderObj) && !empty($live_class_id) && !empty($userObj) && !empty($class_time)) {
       $reminderCreated = "INSERT INTO {guru_reminder} SET class_id='{$live_class_id}', user_id='{$userObj->id}', class_time='{$class_time}',timecreated='$date'";
       $DB->execute($reminderCreated);
     }
