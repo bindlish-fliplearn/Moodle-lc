@@ -792,11 +792,11 @@ class local_flipapi_external extends external_api {
           $modulename = '{' . $activity->modulename . '}';
           $instance = $activity->instance;
           $whereTime = "";
-          if($activity->modulename == "wiziq") {
-            $whereTime = " AND m.wiziq_datetime BETWEEN $now AND $mod_date";
-          } else if($activity->modulename == "braincert") {
-            $whereTime = " AND m.start_date BETWEEN $now AND $mod_date";
-          }
+//          if($activity->modulename == "wiziq") {
+//            $whereTime = " AND m.wiziq_datetime BETWEEN $now AND $mod_date";
+//          } else if($activity->modulename == "braincert") {
+//            $whereTime = " AND m.start_date BETWEEN $now AND $mod_date";
+//          }
           $classDetailsSql = "SELECT m.*,gr.id as remiderid from $modulename m left join {guru_reminder} gr on m.class_id=gr.class_id and gr.user_id='$userObj->id' WHERE m.id=$instance $whereTime $where LIMIT 15";
           $classResult = $DB->get_record_sql($classDetailsSql);
           $role = $DB->get_record('role', array('shortname' => 'editingteacher'));
@@ -852,19 +852,21 @@ class local_flipapi_external extends external_api {
               $resp['duration'] = round(abs($to_time - $from_time) / 60,2);
               $resp['joinurl'] = $launchurl;
             }
-          $response[] = $resp;
+          $response[$resp['startin']] = $resp;
           }
         }
         $return = true;
       }
     }
+    ksort($response);
+    array_values($response);
     if ($return) {
       return ['status' => 'true', 'liveclass' => $response];
     } else {
       return ['status' => 'false', 'liveclass' => array()];
     }
   }
-
+  
   /**
    * Returns description of method result value
    * @return external_description
