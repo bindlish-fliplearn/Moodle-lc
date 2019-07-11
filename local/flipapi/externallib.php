@@ -778,7 +778,7 @@ class local_flipapi_external extends external_api {
     }
       $where = "";
       if (!empty($class_id)) {
-        $where = "AND class_id=$class_id";
+        $where = "AND m.class_id=$class_id";
       }
       $now = time();
       $mod_date = strtotime("+15 days",$now);
