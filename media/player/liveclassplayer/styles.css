@@ -1,2 +1,5 @@
 .liveclassplayer_media {display:block;margin-top:5px;margin-bottom:5px;text-align: center;}
 .liveclassplayer_playerblock{display:inline-block;}
+.jw-settings-content-item {
+    color: #000 !important;
+}

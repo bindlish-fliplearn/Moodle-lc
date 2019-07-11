@@ -50,7 +50,7 @@ class auth_plugin_fliplearn extends \auth_plugin_base {
     global $CFG, $SESSION, $PAGE;
 
    $userMappingData = $userinfo = $this->get_userinfo($client);
-
+   
     if (!$userinfo) {
       // Trigger login failed event.
       $failurereason = AUTH_LOGIN_NOUSER;
