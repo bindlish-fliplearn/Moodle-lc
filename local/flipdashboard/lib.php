@@ -32,6 +32,6 @@ defined('MOODLE_INTERNAL') || die();
  */
 function local_flipdashboard_extend_navigation_course($navigation, $course)
 {
-    $url = new moodle_url('/local/flipdashboard/course.php', array('id' => $course->id));
-    $navigation->add(get_string('pluginname', 'local_flipdashboard'), $url, navigation_node::TYPE_SETTING, null, null, new pix_icon('i/report', ''));
+//    $url = new moodle_url('/local/flipdashboard/course.php', array('id' => $course->id));
+//    $navigation->add(get_string('pluginname', 'local_flipdashboard'), $url, navigation_node::TYPE_SETTING, null, null, new pix_icon('i/report', ''));
 }
