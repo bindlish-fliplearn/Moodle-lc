@@ -829,7 +829,7 @@ class local_flipapi_external extends external_api {
             
             if ($activity->modulename == "wiziq") {
               $resp['title'] = $classResult->name;
-              $resp['starton'] = date('h:m A, d M', $classResult->wiziq_datetime);
+              $resp['starton'] = date('h:i A, d M', $classResult->wiziq_datetime);
               $resp['startin'] = $classResult->wiziq_datetime;
               $resp['duration'] = $classResult->duration;
               $resp['joinurl'] = $classResult->presenter_url;
@@ -846,7 +846,7 @@ class local_flipapi_external extends external_api {
                 $launchurl = $getlaunchurl['launchurl'];
               }
               $resp['title'] = $classResult->name;
-              $resp['starton'] = date('h:m A, d M', $classResult->start_date);
+              $resp['starton'] = date('h:i A, d M', $classResult->start_date);
               $resp['startin'] = $classResult->start_date;
               $to_time = strtotime(date('y-m-d').$classResult->start_time);
               $from_time = strtotime(date('y-m-d').$classResult->end_time);
