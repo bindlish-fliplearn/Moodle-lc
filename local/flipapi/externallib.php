@@ -832,7 +832,11 @@ class local_flipapi_external extends external_api {
               $resp['starton'] = date('h:i A, d M', $classResult->wiziq_datetime);
               $resp['startin'] = $classResult->wiziq_datetime;
               $resp['duration'] = $classResult->duration;
-              $resp['joinurl'] = $classResult->presenter_url;
+              if(!empty($CFG->JOIN_URL)){
+                $resp['joinurl'] = $CFG->JOIN_URL;
+              }else{
+                  $resp['joinurl'] = $classResult->presenter_url;
+              }
             } else {
               $item = array();
               $item['userid'] = $userObj->id;
@@ -851,7 +855,11 @@ class local_flipapi_external extends external_api {
               $to_time = strtotime(date('y-m-d').$classResult->start_time);
               $from_time = strtotime(date('y-m-d').$classResult->end_time);
               $resp['duration'] = round(abs($to_time - $from_time) / 60,2);
-              $resp['joinurl'] = $launchurl;
+              if(!empty($CFG->JOIN_URL)){
+                $resp['joinurl'] = $CFG->JOIN_URL;
+              }else{
+                  $resp['joinurl'] = $launchurl;
+              }
             }
           $response[$resp['startin']] = $resp;
           }
