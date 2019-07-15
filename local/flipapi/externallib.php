@@ -860,11 +860,7 @@ class local_flipapi_external extends external_api {
               $to_time = strtotime(date('y-m-d').$classResult->start_time);
               $from_time = strtotime(date('y-m-d').$classResult->end_time);
               $resp['duration'] = round(abs($to_time - $from_time) / 60,2);
-              if(!empty($CFG->JOIN_URL)){
-                $resp['joinurl'] = $CFG->JOIN_URL;
-              }else{
-                  $resp['joinurl'] = $launchurl;
-              }
+              $resp['joinurl'] = $launchurl;
             }
           $response[$resp['startin']] = $resp;
           }
