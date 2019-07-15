@@ -837,7 +837,7 @@ class local_flipapi_external extends external_api {
               $errormsg = "";
               if(!empty($class_id)) {
                 $language_culture_name = $classResult->vc_language; 
-                $attendee_screen_name = "$userObj->firstname";
+                $attendee_screen_name = $userObj->firstname;
                 wiziq_get_data_attendee($classResult->class_id, $userObj->id, $attendee_url , $classResult->course);
                 wiziq_addattendee($classResult->course, $classResult->class_id, $userObj->id, $attendee_screen_name, $language_culture_name, $attendee_url, $errormsg);
               }
