@@ -795,10 +795,10 @@ class local_flipapi_external extends external_api {
           $classDetailsSql = "";
           if($activity->modulename == "wiziq") {
             $whereTime = " AND UNIX_TIMESTAMP(DATE_ADD(from_unixtime(m.wiziq_datetime), INTERVAL m.duration MINUTE)) BETWEEN $now AND $mod_date";
-            $classDetailsSql = "SELECT m.*,gr.id as remiderid, UNIX_TIMESTAMP(DATE_ADD(from_unixtime(m.wiziq_datetime), INTERVAL m.duration MINUTE)) as enddateTime from $modulename m left join {guru_reminder} gr on m.class_id=gr.class_id WHERE m.id=$instance $whereTime $where LIMIT 15";
+            $classDetailsSql = "SELECT m.*,gr.id as remiderid, UNIX_TIMESTAMP(DATE_ADD(from_unixtime(m.wiziq_datetime), INTERVAL m.duration MINUTE)) as enddateTime from $modulename m left join {guru_reminder} gr on m.class_id=gr.class_id and gr.user_id='$userObj->id' WHERE m.id=$instance $whereTime $where LIMIT 15";
           } else {
             $whereTime = " AND UNIX_TIMESTAMP(STR_TO_DATE(concat(DATE_FORMAT(FROM_UNIXTIME(m.start_date), '%Y-%m-%d '), m.end_time), '%Y-%m-%d %h:%i%p')) BETWEEN $now AND $mod_date";
-            $classDetailsSql = "SELECT m.*,gr.id as remiderid, UNIX_TIMESTAMP(STR_TO_DATE(concat(DATE_FORMAT(FROM_UNIXTIME(m.start_date), '%Y-%m-%d '), m.end_time), '%Y-%m-%d %h:%i%p')) from $modulename m left join {guru_reminder} gr on m.class_id=gr.class_id WHERE m.id=$instance $whereTime $where LIMIT 15";
+            $classDetailsSql = "SELECT m.*,gr.id as remiderid, UNIX_TIMESTAMP(STR_TO_DATE(concat(DATE_FORMAT(FROM_UNIXTIME(m.start_date), '%Y-%m-%d '), m.end_time), '%Y-%m-%d %h:%i%p')) from $modulename m left join {guru_reminder} gr on m.class_id=gr.class_id and gr.user_id='$userObj->id'  WHERE m.id=$instance $whereTime $where LIMIT 15";
           }
           $classResult = $DB->get_record_sql($classDetailsSql);
           $role = $DB->get_record('role', array('shortname' => 'editingteacher'));
