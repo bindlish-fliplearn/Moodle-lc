@@ -22,6 +22,7 @@
  */
 require_once($CFG->libdir . "/externallib.php");
 require_once($CFG->dirroot . "/mod/braincert/locallib.php");
+require_once($CFG->dirroot . "/mod/wiziq/locallib.php");
 
 use \local_flipapi\api as local_api;
 use \core_calendar\external\events_exporter;
@@ -832,11 +833,9 @@ class local_flipapi_external extends external_api {
               $resp['starton'] = date('h:i A, d M', $classResult->wiziq_datetime);
               $resp['startin'] = $classResult->wiziq_datetime;
               $resp['duration'] = $classResult->duration;
-              if(!empty($CFG->JOIN_URL)){
-                $resp['joinurl'] = $CFG->JOIN_URL;
-              }else{
-                  $resp['joinurl'] = $classResult->presenter_url;
-              }
+              $attendee_url = "";
+              wiziq_get_data_attendee($classResult->class_id, $userObj->id, $attendee_url , $classResult->course);
+              $resp['joinurl'] = $attendee_url;
             } else {
               $item = array();
               $item['userid'] = $userObj->id;
