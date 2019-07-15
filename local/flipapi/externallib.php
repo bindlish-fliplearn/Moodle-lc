@@ -834,7 +834,13 @@ class local_flipapi_external extends external_api {
               $resp['startin'] = $classResult->wiziq_datetime;
               $resp['duration'] = $classResult->duration;
               $attendee_url = "";
-              wiziq_get_data_attendee($classResult->class_id, $userObj->id, $attendee_url , $classResult->course);
+              $errormsg = "";
+              if(!empty($class_id)) {
+                $language_culture_name = $classResult->vc_language; 
+                $attendee_screen_name = "$userObj->firstname";
+                wiziq_get_data_attendee($classResult->class_id, $userObj->id, $attendee_url , $classResult->course);
+                wiziq_addattendee($classResult->course, $classResult->class_id, $userObj->id, $attendee_screen_name, $language_culture_name, $attendee_url, $errormsg);
+              }
               $resp['joinurl'] = $attendee_url;
             } else {
               $item = array();
