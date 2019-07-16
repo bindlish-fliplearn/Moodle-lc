@@ -92,3 +92,32 @@
     height: 70px;
     display: block;
 }
+.commentShow{display: block; margin-top: 20px;}
+.commentHide{display: none;}
+.generalbox > .no-overflow {display: flex;flex-direction: column;}
+.rating{order: 1;
+    margin-left: 180px;
+    margin-top: 5px;            
+}
+.modified{order: 0; margin-left: 180px;}
+.ratingarea, .mainButton {position: relative;}
+.star {
+    position: absolute;
+    right: 0;
+    margin-top:-42px;
+    margin-right: 180px;
+}
+.star > span.fa-star-o, .star > span.fa-star {color:#5421a2; font-size: 20px;}
+.feedbacknote{color: #777777;}
+.submitButton{position: absolute;
+    right: 0px;
+    overflow: hidden;
+    margin-top: -20px;
+    margin-right: 180px;}
+.submitButton button {
+    background: #fff;
+    box-shadow: none;
+    border: solid 1px #5421a2;
+    color: #5421a2;
+    padding: 7px 20px
+}  

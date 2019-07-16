@@ -649,10 +649,27 @@ class media_liveclassplayer_plugin extends core_media_player {
         // Set up the player.
         $PAGE->requires->js_call_amd('media_liveclassplayer/liveclassplayer', 'setupPlayer', array($playersetup));
         $playerdiv = html_writer::tag('span', self::LINKPLACEHOLDER, array('id' => $playerid));
+
         $outerspan = html_writer::tag('span', $playerdiv, $outerspanargs);
         $output .= html_writer::tag('span', $outerspan, $options['globalattributes']);
 
-        return $output;
+        global $USER;
+        $rating = '';
+        $contextId =  $playersetup->logcontext;
+        $userId = $USER->id;
+        for ($i=1; $i <=5 ; $i++) { 
+        $rating .="<span class='fa fa-star-o' onclick = addReminder($i,$contextId,$userId) id =rating_$i></span>";
+        }
+        $rRatingDiv = "<div class='star'> $rating</div>";
+        $lRatingDiv = "<div class='avg'>Avg Rating:3.75</div>";
+        $ratingDiv = "<div class='ratingarea'> $lRatingDiv  $rRatingDiv</div>";
+        $textArea = "<div><textarea placeholder = '(Optional feedback about the vidio lesson/tell us you didn`t like this lesson)' id ='feedback' name = 'feedback' rows='4' cols='59'></textarea></div>";
+        $lnote = "<div class = 'feedbacknote' ><span>Note : This feedback for anonymous</span></div>";
+        $rsubmitButton = "<div class='submitButton'><button type = submit  value = Submit onclick = addFeedback($contextId,$userId)>Submit</button></div>";
+        $mainbuttonDiv = "<div class = 'mainButton'>$lnote $rsubmitButton</div>";
+        $commentMainDiv = "<div id ='commentBox' class = 'commentHide'>$textArea $mainbuttonDiv<div>";
+        $mainDiv = "<div class ='rating'>$ratingDiv $commentMainDiv</div>";
+        return $output.$mainDiv;
     }
 
     /**
