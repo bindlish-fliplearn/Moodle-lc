@@ -231,6 +231,7 @@
                 $('#rating_'+i).addClass('fa-star-o');
             }
         }
+        $('#starcount').val(rating);
         if(!$('#commentBox').hasClass('commentShow')){
              $('#commentBox').removeClass('commentHide');   
                 $('#commentBox').addClass('commentShow');   

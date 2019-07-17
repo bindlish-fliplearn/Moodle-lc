@@ -653,14 +653,27 @@ class media_liveclassplayer_plugin extends core_media_player {
         $outerspan = html_writer::tag('span', $playerdiv, $outerspanargs);
         $output .= html_writer::tag('span', $outerspan, $options['globalattributes']);
 
-        global $USER;
+        global $USER, $DB;
         $rating = '';
         $contextId =  $playersetup->logcontext;
         $userId = $USER->id;
-        for ($i=1; $i <=5 ; $i++) { 
-        $rating .="<span class='fa fa-star-o' onclick = addReminder($i,$contextId,$userId) id =rating_$i></span>";
+        $instanceId = $PAGE->context->instanceid;
+
+        $startCount = 0;
+        $sql = "SELECT * FROM {guru_activity_rating} WHERE user_id = $userId AND cm_id= $instanceId";
+        $record = $DB->get_record_sql($sql);
+        if(!empty($record)){
+                $startCount = $record->rating;
+                $feedback = $record->feedback;
         }
-        $rRatingDiv = "<div class='star'> $rating</div>";
+        for ($i=1; $i <=5 ; $i++) { 
+            if($startCount >= $i){
+                $rating .="<span class='fa fa-star' onclick = addReminder($i,$contextId,$userId) id =rating_$i></span>";
+            }else{
+                $rating .="<span class='fa fa-star-o' onclick = addReminder($i,$contextId,$userId) id =rating_$i></span>";
+            }
+        }
+        $rRatingDiv = "<div class='star'> $rating <input type='hidden' value = $startCount id='starcount' ></div>";
         $lRatingDiv = "<div class='avg'>Avg Rating:3.75</div>";
         $ratingDiv = "<div class='ratingarea'> $lRatingDiv  $rRatingDiv</div>";
         $textArea = "<div><textarea placeholder = '(Optional feedback about the vidio lesson/tell us you didn`t like this lesson)' id ='feedback' name = 'feedback' rows='4' cols='59'></textarea></div>";
