@@ -919,7 +919,7 @@ class local_flipapi_external extends external_api {
     $return = false;
     //REQUIRED
     self::validate_parameters(
-      self::get_live_classes_parameters(), array(
+      self::add_activity_rating_parameters(), array(
       'user_id' => $user_id,
       'cm_id' => $cm_id,
       'rating' => $rating,
@@ -938,9 +938,9 @@ class local_flipapi_external extends external_api {
     } else {
       if(!empty($user_id) && !empty($cm_id) && !empty($rating)) {
         if(!empty($feedback)) {
-          $feedbackSql = "feedback='{$feedback}'";
+          $feedbackSql = "feedback='$feedback',";
         }
-        $reminderCreated = "UPDATE {guru_activity_rating} SET user_id='{$user_id}', cm_id='{$cm_id}',rating='{$rating}',$feedbackSql,timemodified='$date'";
+        $reminderCreated = "UPDATE {guru_activity_rating} SET user_id='{$user_id}', cm_id='{$cm_id}',rating='{$rating}', $feedbackSql timemodified='$date'";
         $DB->execute($reminderCreated);
         $return = true;
       }
@@ -953,7 +953,7 @@ class local_flipapi_external extends external_api {
     }
   }
   
-  public function add_activity_rating_return() {
+  public function add_activity_rating_returns() {
     return new external_single_structure(
       array(
       'status' => new external_value(PARAM_TEXT, 'status')
