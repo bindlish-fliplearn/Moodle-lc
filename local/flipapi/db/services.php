@@ -92,6 +92,13 @@ $functions = array(
     'classpath' => 'local/flipapi/externallib.php',
     'description' => 'Get Live classes for user by class id and user id.',
     'type' => 'read',
+  ),
+  'local_flipapi_add_activity_rating' => array(
+    'classname' => 'local_flipapi_external',
+    'methodname' => 'add_activity_rating',
+    'classpath' => 'local/flipapi/externallib.php',
+    'description' => 'Get Live classes for user by class id and user id.',
+    'type' => 'write',
   )
 );
 

@@ -902,4 +902,62 @@ class local_flipapi_external extends external_api {
       )
     );
   }
+  
+  public function add_activity_rating_parameters() {
+    return new external_function_parameters(
+      array(
+      'user_id' => new external_value(PARAM_TEXT, 'User id.'),
+      'cm_id' => new external_value(PARAM_TEXT, 'Activity Id.'),
+      'rating' => new external_value(PARAM_TEXT, 'Rating.'),
+      'feedback' => new external_value(PARAM_TEXT, 'Feedback.'),
+      )
+    );
+  }
+  
+  public  function add_activity_rating($user_id, $cm_id, $rating, $feedback) {
+    global $DB;
+    $return = false;
+    //REQUIRED
+    self::validate_parameters(
+      self::add_activity_rating_parameters(), array(
+      'user_id' => $user_id,
+      'cm_id' => $cm_id,
+      'rating' => $rating,
+      'feedback' => $feedback,
+      )
+    );
+    $date = time();
+    $checkRemider = "SELECT id from {guru_activity_rating} where user_id='{$user_id}' AND cm_id='{$cm_id}'";
+    $remiderObj = $DB->get_record_sql($checkRemider);
+    if (empty($remiderObj)) {
+      if(!empty($user_id) && !empty($cm_id) && !empty($rating)) {
+        $reminderCreated = "INSERT INTO {guru_activity_rating} SET user_id='{$user_id}', cm_id='{$cm_id}',rating='{$rating}',feedback='{$feedback}',timecreated='$date'";
+        $DB->execute($reminderCreated);
+        $return = true;
+      }
+    } else {
+      if(!empty($user_id) && !empty($cm_id) && !empty($rating)) {
+        if(!empty($feedback)) {
+          $feedbackSql = "feedback='$feedback',";
+        }
+        $reminderCreated = "UPDATE {guru_activity_rating} SET user_id='{$user_id}', cm_id='{$cm_id}',rating='{$rating}', $feedbackSql timemodified='$date'";
+        $DB->execute($reminderCreated);
+        $return = true;
+      }
+    }
+    
+    if ($return) {
+      return ['status' => 'true'];
+    } else {
+      return ['status' => 'false'];
+    }
+  }
+  
+  public function add_activity_rating_returns() {
+    return new external_single_structure(
+      array(
+      'status' => new external_value(PARAM_TEXT, 'status')
+      )
+    );
+  }
 }
