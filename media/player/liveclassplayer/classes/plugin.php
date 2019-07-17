@@ -668,9 +668,9 @@ class media_liveclassplayer_plugin extends core_media_player {
         }
         for ($i=1; $i <=5 ; $i++) { 
             if($startCount >= $i){
-                $rating .="<span class='fa fa-star' onclick = addReminder($i,$contextId,$userId) id =rating_$i></span>";
+                $rating .="<span class='fa fa-star' onclick = addReminder($i,$instanceId,$userId) id =rating_$i></span>";
             }else{
-                $rating .="<span class='fa fa-star-o' onclick = addReminder($i,$contextId,$userId) id =rating_$i></span>";
+                $rating .="<span class='fa fa-star-o' onclick = addReminder($i,$instanceId,$userId) id =rating_$i></span>";
             }
         }
         $rRatingDiv = "<div class='star'> $rating <input type='hidden' value = $startCount id='starcount' ></div>";
@@ -678,7 +678,7 @@ class media_liveclassplayer_plugin extends core_media_player {
         $ratingDiv = "<div class='ratingarea'> $lRatingDiv  $rRatingDiv</div>";
         $textArea = "<div><textarea placeholder = '(Optional feedback about the vidio lesson/tell us you didn`t like this lesson)' id ='feedback' name = 'feedback' rows='4' cols='59'></textarea></div>";
         $lnote = "<div class = 'feedbacknote' ><span>Note : This feedback for anonymous</span></div>";
-        $rsubmitButton = "<div class='submitButton'><button type = submit  value = Submit onclick = addFeedback($contextId,$userId)>Submit</button></div>";
+        $rsubmitButton = "<div class='submitButton'><button type = submit  value = Submit onclick = addFeedback($instanceId,$userId)>Submit</button></div>";
         $mainbuttonDiv = "<div class = 'mainButton'>$lnote $rsubmitButton</div>";
         $commentMainDiv = "<div id ='commentBox' class = 'commentHide'>$textArea $mainbuttonDiv<div>";
         $mainDiv = "<div class ='rating'>$ratingDiv $commentMainDiv</div>";

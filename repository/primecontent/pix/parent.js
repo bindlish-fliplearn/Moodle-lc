@@ -236,7 +236,51 @@
              $('#commentBox').removeClass('commentHide');   
                 $('#commentBox').addClass('commentShow');   
         }
+        var request = {
+            user_id:userId,
+            cm_id: contextId,
+            rating: rating,
+            feedback: '',
+       
+        };
+        console.log(request);
+        var url = window.location;
+        var path = url.host;
+        if(url.host == "localhost") {
+            path = url.host + "/flip_moodle";
+        }
+        $.ajax({
+            type: "POST",
+            data: request,
+            url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken=6257f654f905c94b0d0f90fce5b9af31&wsfunction=local_flipapi_add_activity_rating&moodlewsrestformat=json",
+            success: function (data) {
+                console.log(data);
+            }
+        });   
+
     }
     function addFeedback(contextId,userId){
         var feedback =  document.getElementById("feedback").value;
+        var rating =  $('#starcount').val();
+        var request = {
+            user_id:userId,
+            cm_id: contextId,
+            rating: rating,
+            feedback: feedback,
+       
+        };
+        console.log(request);
+        var url = window.location;
+        var path = url.host;
+        if(url.host == "localhost") {
+            path = url.host + "/flip_moodle";
+        }
+        $.ajax({
+            type: "POST",
+            data: request,
+            url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken=6257f654f905c94b0d0f90fce5b9af31&wsfunction=local_flipapi_add_activity_rating&moodlewsrestformat=json",
+            success: function (data) {
+                console.log(data);
+            }
+        }); 
     }
