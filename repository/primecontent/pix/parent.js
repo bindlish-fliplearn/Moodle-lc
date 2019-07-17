@@ -319,8 +319,12 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
                 url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken="+wstoken+"&wsfunction=local_flipapi_get_average_rating&moodlewsrestformat=json",
                 success: function (data) {
                    if(data.status == 'true'){
-                    var avgrating =   'Avg Rating: '+data.avgrating;
-                    $('.avg').html(avgrating);
+                    if(data.avgrating > 3){
+                        var avgrating =   'Avg Rating: '+data.avgrating;
+                        $('.avg').html(avgrating);
+                    }else{
+                        $('.avg').html('');
+                    }
                    }
                 }
             }); 

@@ -669,8 +669,11 @@ class media_liveclassplayer_plugin extends core_media_player {
               $avgrating  = round(($totalRating/$totalRecord), 2);
           }
         }
-
-
+        if($avgrating > 3){
+            $avgrating  = 'Avg Rating:'.round(($totalRating/$totalRecord), 2);  
+        }else {
+           $avgrating = ''; 
+        }
         $startCount = 0;
         $sql = "SELECT * FROM {guru_activity_rating} WHERE user_id = $userId AND cm_id= $instanceId";
         $record = $DB->get_record_sql($sql);
@@ -687,7 +690,7 @@ class media_liveclassplayer_plugin extends core_media_player {
             }
         }
         $rRatingDiv = "<div class='star'> $rating <input type='hidden' value = $startCount id='starcount' ></div>";
-        $lRatingDiv = "<div class='avg' >Avg Rating: $avgrating</div>";
+        $lRatingDiv = "<div class='avg' > $avgrating</div>";
         $ratingDiv = "<div class='ratingarea'> $lRatingDiv  $rRatingDiv</div>";
         $textArea = "<div><textarea placeholder = '(Optional feedback about the vidio lesson/tell us you didn`t like this lesson)' id ='feedback' name = 'feedback' rows='4' cols='59'></textarea></div>";
         $lnote = "<div class = 'feedbacknote' ><span>Note : This feedback for anonymous</span></div>";
