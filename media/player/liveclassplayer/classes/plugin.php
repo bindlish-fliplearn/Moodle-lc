@@ -659,6 +659,18 @@ class media_liveclassplayer_plugin extends core_media_player {
         $userId = $USER->id;
         $instanceId = $PAGE->context->instanceid;
 
+        $avgsql = "SELECT sum(rating) as totalRating, count(id) as totalRecord FROM {guru_activity_rating} WHERE cm_id= $instanceId";
+        $avgrecord = $DB->get_record_sql($avgsql);
+         $avgrating  = 0 ;
+        if(!empty($avgrecord)){
+          $totalRating = $avgrecord->totalrating;
+          $totalRecord = $avgrecord->totalrecord;
+          if($totalRating>0){
+              $avgrating  = round(($totalRating/$totalRecord), 2);
+          }
+        }
+
+
         $startCount = 0;
         $sql = "SELECT * FROM {guru_activity_rating} WHERE user_id = $userId AND cm_id= $instanceId";
         $record = $DB->get_record_sql($sql);
@@ -666,6 +678,7 @@ class media_liveclassplayer_plugin extends core_media_player {
                 $startCount = $record->rating;
                 $feedback = $record->feedback;
         }
+
         for ($i=1; $i <=5 ; $i++) { 
             if($startCount >= $i){
                 $rating .="<span class='fa fa-star' onclick = addReminder($i,$instanceId,$userId) id =rating_$i></span>";
@@ -674,7 +687,7 @@ class media_liveclassplayer_plugin extends core_media_player {
             }
         }
         $rRatingDiv = "<div class='star'> $rating <input type='hidden' value = $startCount id='starcount' ></div>";
-        $lRatingDiv = "<div class='avg'>Avg Rating:3.75</div>";
+        $lRatingDiv = "<div class='avg' >Avg Rating: $avgrating</div>";
         $ratingDiv = "<div class='ratingarea'> $lRatingDiv  $rRatingDiv</div>";
         $textArea = "<div><textarea placeholder = '(Optional feedback about the vidio lesson/tell us you didn`t like this lesson)' id ='feedback' name = 'feedback' rows='4' cols='59'></textarea></div>";
         $lnote = "<div class = 'feedbacknote' ><span>Note : This feedback for anonymous</span></div>";

@@ -1,4 +1,4 @@
-
+var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
     function hidePopup() {
         $('.moodle-dialogue-lightbox').hide();  
         $('.moodle-dialogue').addClass("moodle-dialogue-hidden");
@@ -247,7 +247,6 @@
             feedback: '',
        
         };
-        console.log(request);
         var url = window.location;
         var path = url.host;
         if(url.host == "localhost") {
@@ -256,11 +255,14 @@
         $.ajax({
             type: "POST",
             data: request,
-            url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken=6257f654f905c94b0d0f90fce5b9af31&wsfunction=local_flipapi_add_activity_rating&moodlewsrestformat=json",
+            url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken="+wstoken+"&wsfunction=local_flipapi_add_activity_rating&moodlewsrestformat=json",
             success: function (data) {
-                console.log(data);
+               if(data.status == 'true'){
+                 getRating(contextId);
+               }
             }
-        });   
+        });
+
 
     }
     function addFeedback(contextId,userId){
@@ -274,6 +276,37 @@
                 feedback: feedback,
            
             };
+            var url = window.location;
+            var path = url.host;
+            if(url.host == "localhost") {
+                path = url.host + "/flip_moodle";
+            }
+            $.ajax({
+                type: "POST",
+                data: request,
+                url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken="+wstoken+"&wsfunction=local_flipapi_add_activity_rating&moodlewsrestformat=json",
+                success: function (data) {
+                if(data.status == 'true'){
+                    var succMsg = "<div class='success'>Feedback successfully submitted ! Happy Learning.</div>"
+                    $('#successMsg').html(succMsg);
+                    $('#commentBox').addClass('commentHide');
+                    $('#commentBox').removeClass('commentShow');      
+                    $('#successMsg').removeClass('commentHide');      
+                    $('#successMsg').addClass('commentShow'); 
+                }
+                }
+            }); 
+        }else{
+                var errMsg = "<div class='success texterrormessage'>Please add feedback.</div>"
+                $('#successMsg').html(errMsg);
+                $('#successMsg').removeClass('commentHide');      
+                $('#successMsg').addClass('commentShow');  
+        }
+    }
+    function getRating(cm_id){
+            var request = {
+                cm_id: cm_id,           
+            };
             console.log(request);
             var url = window.location;
             var path = url.host;
@@ -283,20 +316,12 @@
             $.ajax({
                 type: "POST",
                 data: request,
-                url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken=6257f654f905c94b0d0f90fce5b9af31&wsfunction=local_flipapi_add_activity_rating&moodlewsrestformat=json",
+                url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken="+wstoken+"&wsfunction=local_flipapi_get_average_rating&moodlewsrestformat=json",
                 success: function (data) {
-                    var succMsg = "<div class='success'>Feedback successfully submitted ! Happy Learning.</div>"
-                    $('#successMsg').html(succMsg);
-                    $('#commentBox').addClass('commentHide');
-                    $('#commentBox').removeClass('commentShow');      
-                    $('#successMsg').removeClass('commentHide');      
-                    $('#successMsg').addClass('commentShow'); 
+                   if(data.status == 'true'){
+                    var avgrating =   'Avg Rating: '+data.avgrating;
+                    $('.avg').html(avgrating);
+                   }
                 }
             }); 
-        }else{
-                var errMsg = "<div class='success texterrormessage'>Please add feedback.</div>"
-                $('#successMsg').html(errMsg);
-                $('#successMsg').removeClass('commentHide');      
-                $('#successMsg').addClass('commentShow');  
-        }
     }

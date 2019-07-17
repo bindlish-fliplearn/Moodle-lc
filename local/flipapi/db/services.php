@@ -99,6 +99,13 @@ $functions = array(
     'classpath' => 'local/flipapi/externallib.php',
     'description' => 'Get Live classes for user by class id and user id.',
     'type' => 'write',
+  ),
+   'local_flipapi_get_average_rating' => array(
+    'classname' => 'local_flipapi_external',
+    'methodname' => 'get_average_rating',
+    'classpath' => 'local/flipapi/externallib.php',
+    'description' => 'Get averege rating.',
+    'type' => 'write',
   )
 );
 

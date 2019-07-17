@@ -960,4 +960,46 @@ class local_flipapi_external extends external_api {
       )
     );
   }
+  public function get_average_rating_parameters() {
+    return new external_function_parameters(
+      array(
+      'cm_id' => new external_value(PARAM_TEXT, 'Activity Id.')
+      )
+    );
+  }
+
+  public function get_average_rating($cm_id){
+    global $DB, $CFG;
+    $return = false;
+    //REQUIRED
+    self::validate_parameters(
+      self::get_average_rating_parameters(), array(
+      'cm_id' => $cm_id
+      )
+    );
+    $sql = "SELECT sum(rating) as totalRating, count(id) as totalRecord FROM {guru_activity_rating} WHERE cm_id= $cm_id";
+    $record = $DB->get_record_sql($sql);
+     $avgrating  = 0 ;
+    if(!empty($record)){
+      $totalRating = $record->totalrating;
+      $totalRecord = $record->totalrecord;
+      if($totalRating>0){
+          $avgrating  = round(($totalRating/$totalRecord), 2);
+      }
+    }
+    if (!empty($record)) {
+      return ['status' => 'true', 'avgrating' => $avgrating];
+    } else {
+      return ['status' => 'false', 'avgrating' => 0];
+    }
+
+  }
+  public function get_average_rating_returns() {
+    return new external_single_structure(
+      array(
+      'status' => new external_value(PARAM_TEXT, 'status'),
+      'avgrating' => new external_value(PARAM_TEXT, 'avgrating')
+      )
+    );
+  }
 }
