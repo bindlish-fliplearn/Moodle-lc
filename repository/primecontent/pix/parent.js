@@ -220,6 +220,10 @@
         });   
     }
     function addReminder(rating,contextId, userId, ){
+        $('#feedback').val('');
+        $('#successMsg').removeClass('commentShow');      
+        $('#successMsg').addClass('commentHide'); 
+
         var addRating = "fa-star";
         var totalStar = 5;
         for (let i = 1; i <= totalStar; i++) { 
@@ -261,26 +265,38 @@
     }
     function addFeedback(contextId,userId){
         var feedback =  document.getElementById("feedback").value;
-        var rating =  $('#starcount').val();
-        var request = {
-            user_id:userId,
-            cm_id: contextId,
-            rating: rating,
-            feedback: feedback,
-       
-        };
-        console.log(request);
-        var url = window.location;
-        var path = url.host;
-        if(url.host == "localhost") {
-            path = url.host + "/flip_moodle";
-        }
-        $.ajax({
-            type: "POST",
-            data: request,
-            url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken=6257f654f905c94b0d0f90fce5b9af31&wsfunction=local_flipapi_add_activity_rating&moodlewsrestformat=json",
-            success: function (data) {
-                console.log(data);
+        if(feedback != ''){
+            var rating =  $('#starcount').val();
+            var request = {
+                user_id:userId,
+                cm_id: contextId,
+                rating: rating,
+                feedback: feedback,
+           
+            };
+            console.log(request);
+            var url = window.location;
+            var path = url.host;
+            if(url.host == "localhost") {
+                path = url.host + "/flip_moodle";
             }
-        }); 
+            $.ajax({
+                type: "POST",
+                data: request,
+                url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken=6257f654f905c94b0d0f90fce5b9af31&wsfunction=local_flipapi_add_activity_rating&moodlewsrestformat=json",
+                success: function (data) {
+                    var succMsg = "<div class='success'>Feedback successfully submitted ! Happy Learning.</div>"
+                    $('#successMsg').html(succMsg);
+                    $('#commentBox').addClass('commentHide');
+                    $('#commentBox').removeClass('commentShow');      
+                    $('#successMsg').removeClass('commentHide');      
+                    $('#successMsg').addClass('commentShow'); 
+                }
+            }); 
+        }else{
+                var errMsg = "<div class='success texterrormessage'>Please add feedback.</div>"
+                $('#successMsg').html(errMsg);
+                $('#successMsg').removeClass('commentHide');      
+                $('#successMsg').addClass('commentShow');  
+        }
     }

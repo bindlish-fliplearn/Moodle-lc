@@ -680,9 +680,10 @@ class media_liveclassplayer_plugin extends core_media_player {
         $lnote = "<div class = 'feedbacknote' ><span>Note : This feedback for anonymous</span></div>";
         $rsubmitButton = "<div class='submitButton'><button type = submit  value = Submit onclick = addFeedback($instanceId,$userId)>Submit</button></div>";
         $mainbuttonDiv = "<div class = 'mainButton'>$lnote $rsubmitButton</div>";
-        $commentMainDiv = "<div id ='commentBox' class = 'commentHide'>$textArea $mainbuttonDiv<div>";
-        $mainDiv = "<div class ='rating'>$ratingDiv $commentMainDiv</div>";
-        return $output.$mainDiv;
+        $commentMainDiv = "<div id ='commentBox' class = 'commentHide'>$textArea $mainbuttonDiv </div>";
+        $successMSG = "<div class = 'commentHide' id = 'successMsg'>Feedback successfully submitted ! Happy Learning </div>";
+        $mainDiv = "<div class ='rating'>$ratingDiv $commentMainDiv <div>";
+        return $output.$mainDiv.$successMSG;
     }
 
     /**

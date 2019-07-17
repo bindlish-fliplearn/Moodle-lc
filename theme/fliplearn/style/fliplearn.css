@@ -104,7 +104,7 @@
 .star {
     position: absolute;
     right: 0;
-    margin-top:-42px;
+    margin-top:-18px;
     margin-right: 180px;
 }
 .star > span.fa-star-o, .star > span.fa-star {color:#5421a2; font-size: 20px;}
@@ -121,3 +121,7 @@
     color: #5421a2;
     padding: 7px 20px
 }  
+.texterrormessage{
+    color: #b94a48;
+}
+.modified{display: none;}
