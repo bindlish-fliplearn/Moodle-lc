@@ -940,7 +940,7 @@ class local_flipapi_external extends external_api {
         if(!empty($feedback)) {
           $feedbackSql = "feedback='$feedback',";
         }
-        $reminderCreated = "UPDATE {guru_activity_rating} SET user_id='{$user_id}', cm_id='{$cm_id}',rating='{$rating}', $feedbackSql timemodified='$date'";
+        $reminderCreated = "UPDATE {guru_activity_rating} SET rating='{$rating}', $feedbackSql timemodified='$date' where user_id='{$user_id}' and cm_id='{$cm_id}'";
         $DB->execute($reminderCreated);
         $return = true;
       }
