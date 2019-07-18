@@ -104,7 +104,7 @@
 .star {
     position: absolute;
     right: 0;
-    margin-top:-18px;
+    top:-2px;
     margin-right: 180px;
 }
 .star > span.fa-star-o, .star > span.fa-star {color:#5421a2; font-size: 20px;}
@@ -125,3 +125,4 @@
     color: #b94a48;
 }
 .modified{display: none;}
+.avg{height: 20px;}
