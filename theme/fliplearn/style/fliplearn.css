@@ -92,7 +92,7 @@
     height: 70px;
     display: block;
 }
-.commentShow{display: block; margin-top: 20px;}
+.commentShow{display: block; margin-top: 20px;clear: both;}
 .commentHide{display: none;}
 .generalbox > .no-overflow {display: flex;flex-direction: column;}
 .rating{order: 1;
@@ -125,4 +125,15 @@
     color: #b94a48;
 }
 .modified{display: none;}
-.avg{height: 20px;}
+.avg{min-height: 20px;}
+.success{margin-bottom: 10px;color: #5421a2;}
+.ratingSuccess{
+    float: right;
+    margin-right: 180px;
+    height: 15px;
+}
+
+@media (max-width: 560px) {
+    .rating{ margin-left:10px !important;}
+    .star, .submitButton, .ratingSuccess {margin-right:10px !important;}
+}

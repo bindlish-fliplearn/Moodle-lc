@@ -653,7 +653,7 @@ class media_liveclassplayer_plugin extends core_media_player {
         $outerspan = html_writer::tag('span', $playerdiv, $outerspanargs);
         $output .= html_writer::tag('span', $outerspan, $options['globalattributes']);
 
-        global $USER, $DB;
+        global $USER, $DB , $CNF;
         $rating = '';
         $contextId =  $playersetup->logcontext;
         $userId = $USER->id;
@@ -662,6 +662,7 @@ class media_liveclassplayer_plugin extends core_media_player {
         $avgsql = "SELECT sum(rating) as totalRating, count(id) as totalRecord FROM {guru_activity_rating} WHERE cm_id= $instanceId";
         $avgrecord = $DB->get_record_sql($avgsql);
          $avgrating  = 0 ;
+         $totalRecord = 0;
         if(!empty($avgrecord)){
           $totalRating = $avgrecord->totalrating;
           $totalRecord = $avgrecord->totalrecord;
@@ -669,7 +670,7 @@ class media_liveclassplayer_plugin extends core_media_player {
               $avgrating  = round(($totalRating/$totalRecord), 2);
           }
         }
-        if($avgrating > 3){
+        if($CFG->AVG_RATING <= $avgrating && $CFG->MAX_USER <= $totalRecord){
             $avgrating  = 'Avg Rating:'.round(($totalRating/$totalRecord), 2);  
         }else {
            $avgrating = ''; 
@@ -690,9 +691,9 @@ class media_liveclassplayer_plugin extends core_media_player {
             }
         }
         $rRatingDiv = "<div class='star'> $rating <input type='hidden' value = $startCount id='starcount' ></div>";
-        $lRatingDiv = "<div class='avg' > $avgrating</div>";
+        $lRatingDiv = "<div class='avg' > $avgrating</div><div class='success ratingSuccess' id='ratingSuccess'></div>";
         $ratingDiv = "<div class='ratingarea'> $lRatingDiv  $rRatingDiv</div>";
-        $textArea = "<div><textarea placeholder = '(Optional feedback about the vidio lesson/tell us you didn`t like this lesson)' id ='feedback' name = 'feedback' rows='4' cols='59'></textarea></div>";
+        $textArea = "<div><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedback' name = 'feedback' rows='4' cols='59'></textarea></div>";
         $lnote = "<div class = 'feedbacknote' ><span>Note : This feedback for anonymous</span></div>";
         $rsubmitButton = "<div class='submitButton'><button type = submit  value = Submit onclick = addFeedback($instanceId,$userId)>Submit</button></div>";
         $mainbuttonDiv = "<div class = 'mainButton'>$lnote $rsubmitButton</div>";
