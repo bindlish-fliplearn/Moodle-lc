@@ -261,7 +261,7 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
                if(data.status == 'true'){
                 $('#ratingSuccess').html('Thank you for rating the video lesson!');
 
-                setTimeout(function(){ $('#ratingSuccess').html(''); }, 3000);
+                //setTimeout(function(){ $('#ratingSuccess').html(''); }, 3000);
 
                }
             }
