@@ -96,7 +96,7 @@
 .commentHide{display: none;}
 .generalbox > .no-overflow {display: flex;flex-direction: column;}
 .rating{order: 1;
-width:600px;      
+width:500px;      
 margin:auto ; 
 }
 .modified{order: 0; margin-left: 180px;}
