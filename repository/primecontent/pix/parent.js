@@ -343,7 +343,7 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
         html += "<div class='modal' id='joinLiveClassNew' role='dialog' aria-labelledby='myModalLabel'>";
         html += "<div class='modal-dialog modal-sm' role='document'>";
         html += "<div class='modal-content '>";
-        html += "<div class='modal-header promotion-head text-center' style='background:#f2e9ff;'><button type='button' class='close' data-dismiss='modal'>×</button><h3 class='modal-title fontregular text-color-purple'>This is for the testing order </h3></div>";
+        html += "<div class='modal-header promotion-head text-center' style='background:#f2e9ff;'><button type='button' class='close' onclick = 'closePopup()' data-dismiss='modal'>×</button><h3 class='modal-title fontregular text-color-purple'>This is for the testing order </h3></div>";
         html += "<h3 class='modal-title fontregular text-color-purple'>This is for the testing order </h3></div><div class='modal-body head_bottom'>";
         html += "<div class='modal-body head_bottom'>";
         html += "<div class='row'><div class='col-sm-6'><p>Starts on: 05:30 PM, 28 Jul</p></div>";
@@ -353,4 +353,7 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
         html += "</div></div></div></div>";
         $('body').append(html);
        $( "#joinLiveClassNew" ).trigger( "click" );
+    }
+    function closePopup(){
+        $('#joinLiveClassNew').addClass('fade');
     }
