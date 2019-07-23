@@ -333,3 +333,24 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
                 }
             }); 
     }
+    setTimeout(function(){
+        $(document).ready(function(){
+            studentFeedback();
+        });
+    },3000);
+    function studentFeedback(){
+        var html = "";
+        html += "<div class='modal' id='joinLiveClassNew' role='dialog' aria-labelledby='myModalLabel'>";
+        html += "<div class='modal-dialog modal-sm' role='document'>";
+        html += "<div class='modal-content '>";
+        html += "<div class='modal-header promotion-head text-center' style='background:#f2e9ff;'><button type='button' class='close' data-dismiss='modal'>×</button><h3 class='modal-title fontregular text-color-purple'>This is for the testing order </h3></div>";
+        html += "<h3 class='modal-title fontregular text-color-purple'>This is for the testing order </h3></div><div class='modal-body head_bottom'>";
+        html += "<div class='modal-body head_bottom'>";
+        html += "<div class='row'><div class='col-sm-6'><p>Starts on: 05:30 PM, 28 Jul</p></div>";
+        html += "<div class='col-sm-6 text-right'><p>Duration: 30 Minutes</p></div></div>";
+        html += "<div class='row m-t-28'><div class='col-sm-3'><img src='https://stgmoodlelc.fliplearn.com/user/pix.php/24/f1.jpg' class='radius10 img-responsive'></div>";
+        html += "<div class='col-sm-9'><h4>Praveen Kumar</h4><span> 1 Year Exp</span></div></div>";
+        html += "</div></div></div></div>";
+        $('body').append(html);
+       $( "#joinLiveClassNew" ).trigger( "click" );
+    }
