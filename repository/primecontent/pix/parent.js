@@ -340,6 +340,17 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
     },3000);
     function studentFeedback(){
         var html = "";
+       var startCount = 3;
+       var rating = '';
+      for (var i=1; i <=5 ; i++) { 
+        if(startCount >= i){
+            rating +="<span class='fa fa-star' onclick = addReminder(1,2,3) id =rating_1></span>";
+        }else{
+            rating +="<span class='fa fa-star-o' onclick = addReminder(1,2,3) id =rating_2></span>";
+        }
+    }
+
+
         html += "<div class='modal' id='joinLiveClassNew' role='dialog' aria-labelledby='myModalLabel'>";
         html += "<div class='modal-dialog modal-sm' role='document'>";
         html += "<div class='modal-content '>";
@@ -350,7 +361,10 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
         html += "<div class='col-sm-6 text-right'><p>Duration: 30 Minutes</p></div></div>";
         html += "<div class='row m-t-28'><div class='col-sm-3'><img src='https://stgmoodlelc.fliplearn.com/user/pix.php/24/f1.jpg' class='radius10 img-responsive'></div>";
         html += "<div class='col-sm-9'><h4>Praveen Kumar</h4><span> 1 Year Exp</span></div></div>";
+        html += "<div class=''> '"+rating+"' <input type='hidden' value = 2 id='starcount' >";
         html += "</div></div></div></div>";
+
+
         $('body').append(html);
        $( "#joinLiveClassNew" ).trigger( "click" );
     }
