@@ -219,7 +219,7 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
             }
         });   
     }
-    function addReminder(rating,contextId, userId, ){
+    function addReminder(rating,contextId, userId){
         $('#feedback').val('');
         $('#successMsg').removeClass('commentShow');      
         $('#successMsg').addClass('commentHide'); 
@@ -335,39 +335,55 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
     }
     setTimeout(function(){
         $(document).ready(function(){
-            studentFeedback();
+            showfeedback();
         });
     },3000);
-    function studentFeedback(){
+     var countArray = [];
+     var current  = 0;
+    function showfeedback(){
+         countArray = [1,2,3,4,5];
+         current = 1;
+       studentFeedback(current,countArray); 
+    }
+    function addrating(rating,contextId, userId){
+          if(!$('#feedbackBox').hasClass('commentShow')){
+             $('#feedbackBox').removeClass('commentHide');   
+                $('#feedbackBox').addClass('commentShow');   
+        }
+    }
+    function studentFeedback(current,countArray){
         var html = "";
-       var startCount = 3;
-       var rating = '';
+        var startCount = 3;
+        var rating = '';
       for (var i=1; i <=5 ; i++) { 
         if(startCount >= i){
-            rating +="<span class='fa fa-star' onclick = addReminder(1,2,3) id =rating_1></span>";
+            rating +="<span class='fa fa-star' onclick = addrating(1,2,3) id =rating_1></span>";
         }else{
-            rating +="<span class='fa fa-star-o' onclick = addReminder(1,2,3) id =rating_2></span>";
+            rating +="<span class='fa fa-star-o' onclick = addrating(1,2,3) id =rating_2></span>";
         }
     }
 
-
+        var avgRating = 'Avg Rating : 3.5';
         html += "<div class='modal' id='joinLiveClassNew' role='dialog' aria-labelledby='myModalLabel'>";
         html += "<div class='modal-dialog modal-sm' role='document'>";
         html += "<div class='modal-content '>";
         html += "<div class='modal-header promotion-head text-center' style='background:#f2e9ff;'><button type='button' class='close' onclick = 'closePopup()' data-dismiss='modal'>×</button><h3 class='modal-title fontregular text-color-purple'>This is for the testing order </h3></div>";
-        html += "<h3 class='modal-title fontregular text-color-purple'>This is for the testing order </h3></div><div class='modal-body head_bottom'>";
+        html += "<h3 class='modal-title fontregular text-color-purple text-center'>This is for the testing order </h3></div><div class='modal-body head_bottom'>";
         html += "<div class='modal-body head_bottom'>";
-        html += "<div class='row'><div class='col-sm-6'><p>Starts on: 05:30 PM, 28 Jul</p></div>";
-        html += "<div class='col-sm-6 text-right'><p>Duration: 30 Minutes</p></div></div>";
-        html += "<div class='row m-t-28'><div class='col-sm-3'><img src='https://stgmoodlelc.fliplearn.com/user/pix.php/24/f1.jpg' class='radius10 img-responsive'></div>";
-        html += "<div class='col-sm-9'><h4>Praveen Kumar</h4><span> 1 Year Exp</span></div></div>";
-        html += "<div class=''> '"+rating+"' <input type='hidden' value = 2 id='starcount' >";
+        html += "<div class='row-fluid'><div class='span6'><p>Starts on: 05:30 PM, 28 Jul</p></div>";
+        html += "<div class='span6 text-right'><p>Duration: 30 Minutes</p></div></div>";
+        html += "<div class='row-fluid m-t-28'><div class='span3'><img src='https://stgmoodlelc.fliplearn.com/user/pix.php/24/f1.jpg' class='radius10 img-responsive'></div>";
+        html += "<div class='span9'><h4>Praveen Kumar</h4><span> 1 Year Exp</span><div><a href = '#' >Class Link</a></div></span></div></div>";
+        html += "<div class='row-fluid'><div class = 'span6'>"+avgRating+"</div><div class = 'span6 text-right'> "+rating+" <input type='hidden' value = 2 id='starcount' ></div>";
+        html += "<div id = 'feedbackBox' class = 'commentHide'><div class='row-fluid'><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedback' name = 'feedback' rows='4' cols='59'></textarea></div>"
+        html += "<div class='row-fluid submitButton text-right'><button type = submit  value = Submit onclick = addFeedback($instanceId,$userId)>Submit</button></div></div>";
+        html += "<div class='row-fluid text-center' ><input type='button' onclick = 'closePopup()' value='Close'></div>";
         html += "</div></div></div></div>";
 
-
         $('body').append(html);
-       $( "#joinLiveClassNew" ).trigger( "click" );
+        $( "#joinLiveClassNew" ).trigger( "click" );
     }
-    function closePopup(){
+    function closePopup(current ,countArray ){
+        
         $('#joinLiveClassNew').addClass('fade');
     }
