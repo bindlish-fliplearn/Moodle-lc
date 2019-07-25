@@ -338,12 +338,30 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
             showfeedback();
         });
     },3000);
-     var countArray = [];
+     var liveclasses = '';
+     var classdata = '';
      var current  = 0;
     function showfeedback(){
-         countArray = [1,2,3,4,5];
-         current = 1;
-       studentFeedback(current,countArray); 
+            var url = window.location;
+                var path = url.host;
+                if(url.host == "localhost") {
+                    path = url.host + "/flip_moodle";
+            }
+          $.ajax({
+                    type: "get",
+                    url:  url.protocol+'//'+path+"/pushnotification/notificationConfig.php",
+                    success: function(result){
+                                var jsonObj =  JSON.parse(result);
+                                console.log('jsonObj',jsonObj)
+                                 if(jsonObj.error == ''){
+                                    var classdata = '{"response":{"status":"true","liveclass":[{"courseid":"103","addreminder":"false","classid":"998539","teachers":[{"id":"631","name":"sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/631\/f1.jpg"},{"id":"635","name":"Sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/635\/f1.jpg"}],"title":"26th July: Physics XI (5 PM) - Motion in two dimensions","duration":"140","starton":"04:45 PM, 26 Jul","startin":"1564139700","joinurl":""},{"courseid":"59","addreminder":"false","classid":"998736","teachers":[{"id":"625","name":"Mrinmoy","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/625\/f1.jpg"}],"title":"27th July: Maths IX - Lines Angles","duration":"90","starton":"03:45 PM, 27 Jul","startin":"1564222500","joinurl":""},{"courseid":"63","addreminder":"false","classid":"998751","teachers":[{"id":"625","name":"Mrinmoy","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/625\/f1.jpg"}],"title":"27th July: Maths X - Arithmetic Progression","duration":"90","starton":"04:45 PM, 27 Jul","startin":"1564226100","joinurl":""},{"courseid":"173","addreminder":"false","classid":"998540","teachers":[{"id":"631","name":"sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/631\/f1.jpg"},{"id":"635","name":"Sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/635\/f1.jpg"}],"title":"27th July: Physics XI (7.30 PM) - Motion in One Dimension","duration":"180","starton":"07:15 PM, 27 Jul","startin":"1564235100","joinurl":""}]},"error":null,"warning":null}';
+                                    var dataObj = JSON.parse(classdata);
+                                    liveclasses = dataObj.response.liveclass;
+                                    var studentData = liveclasses[current];
+                                    studentFeedback(current,studentData); 
+                                 }
+                            }
+                        });
     }
     function addrating(rating,contextId, userId){
           if(!$('#feedbackBox').hasClass('commentShow')){
@@ -351,39 +369,54 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
                 $('#feedbackBox').addClass('commentShow');   
         }
     }
-    function studentFeedback(current,countArray){
+    function studentFeedback(index,studentData){
+        if(index >0){
+            $('#joinLiveClassNew').remove(); 
+        }
         var html = "";
         var startCount = 3;
         var rating = '';
-      for (var i=1; i <=5 ; i++) { 
-        if(startCount >= i){
-            rating +="<span class='fa fa-star' onclick = addrating(1,2,3) id =rating_1></span>";
-        }else{
-            rating +="<span class='fa fa-star-o' onclick = addrating(1,2,3) id =rating_2></span>";
+        for (var i=1; i <=5 ; i++) { 
+            if(startCount >= i){
+                rating +="<span class='fa fa-star' onclick = addrating(1,2,3) id =rating_1></span>";
+            }else{
+                rating +="<span class='fa fa-star-o' onclick = addrating(1,2,3) id =rating_2></span>";
+            }
         }
-    }
-
+        var profilePic = studentData.teachers[0].picture;
+        var teacherName = studentData.teachers[0].name;
+        var teacherCount  = '';
+        if(studentData.teachers.length > 1){
+              teacherCount = '+' +(studentData.teachers.length-1).toString();
+        }
         var avgRating = 'Avg Rating : 3.5';
         html += "<div class='modal' id='joinLiveClassNew' role='dialog' aria-labelledby='myModalLabel'>";
         html += "<div class='modal-dialog modal-sm' role='document'>";
         html += "<div class='modal-content '>";
-        html += "<div class='modal-header promotion-head text-center' style='background:#f2e9ff;'><button type='button' class='close' onclick = 'closePopup()' data-dismiss='modal'>×</button><h3 class='modal-title fontregular text-color-purple'>This is for the testing order </h3></div>";
-        html += "<h3 class='modal-title fontregular text-color-purple text-center'>This is for the testing order </h3></div><div class='modal-body head_bottom'>";
+        html += "<div class='modal-header promotion-head text-center' style='background:#f2e9ff;'><h3 class='modal-title fontregular text-color-purple'>Live Class Feedback ! </h3></div>";
+        html += "<h3 class='modal-title fontregular text-color-purple text-center'>"+studentData.title+"</h3></div><div class='modal-body head_bottom'>";
         html += "<div class='modal-body head_bottom'>";
-        html += "<div class='row-fluid'><div class='span6'><p>Starts on: 05:30 PM, 28 Jul</p></div>";
-        html += "<div class='span6 text-right'><p>Duration: 30 Minutes</p></div></div>";
-        html += "<div class='row-fluid m-t-28'><div class='span3'><img src='https://stgmoodlelc.fliplearn.com/user/pix.php/24/f1.jpg' class='radius10 img-responsive'></div>";
-        html += "<div class='span9'><h4>Praveen Kumar</h4><span> 1 Year Exp</span><div><a href = '#' >Class Link</a></div></span></div></div>";
+        html += "<div class='row-fluid'><div class='span6'><p>Starts on: "+studentData.starton+"</p></div>";
+        html += "<div class='span6 text-right'><p>Duration: "+studentData.duration+" Minutes</p></div></div>";
+        html += "<div class='row-fluid m-t-28'><div class='span3'><img src="+profilePic+" class='radius10 img-responsive'></div>";
+        html += "<div class='span9'><h4>"+teacherName+"</h4><span> "+teacherCount+"</span><div><a href = '#' >Class Link</a></div></span></div></div>";
         html += "<div class='row-fluid'><div class = 'span6'>"+avgRating+"</div><div class = 'span6 text-right'> "+rating+" <input type='hidden' value = 2 id='starcount' ></div>";
         html += "<div id = 'feedbackBox' class = 'commentHide'><div class='row-fluid'><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedback' name = 'feedback' rows='4' cols='59'></textarea></div>"
         html += "<div class='row-fluid submitButton text-right'><button type = submit  value = Submit onclick = addFeedback($instanceId,$userId)>Submit</button></div></div>";
-        html += "<div class='row-fluid text-center' ><input type='button' onclick = 'closePopup()' value='Close'></div>";
+        html += "<div class='row-fluid text-center' ><input type='button' onclick = 'closePopup("+index+")' value='Skip'></div>";
         html += "</div></div></div></div>";
-
         $('body').append(html);
         $( "#joinLiveClassNew" ).trigger( "click" );
     }
-    function closePopup(current ,countArray ){
-        
+    function closePopup(index){
         $('#joinLiveClassNew').addClass('fade');
+        var nextIndex = eval(index+1);
+        if(liveclasses.length > nextIndex){
+            setTimeout(function(){
+                $('#joinLiveClassNew').removeClass('fade');
+                studentData = liveclasses[nextIndex];
+                studentFeedback(nextIndex,studentData); 
+            },1000)
+         
+        }
     }
