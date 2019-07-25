@@ -386,23 +386,21 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
         var profilePic = studentData.teachers[0].picture;
         var teacherName = studentData.teachers[0].name;
         var teacherCount  = '';
-        if(studentData.teachers.length > 1){
-              teacherCount = '+' +(studentData.teachers.length-1).toString();
-        }
+      
         var avgRating = 'Avg Rating : 3.5';
-        html += "<div class='modal' id='joinLiveClassNew' role='dialog' aria-labelledby='myModalLabel'>";
+        html += "<div class='modal liveClass' id='joinLiveClassNew' role='dialog' aria-labelledby='myModalLabel'>";
         html += "<div class='modal-dialog modal-sm' role='document'>";
         html += "<div class='modal-content '>";
-        html += "<div class='modal-header promotion-head text-center' style='background:#f2e9ff;'><h3 class='modal-title fontregular text-color-purple'>Live Class Feedback ! </h3></div>";
+        html += "<div class='modal-header promotion-head text-center feedbackHead'><h3 class='modal-title fontregular text-color-purple'>Live Class Feedback ! </h3></div>";
         html += "<h3 class='modal-title fontregular text-color-purple text-center'>"+studentData.title+"</h3></div><div class='modal-body head_bottom'>";
-        html += "<div class='modal-body head_bottom'>";
-        html += "<div class='row-fluid'><div class='span6'><p>Starts on: "+studentData.starton+"</p></div>";
-        html += "<div class='span6 text-right'><p>Duration: "+studentData.duration+" Minutes</p></div></div>";
+        html += "<div class='head_bottom'>";
+        html += "<div class='row-fluid'><div class='span6'><p><span class = 'text-grey'>Starts on:</span> "+studentData.starton+"</p></div>";
+        html += "<div class='span6 text-right'><p><span class = 'text-grey'>Duration:</span> "+studentData.duration+" Minutes</p></div></div>";
         html += "<div class='row-fluid m-t-28'><div class='span3'><img src="+profilePic+" class='radius10 img-responsive'></div>";
-        html += "<div class='span9'><h4>"+teacherName+"</h4><span> "+teacherCount+"</span><div><a href = '#' >Class Link</a></div></span></div></div>";
-        html += "<div class='row-fluid'><div class = 'span6'>"+avgRating+"</div><div class = 'span6 text-right'> "+rating+" <input type='hidden' value = 2 id='starcount' ></div>";
-        html += "<div id = 'feedbackBox' class = 'commentHide'><div class='row-fluid'><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedback' name = 'feedback' rows='4' cols='59'></textarea></div>"
-        html += "<div class='row-fluid submitButton text-right'><button type = submit  value = Submit onclick = addFeedback($instanceId,$userId)>Submit</button></div></div>";
+        html += "<div class='span9'><h4>"+teacherName+"</h4><div><a class ='link' href = '#' >Class Link</a></div></span></div></div>";
+        html += "<div class='row-fluid feedbackRating'><div class = 'span6'>"+avgRating+"</div><div class = 'span6 text-right'> "+rating+" <input type='hidden' value = 2 id='starcount' ></div></div>";
+        html += "<div id = 'feedbackBox' class = ' row-fluid commentHide'><div class='row-fluid'><div class='span12'><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedback' name = 'feedback' rows='4' cols='59'></textarea></div></div>"
+        html += "<div class='row-fluid padding'><div class='submitButton span12 text-right'><button type = submit  value = Submit onclick = addFeedback($instanceId,$userId)>Submit</button></div></div></div>";
         html += "<div class='row-fluid text-center' ><input type='button' onclick = 'closePopup("+index+")' value='Skip'></div>";
         html += "</div></div></div></div>";
         $('body').append(html);
