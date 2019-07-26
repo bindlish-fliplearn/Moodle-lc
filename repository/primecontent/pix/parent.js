@@ -307,11 +307,10 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
                 $('#successMsg').addClass('commentShow');  
         }
     }
-    function getRating(cm_id){
+    function getRating(resolve, reject, cm_id){
             var request = {
                 cm_id: cm_id,           
             };
-            console.log(request);
             var url = window.location;
             var path = url.host;
             if(url.host == "localhost") {
@@ -323,12 +322,9 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
                 url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken="+wstoken+"&wsfunction=local_flipapi_get_average_rating&moodlewsrestformat=json",
                 success: function (data) {
                    if(data.status == 'true'){
-                    if(data.avgrating > 3){
-                        var avgrating =   'Avg Rating: '+data.avgrating;
-                        $('.avg').html(avgrating);
-                    }else{
-                        $('.avg').html('');
-                    }
+                     resolve(data); 
+                   }else{
+                        reject(data); 
                    }
                 }
             }); 
@@ -376,18 +372,23 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
         var html = "";
         var startCount = 3;
         var rating = '';
-        for (var i=1; i <=5 ; i++) { 
-            if(startCount >= i){
-                rating +="<span class='fa fa-star' onclick = addrating(1,2,3) id =rating_1></span>";
-            }else{
+        for (var i=1; i <=5 ; i++) {    
                 rating +="<span class='fa fa-star-o' onclick = addrating(1,2,3) id =rating_2></span>";
-            }
         }
         var profilePic = studentData.teachers[0].picture;
         var teacherName = studentData.teachers[0].name;
         var teacherCount  = '';
-      
-        var avgRating = 'Avg Rating : 3.5';
+        var cm_id = studentData.classid;
+
+        let promise = new Promise(function(resolve, reject) {
+            getRating(resolve, reject, 55215);
+        });
+        var avgRating = "";
+        promise.then(function(data){
+           var  avg = data.avgrating;
+           if (avg >0) {
+                 avgRating = 'Avg Rating : '+avg;
+           }
         html += "<div class='modal liveClass' id='joinLiveClassNew' role='dialog' aria-labelledby='myModalLabel'>";
         html += "<div class='modal-dialog modal-sm' role='document'>";
         html += "<div class='modal-content '>";
@@ -399,12 +400,13 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
         html += "<div class='row-fluid m-t-28'><div class='span3'><img src="+profilePic+" class='radius10 img-responsive'></div>";
         html += "<div class='span9'><h4>"+teacherName+"</h4><div><a class ='link' href = '#' >Class Link</a></div></span></div></div>";
         html += "<div class='row-fluid feedbackRating'><div class = 'span6'>"+avgRating+"</div><div class = 'span6 text-right'> "+rating+" <input type='hidden' value = 2 id='starcount' ></div></div>";
-        html += "<div id = 'feedbackBox' class = ' row-fluid commentHide'><div class='row-fluid'><div class='span12'><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedback' name = 'feedback' rows='4' cols='59'></textarea></div></div>"
+        html += "<div id = 'feedbackBox' class = 'row-fluid commentHide'><div class='row-fluid'><div class='span12'><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedback' name = 'feedback' rows='4' cols='59'></textarea></div></div>"
         html += "<div class='row-fluid padding'><div class='submitButton span12 text-right'><button type = submit  value = Submit onclick = addFeedback($instanceId,$userId)>Submit</button></div></div></div>";
         html += "<div class='row-fluid text-center' ><input type='button' onclick = 'closePopup("+index+")' value='Skip'></div>";
         html += "</div></div></div></div>";
         $('body').append(html);
         $( "#joinLiveClassNew" ).trigger( "click" );
+        });
     }
     function closePopup(index){
         $('#joinLiveClassNew').addClass('fade');
