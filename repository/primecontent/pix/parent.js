@@ -219,7 +219,7 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
             }
         });   
     }
-    function addReminder(rating,contextId, userId, ){
+    function addReminder(rating,contextId, userId){
         $('#feedback').val('');
         $('#successMsg').removeClass('commentShow');      
         $('#successMsg').addClass('commentHide'); 
@@ -307,11 +307,10 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
                 $('#successMsg').addClass('commentShow');  
         }
     }
-    function getRating(cm_id){
+    function getRating(resolve, reject, cm_id){
             var request = {
                 cm_id: cm_id,           
             };
-            console.log(request);
             var url = window.location;
             var path = url.host;
             if(url.host == "localhost") {
@@ -323,13 +322,101 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
                 url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken="+wstoken+"&wsfunction=local_flipapi_get_average_rating&moodlewsrestformat=json",
                 success: function (data) {
                    if(data.status == 'true'){
-                    if(data.avgrating > 3){
-                        var avgrating =   'Avg Rating: '+data.avgrating;
-                        $('.avg').html(avgrating);
-                    }else{
-                        $('.avg').html('');
-                    }
+                     resolve(data); 
+                   }else{
+                        reject(data); 
                    }
                 }
             }); 
+    }
+    setTimeout(function(){
+        $(document).ready(function(){
+            showfeedback();
+        });
+    },3000);
+     var liveclasses = '';
+     var classdata = '';
+     var current  = 0;
+    function showfeedback(){
+            var url = window.location;
+                var path = url.host;
+                if(url.host == "localhost") {
+                    path = url.host + "/flip_moodle";
+            }
+          $.ajax({
+                    type: "get",
+                    url:  url.protocol+'//'+path+"/pushnotification/notificationConfig.php",
+                    success: function(result){
+                                var jsonObj =  JSON.parse(result);
+                                console.log('jsonObj',jsonObj)
+                                 if(jsonObj.error == ''){
+                                    var classdata = '{"response":{"status":"true","liveclass":[{"courseid":"103","addreminder":"false","classid":"998539","teachers":[{"id":"631","name":"sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/631\/f1.jpg"},{"id":"635","name":"Sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/635\/f1.jpg"}],"title":"26th July: Physics XI (5 PM) - Motion in two dimensions","duration":"140","starton":"04:45 PM, 26 Jul","startin":"1564139700","joinurl":""},{"courseid":"59","addreminder":"false","classid":"998736","teachers":[{"id":"625","name":"Mrinmoy","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/625\/f1.jpg"}],"title":"27th July: Maths IX - Lines Angles","duration":"90","starton":"03:45 PM, 27 Jul","startin":"1564222500","joinurl":""},{"courseid":"63","addreminder":"false","classid":"998751","teachers":[{"id":"625","name":"Mrinmoy","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/625\/f1.jpg"}],"title":"27th July: Maths X - Arithmetic Progression","duration":"90","starton":"04:45 PM, 27 Jul","startin":"1564226100","joinurl":""},{"courseid":"173","addreminder":"false","classid":"998540","teachers":[{"id":"631","name":"sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/631\/f1.jpg"},{"id":"635","name":"Sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/635\/f1.jpg"}],"title":"27th July: Physics XI (7.30 PM) - Motion in One Dimension","duration":"180","starton":"07:15 PM, 27 Jul","startin":"1564235100","joinurl":""}]},"error":null,"warning":null}';
+                                    var dataObj = JSON.parse(classdata);
+                                    liveclasses = dataObj.response.liveclass;
+                                    var studentData = liveclasses[current];
+                                    studentFeedback(current,studentData); 
+                                 }
+                            }
+                        });
+    }
+    function addrating(rating,contextId, userId){
+          if(!$('#feedbackBox').hasClass('commentShow')){
+             $('#feedbackBox').removeClass('commentHide');   
+                $('#feedbackBox').addClass('commentShow');   
+        }
+    }
+    function studentFeedback(index,studentData){
+        if(index >0){
+            $('#joinLiveClassNew').remove(); 
+        }
+        var html = "";
+        var startCount = 3;
+        var rating = '';
+        for (var i=1; i <=5 ; i++) {    
+                rating +="<span class='fa fa-star-o' onclick = addrating(1,2,3) id =rating_2></span>";
+        }
+        var profilePic = studentData.teachers[0].picture;
+        var teacherName = studentData.teachers[0].name;
+        var teacherCount  = '';
+        var cm_id = studentData.classid;
+
+        let promise = new Promise(function(resolve, reject) {
+            getRating(resolve, reject, 55215);
+        });
+        var avgRating = "";
+        promise.then(function(data){
+           var  avg = data.avgrating;
+           if (avg >0) {
+                 avgRating = 'Avg Rating : '+avg;
+           }
+        html += "<div class='modal liveClass' id='joinLiveClassNew' role='dialog' aria-labelledby='myModalLabel'>";
+        html += "<div class='modal-dialog modal-sm' role='document'>";
+        html += "<div class='modal-content '>";
+        html += "<div class='modal-header promotion-head text-center feedbackHead'><h3 class='modal-title fontregular text-color-purple'>Live Class Feedback ! </h3></div>";
+        html += "<h3 class='modal-title fontregular text-color-purple text-center'>"+studentData.title+"</h3></div><div class='modal-body head_bottom'>";
+        html += "<div class='head_bottom'>";
+        html += "<div class='row-fluid'><div class='span6'><p><span class = 'text-grey'>Starts on:</span> "+studentData.starton+"</p></div>";
+        html += "<div class='span6 text-right'><p><span class = 'text-grey'>Duration:</span> "+studentData.duration+" Minutes</p></div></div>";
+        html += "<div class='row-fluid m-t-28'><div class='span3'><img src="+profilePic+" class='radius10 img-responsive'></div>";
+        html += "<div class='span9'><h4>"+teacherName+"</h4><div><a class ='link' href = '#' >Class Link</a></div></span></div></div>";
+        html += "<div class='row-fluid feedbackRating'><div class = 'span6'>"+avgRating+"</div><div class = 'span6 text-right'> "+rating+" <input type='hidden' value = 2 id='starcount' ></div></div>";
+        html += "<div id = 'feedbackBox' class = 'row-fluid commentHide'><div class='row-fluid'><div class='span12'><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedback' name = 'feedback' rows='4' cols='59'></textarea></div></div>"
+        html += "<div class='row-fluid padding'><div class='submitButton span12 text-right'><button type = submit  value = Submit onclick = addFeedback($instanceId,$userId)>Submit</button></div></div></div>";
+        html += "<div class='row-fluid text-center' ><input type='button' onclick = 'closePopup("+index+")' value='Skip'></div>";
+        html += "</div></div></div></div>";
+        $('body').append(html);
+        $( "#joinLiveClassNew" ).trigger( "click" );
+        });
+    }
+    function closePopup(index){
+        $('#joinLiveClassNew').addClass('fade');
+        var nextIndex = eval(index+1);
+        if(liveclasses.length > nextIndex){
+            setTimeout(function(){
+                $('#joinLiveClassNew').removeClass('fade');
+                studentData = liveclasses[nextIndex];
+                studentFeedback(nextIndex,studentData); 
+            },1000)
+         
+        }
     }

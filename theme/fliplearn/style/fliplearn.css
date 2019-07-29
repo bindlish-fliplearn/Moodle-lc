@@ -135,3 +135,15 @@ margin:auto ;
     .rating{ margin-left:10px !important;}
     .star, .submitButton, .ratingSuccess {margin-right:10px !important;}
 }
+.liveClass{
+    overflow: hidden;
+    border-radius: 10px;
+    border: 0;
+}
+.feedbackHead{padding: 20px 15px;background:#f0f6ff; border-bottom: solid 1px #e1eaf1}
+.feedbackHead+h3{font-size: 18px;margin-top: 12px;}
+.text-grey{color: #757575;}
+.link{font-size: 16px;color: #53a7fe;}
+.feedbackRating{background: #f0f6ff;padding: 15px 20px 5px 20px;box-sizing: border-box;margin-top: 15px;border-radius: 10px;    margin-bottom: 15px;
+}
+.padding{padding:20px 0px 22px;}
