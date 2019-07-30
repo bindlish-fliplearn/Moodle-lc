@@ -26,5 +26,4 @@ function jwplayerInitialize($option){
         </script>";
 		return $jwplayer;
 } 
-
 ?>
