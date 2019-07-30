@@ -694,7 +694,7 @@ class media_liveclassplayer_plugin extends core_media_player {
         $lRatingDiv = "<div class='avg' > $avgrating</div><div class='success ratingSuccess' id='ratingSuccess'></div>";
         $ratingDiv = "<div class='ratingarea'> $lRatingDiv  $rRatingDiv</div>";
         $textArea = "<div><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedback' name = 'feedback' rows='4' cols='59'></textarea></div>";
-        $lnote = "<div class = 'feedbacknote' ><span>Note : This feedback for anonymous</span></div>";
+        $lnote = "<div class = 'feedbacknote' ><span>Note : This feedback will remain anonymous</span></div>";
         $rsubmitButton = "<div class='submitButton'><button type = submit  value = Submit onclick = addFeedback($instanceId,$userId)>Submit</button></div>";
         $mainbuttonDiv = "<div class = 'mainButton'>$lnote $rsubmitButton</div>";
         $commentMainDiv = "<div id ='commentBox' class = 'commentHide'>$textArea $mainbuttonDiv </div>";
