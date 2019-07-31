@@ -389,6 +389,12 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
            if (avg >0) {
                  avgRating = 'Avg Rating : '+avg;
            }
+        var options = ['Audio-Video was not clear / consistently','Not satisfied with the teacher','Could not understand the interface / platform','The teacher explained most of the things real good', 'I understood most of what was taught in the class','Some other reason'];
+        var optionHtml = '';
+        for (var i = 0; i <= options.length - 1; i++) {
+            var text = options[i];
+            optionHtml += "<label onclick = setOption("+text+") class='container'>"+text+"<input type='checkbox' checked='checked'><span class='checkmark'></span></label>";
+        }
         html += "<div class='modal liveClass' id='joinLiveClassNew' role='dialog' aria-labelledby='myModalLabel'>";
         html += "<div class='modal-dialog modal-sm' role='document'>";
         html += "<div class='modal-content '>";
@@ -400,12 +406,12 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
         html += "<div class='row-fluid m-t-28'><div class='span3'><img src="+profilePic+" class='radius10 img-responsive'></div>";
         html += "<div class='span9'><h4>"+teacherName+"</h4><div><a class ='link' href = '#' >Class Link</a></div></span></div></div>";
         html += "<div class='row-fluid feedbackRating'><div class = 'span6'>"+avgRating+"</div><div class = 'span6 star liveClassStar text-right'> "+rating+" <input type='hidden' value = 2 id='starcount' ></div></div>";
-        html += "<div id = 'feedbackBox' class = 'row-fluid commentHide'><div class='row-fluid'><div class='span12'><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedback' name = 'feedback' rows='4' cols='59'></textarea></div></div>"
+        html += "<div id = 'feedbackBox' class = 'row-fluid commentHide'><div class='row-fluid checkboxDiv'>"+optionHtml+"<div class='span12'><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedback' name = 'feedback' rows='4' cols='59'></textarea></div></div>"
         html += "<div class='row-fluid padding'><div class='submitButton span12 text-right'><button type = submit  value = Submit onclick = addFeedback($instanceId,$userId)>Submit</button></div></div></div>";
         html += "<div class='row-fluid text-center' ><input type='button' onclick = 'closePopup("+index+")' value='Skip'></div>";
         html += "</div></div></div></div>";
         $('body').append(html);
-        $( "#joinLiveClassNew" ).trigger( "click" );
+        $( "#joinLiveClassNew" ).trigger("click");
         });
     }
     function closePopup(index){
