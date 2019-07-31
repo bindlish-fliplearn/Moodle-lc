@@ -90,7 +90,7 @@ foreach ($courseResult as $activity) {
       exec("wget '" . $download_recording_link . "' -P $folderPath -O $localFileName");
       $smileFile = $folderPath . '/playlist.smil';
       createSmilFile($smileFile, $localFileName);
-      $res['class_id'] = $class_id;
+      $res['cm_id'] = $activity->id;
       $res['size'] = filesize($localFileName);
       $res['record_path'] = $localFileName;
       $res['record_url'] = getWowzaUrl($smileFile, $CFG->liveclass_bucket);
@@ -120,7 +120,7 @@ foreach ($courseResult as $activity) {
             exec("wget '" . $download_recording_link . "' -P $folderPath -O $localFileName");
             $smileFile = $folderPath . '/playlist.smil';
             createSmilFile($smileFile, $localFileName);
-            $res['class_id'] = $class_id;
+            $res['cm_id'] = $activity->id;
             $res['size'] = filesize($localFileName);
             $res['record_path'] = $localFileName;
             $res['record_url'] = getWowzaUrl($smileFile, $CFG->liveclass_bucket);
@@ -135,7 +135,7 @@ foreach ($courseResult as $activity) {
 
 function createLiveClassMapping($res) {
   global $DB;
-  $insertRecord['class_id'] = $res['class_id'];
+  $insertRecord['cm_id'] = $res['cm_id'];
   $insertRecord['size'] = $res['size'];
   $insertRecord['record_path'] = $res['record_path'];
   $insertRecord['record_url'] = $res['record_url'];
