@@ -836,4 +836,12 @@ if (!empty($braincertclass)) {
 </div>
 <?php
 
+// For display jwplayer
+require_once($CFG->dirroot . '/local/flipapi/lib.php');
+$path = "https://d12qsoed6q4q41.cloudfront.net/fliplearnaes/_definst_/s3/fliplearnjeee/Resourse/949/playlist.smil/playlist.m3u8?wowzatokenstarttime=1560164319&wowzatokenendtime=1591786719&wowzatokenhash=ltry-YyeNVI3jKHqr5X8vrWocydjnhuKfnruYfJvKAM=";
+$optionArray = array('path' => $path, 'JWPLAYER_KEY'=>JWPLAYER_KEY);
+echo $jwplayer = jwplayerInitialize($optionArray);
+$instanceId = 4;
+$ratingBox = getRatingBox($instanceId);
+echo $ratingBox;
 echo $OUTPUT->footer();
