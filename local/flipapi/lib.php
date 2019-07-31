@@ -61,7 +61,7 @@ function getRatingBox($instanceId = 2){
         $mainbuttonDiv = "<div class = 'mainButton'>$lnote $rsubmitButton</div>";
         $commentMainDiv = "<div id ='commentBox' class = 'commentHide'>$textArea $mainbuttonDiv </div>";
         $successMSG = "<div class = 'commentHide' id = 'successMsg'>Feedback successfully submitted ! Happy Learning </div>";
-        $mainDiv = "<div class ='rating'>$ratingDiv $commentMainDiv </div>";
+        $mainDiv = "<div class ='rating liveClassWizIq'>$ratingDiv $commentMainDiv </div>";
         return $mainDiv.$successMSG;
 }
 

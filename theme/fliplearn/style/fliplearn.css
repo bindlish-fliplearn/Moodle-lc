@@ -147,3 +147,8 @@ margin:auto ;
 .feedbackRating{background: #f0f6ff;padding: 15px 20px 5px 20px;box-sizing: border-box;margin-top: 15px;border-radius: 10px;    margin-bottom: 15px;
 }
 .padding{padding:20px 0px 22px;}
+.liveClassWizIq{
+        margin-left: 0 !important;
+        margin-top: 22px;
+}
+.liveClassStar{position: inherit;}
