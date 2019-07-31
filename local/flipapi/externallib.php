@@ -857,8 +857,8 @@ class local_flipapi_external extends external_api {
               $resp['title'] = $classResult->name;
               $resp['starton'] = date('h:i A, d M', $classResult->start_date);
               $resp['startin'] = $classResult->start_date;
-              $to_time = strtotime(date('y-m-d').$classResult->start_time);
-              $from_time = strtotime(date('y-m-d').$classResult->end_time);
+              $to_time = strtotime(date('y-m-d').' '.$classResult->start_time);
+              $from_time = strtotime(date('y-m-d').' '.$classResult->end_time);
               $resp['duration'] = round(abs($to_time - $from_time) / 60,2);
               $resp['joinurl'] = $launchurl;
             }
