@@ -113,6 +113,13 @@ $functions = array(
     'classpath' => 'local/flipapi/externallib.php',
     'description' => 'Return feedback option details.',
     'type' => 'read',
+  ),
+  'local_flipapi_get_live_classes_for_feedback' => array(
+    'classname' => 'local_flipapi_external',
+    'methodname' => 'get_live_classes_for_feedback',
+    'classpath' => 'local/flipapi/externallib.php',
+    'description' => 'Get Live classes for user by class id and user id.',
+    'type' => 'read',
   )
 );
 
