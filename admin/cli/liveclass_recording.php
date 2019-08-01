@@ -30,7 +30,16 @@ require_once($CFG->libdir . '/clilib.php');      // cli only functions
 require_once($CFG->libdir . '/fliplearnlib.php');      // cli only functions
 require_once($CFG->libdir . '/../mod/braincert/locallib.php'); // braincert Lib
 require_once($CFG->libdir . '/../mod/wiziq/locallib.php'); // wiziq Lib
-//
+require_once $CFG->libdir . '/local/aws/aws-autoloader.php';
+
+$sqsClient = \Aws\Sqs\SqsClient::factory(array(
+    'version' => 'latest',
+    'region' => $CFG->amazon_region,
+    'credentials' => array(
+      'key' => $CFG->amazon_key,
+      'secret' => $CFG->amazon_secret
+)));
+  
 // Define the input options.
 $longparams = array(
   'help' => false,
@@ -70,13 +79,13 @@ $courseResult = $DB->get_records_sql($getCourseModuleSql);
 
 foreach ($courseResult as $activity) {
   $modulename = '{' . $activity->modulename . '}';
-  $classDetails = "SELECT m.* FROM {$modulename} as m LEFT JOIN {guru_liveclass_recording} as glr on glr.class_id = m.class_id WHERE m.id = $activity->instance ";
+  $classDetails = "SELECT m.* FROM {$modulename} as m JOIN {course_modules} as cm on m.id=cm.instance LEFT JOIN {guru_liveclass_recording} as glr on glr.cm_id = cm.id WHERE m.id = $activity->instance ";
   $class = $DB->get_record_sql($classDetails);
 
   $download_recording_link = "";
   $courseid = $class->course;
   $class_id = $class->class_id;
-  $folderPath = $CFG->liveclass_path . $activity->id;
+  $folderPath = $CFG->liveclass_path .'Resourse/'. $activity->id;
   cli_heading("Course Id is:- " . $courseid . " Class Id is:- " . $class_id);
   if ($activity->modulename == "wiziq") {
     wiziq_downloadrecording($courseid, $class_id, $download_recording_link, $errormsg, $abcdd);
@@ -86,8 +95,10 @@ foreach ($courseResult as $activity) {
       if (!file_exists($folderPath)) {
         mkdir($folderPath);
       }
-      $localFileName = $folderPath . '/output.mp4';
+      $localFileName = $folderPath . '/'.$activity->id.'.mp4';
+      $localOutputFileName = $folderPath . '/output.mp4';
       exec("wget '" . $download_recording_link . "' -P $folderPath -O $localFileName");
+      exec("wget '" . $download_recording_link . "' -P $folderPath -O $localOutputFileName");
       $smileFile = $folderPath . '/playlist.smil';
       createSmilFile($smileFile, $localFileName);
       $res['cm_id'] = $activity->id;
@@ -96,6 +107,8 @@ foreach ($courseResult as $activity) {
       $res['record_url'] = getWowzaUrl($smileFile, $CFG->liveclass_bucket);
       $res['platform'] = $activity->modulename;
       createLiveClassMapping($res);
+      $request = array('cm_id' => $activity->id, 'file' =>  $localFileName);
+      sendInQueue($sqsClient, $request);
     }
   } else {
     $data['task'] = 'getclassrecording';
@@ -126,6 +139,8 @@ foreach ($courseResult as $activity) {
             $res['record_url'] = getWowzaUrl($smileFile, $CFG->liveclass_bucket);
             $res['platform'] = $activity->modulename;
             createLiveClassMapping($res);
+            $request = array('cm_id' => $activity->id, 'file' =>  $localFileName);
+            sendInQueue($sqsClient, $request);
           }
         }
       }
@@ -135,14 +150,26 @@ foreach ($courseResult as $activity) {
 
 function createLiveClassMapping($res) {
   global $DB;
-  $insertRecord['cm_id'] = $res['cm_id'];
-  $insertRecord['size'] = $res['size'];
-  $insertRecord['record_path'] = $res['record_path'];
-  $insertRecord['record_url'] = $res['record_url'];
-  $insertRecord['platform'] = $res['platform'];
-  $DB->insert_record('guru_liveclass_recording', $insertRecord);
+  if ($checkVideo = $DB->get_records('guru_liveclass_recording', array('cm_id' => $res['cm_id']))) {
+    $insertRecord['cm_id'] = $res['cm_id'];
+    $insertRecord['size'] = $res['size'];
+    $insertRecord['record_path'] = $res['record_path'];
+    $insertRecord['record_url'] = $res['record_url'];
+    $insertRecord['platform'] = $res['platform'];
+    $DB->insert_record('guru_liveclass_recording', $insertRecord);
+  } else {
+    $reminderCreated = "UPDATE {guru_liveclass_recording} SET record_path='{$res['record_path']}', record_url='{$res['record_url']}' where cm_id='{$res['cm_id']}'";
+    $DB->execute($reminderCreated);
+  }
 }
 
+function sendInQueue($sqsClient, $request) {
+  $json = json_encode($request);
+  $sqsClient->sendMessage(array(
+    'QueueUrl' => $CFG->amazon_sqs_url,
+    'MessageBody' => $json,
+  ));
+}
 cli_heading('Live class download and upload successfully');
 
 exit(0); // 0 means success.
