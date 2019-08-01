@@ -430,26 +430,26 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
     }
     function submitFeedback(contextId,userId){
         var feedback =  document.getElementById("feedbackliveClass").value;
-
         var optionsdata = [];
         var i = 1;
         $.each($("input[name='foption']:checked"), function(){          
             var id = "input_"+$(this).val();
             var textvalue = $('#'+id).val();
-            optionsdata.push(textvalue);
-
+            if($(this).val()==5){
+                textvalue = textvalue+"-"+feedback;
+                    optionsdata.push(textvalue);
+            }else{
+                optionsdata.push(textvalue);
+            }
         });
-        console.log(optionsdata);
-
-
-        if(feedback != ''){
-            var rating =  $('#starcount').val();
+        var feedbackstring = JSON.stringify(optionsdata);
+        if(feedbackstring != ''){
+            var rating =  $('#ratingCount').val();
             var request = {
                 user_id:userId,
                 cm_id: contextId,
                 rating: rating,
-                feedback: feedback,
-           
+                feedback: feedbackstring,
             };
             var url = window.location;
             var path = url.host;
@@ -533,7 +533,7 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
         html += "<div class='span9'><h4>"+teacherName+"</h4><div><a class ='link' href = '#' >Class Link</a></div></span></div></div>";
         html += "<div class='row-fluid feedbackRating'><div class = 'span6'>"+avgRating+"</div><div class = 'span6 star liveClassStar text-right'> "+rating+" <input type='hidden' value = '' id='ratingCount' ></div></div>"+success+"";
         html += "<div id = 'feedbackBox' class = 'row-fluid commentHide'><div class='row-fluid checkboxDiv'>"+optionHtml+"<div class='commentHide' id = 'textareabox'><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedbackliveClass' name = 'feedback' rows='4' cols='59'></textarea></div></div>"
-        html += "<div class='row-fluid padding'><div class='submitButton span12 text-right'><button type = submit  value = Submit onclick = submitFeedback("+cm_id+","+userId+")>Submit</button></div></div></div>";
+        html += "<div class='row-fluid padding'><div class='submitButton span12 text-right'><button type = submit  value = Submit onclick = submitFeedback("+cm_id+","+userId+")>Submit</button></div><div class = 'commentHide' id = 'successMsg'>Feedback successfully submitted ! Happy Learning </div></div></div>";
         html += "<div class='row-fluid text-center' ><input type='button' onclick = 'closePopup("+index+")' value='Skip'></div>";
         html += "</div></div></div></div>";
         $('body').append(html);
