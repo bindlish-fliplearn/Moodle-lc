@@ -345,35 +345,149 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
             }
           $.ajax({
                     type: "get",
-                    url:  url.protocol+'//'+path+"/pushnotification/notificationConfig.php",
+                    url:  url.protocol+'//'+path+"/pushnotification/getUserDetails.php",
                     success: function(result){
                                 var jsonObj =  JSON.parse(result);
                                 console.log('jsonObj',jsonObj)
-                                 if(jsonObj.error == ''){
+                                 if(jsonObj){
                                     var classdata = '{"response":{"status":"true","liveclass":[{"courseid":"103","addreminder":"false","classid":"998539","teachers":[{"id":"631","name":"sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/631\/f1.jpg"},{"id":"635","name":"Sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/635\/f1.jpg"}],"title":"26th July: Physics XI (5 PM) - Motion in two dimensions","duration":"140","starton":"04:45 PM, 26 Jul","startin":"1564139700","joinurl":""},{"courseid":"59","addreminder":"false","classid":"998736","teachers":[{"id":"625","name":"Mrinmoy","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/625\/f1.jpg"}],"title":"27th July: Maths IX - Lines Angles","duration":"90","starton":"03:45 PM, 27 Jul","startin":"1564222500","joinurl":""},{"courseid":"63","addreminder":"false","classid":"998751","teachers":[{"id":"625","name":"Mrinmoy","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/625\/f1.jpg"}],"title":"27th July: Maths X - Arithmetic Progression","duration":"90","starton":"04:45 PM, 27 Jul","startin":"1564226100","joinurl":""},{"courseid":"173","addreminder":"false","classid":"998540","teachers":[{"id":"631","name":"sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/631\/f1.jpg"},{"id":"635","name":"Sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/635\/f1.jpg"}],"title":"27th July: Physics XI (7.30 PM) - Motion in One Dimension","duration":"180","starton":"07:15 PM, 27 Jul","startin":"1564235100","joinurl":""}]},"error":null,"warning":null}';
                                     var dataObj = JSON.parse(classdata);
                                     liveclasses = dataObj.response.liveclass;
                                     var studentData = liveclasses[current];
-                                    studentFeedback(current,studentData); 
+                                    studentFeedback(current,studentData,jsonObj.id); 
                                  }
                             }
                         });
     }
-    function addrating(rating,contextId, userId){
+    function addrating(rating,contextId, userId,status){
+        if(status == 1){
           if(!$('#feedbackBox').hasClass('commentShow')){
              $('#feedbackBox').removeClass('commentHide');   
                 $('#feedbackBox').addClass('commentShow');   
         }
+        var addRating = "fa-star";
+        var totalStar = 5;
+        for (let i = 1; i <= totalStar; i++) { 
+            if(i <= rating){
+                $('#liveClassRating_'+i).removeClass('fa-star-o');
+                $('#liveClassRating_'+i).addClass('fa-star');
+            }else{
+                $('#liveClassRating_'+i).removeClass('fa-star');
+                $('#liveClassRating_'+i).addClass('fa-star-o');
+            }
+        }
+        $('#ratingCount').val(rating);
+
+        var request = {
+            user_id:userId,
+            cm_id: contextId,
+            rating: rating,
+            feedback: '',
+       
+        };
     }
-    function studentFeedback(index,studentData){
+    if(status ==2){
+          var request = {
+            user_id:userId,
+            cm_id: contextId,
+            rating: rating,
+            feedback: '',
+            status:status,
+       
+        };
+    }
+        var url = window.location;
+        var path = url.host;
+        if(url.host == "localhost") {
+            path = url.host + "/flip_moodle";
+        }
+        $.ajax({
+            type: "POST",
+            data: request,
+            url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken="+wstoken+"&wsfunction=local_flipapi_add_activity_rating&moodlewsrestformat=json",
+            success: function (data) {
+               if(data.status == 'true'){
+                if(status==1)
+                $('#ratingSuccess').html('Thank you for rating the video lesson!');
+                //setTimeout(function(){ $('#ratingSuccess').html(''); }, 3000);
+
+               }
+            }
+        });
+
+    }
+    function otheroption(id){
+        if($("#"+id).prop('checked') == true){
+            $('#textareabox').addClass('commentShow');  
+            $('#textareabox').addClass('span12');   
+            $('#textareabox').removeClass('commentHide'); 
+        }else{
+            $('#textareabox').addClass('commentHide');  
+            $('#textareabox').removeClass('span12');   
+            $('#textareabox').removeClass('commentShow'); 
+        }
+
+    }
+    function submitFeedback(contextId,userId){
+        var feedback =  document.getElementById("feedbackliveClass").value;
+
+        var optionsdata = [];
+        var i = 1;
+        $.each($("input[name='foption']:checked"), function(){          
+            var id = "input_"+$(this).val();
+            var textvalue = $('#'+id).val();
+            optionsdata.push(textvalue);
+
+        });
+        console.log(optionsdata);
+
+
+        if(feedback != ''){
+            var rating =  $('#starcount').val();
+            var request = {
+                user_id:userId,
+                cm_id: contextId,
+                rating: rating,
+                feedback: feedback,
+           
+            };
+            var url = window.location;
+            var path = url.host;
+            if(url.host == "localhost") {
+                path = url.host + "/flip_moodle";
+            }
+            $.ajax({
+                type: "POST",
+                data: request,
+                url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken="+wstoken+"&wsfunction=local_flipapi_add_activity_rating&moodlewsrestformat=json",
+                success: function (data) {
+                if(data.status == 'true'){
+                    var succMsg = "<div class='success'>Feedback successfully submitted ! Happy Learning.</div>"
+                    $('#successMsg').html(succMsg);
+                    $('#commentBox').addClass('commentHide');
+                    $('#commentBox').removeClass('commentShow');      
+                    $('#successMsg').removeClass('commentHide');      
+                    $('#successMsg').addClass('commentShow'); 
+                }
+                }
+            }); 
+        }else{
+                var errMsg = "<div class='texterrormessage'>The optional feedback box is empty.</div>"
+                $('#successMsg').html(errMsg);
+                $('#successMsg').removeClass('commentHide');      
+                $('#successMsg').addClass('commentShow');  
+        }
+    }
+    function studentFeedback(index,studentData,userId){
         if(index >0){
             $('#joinLiveClassNew').remove(); 
         }
         var html = "";
         var startCount = 3;
         var rating = '';
+        var cm_id = 55215;
         for (var i=1; i <=5 ; i++) {    
-                rating +="<span class='fa fa-star-o' onclick = addrating(1,2,3) id =rating_2></span>";
+                rating +="<span class='fa fa-star-o' onclick = addrating("+i+","+cm_id+","+userId+",1) id =liveClassRating_"+i+"></span>";
         }
         var profilePic = studentData.teachers[0].picture;
         var teacherName = studentData.teachers[0].name;
@@ -393,8 +507,20 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
         var optionHtml = '';
         for (var i = 0; i <= options.length - 1; i++) {
             var text = options[i];
-            optionHtml += "<label onclick = setOption("+text+") class='container'>"+text+"<input type='checkbox' checked='checked'><span class='checkmark'></span></label>";
+
+            var chkid = 'checkboxid_'+i;
+            var input = 'input_'+i;
+            if(i == options.length-1){
+                optionHtml += "<label onclick = otheroption('"+chkid+"') class='containerForCheckBox'>"+text+"<input class = 'checkBoxoption' name='foption' value = "+i+" id = '"+chkid+"' type='checkbox' ><span class='checkmark'></span></label>";
+            }else{ 
+                optionHtml += "<label class='containerForCheckBox'>"+text+"<input class = 'checkBoxoption' id = '"+chkid+"' type='checkbox' name='foption' value = "+i+" ><span class='checkmark'></span></label>";
+            }
+            optionHtml += "<input type = 'hidden' value = '"+text+"' id = '"+input+"'>";
+
         }
+        var success =   '<div class="success" id="ratingSuccess"></div>';
+
+
         html += "<div class='modal liveClass' id='joinLiveClassNew' role='dialog' aria-labelledby='myModalLabel'>";
         html += "<div class='modal-dialog modal-sm' role='document'>";
         html += "<div class='modal-content '>";
@@ -405,9 +531,9 @@ var wstoken = '6257f654f905c94b0d0f90fce5b9af31';
         html += "<div class='span6 text-right'><p><span class = 'text-grey'>Duration:</span> "+studentData.duration+" Minutes</p></div></div>";
         html += "<div class='row-fluid m-t-28'><div class='span3'><img src="+profilePic+" class='radius10 img-responsive'></div>";
         html += "<div class='span9'><h4>"+teacherName+"</h4><div><a class ='link' href = '#' >Class Link</a></div></span></div></div>";
-        html += "<div class='row-fluid feedbackRating'><div class = 'span6'>"+avgRating+"</div><div class = 'span6 star liveClassStar text-right'> "+rating+" <input type='hidden' value = 2 id='starcount' ></div></div>";
-        html += "<div id = 'feedbackBox' class = 'row-fluid commentHide'><div class='row-fluid checkboxDiv'>"+optionHtml+"<div class='span12'><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedback' name = 'feedback' rows='4' cols='59'></textarea></div></div>"
-        html += "<div class='row-fluid padding'><div class='submitButton span12 text-right'><button type = submit  value = Submit onclick = addFeedback($instanceId,$userId)>Submit</button></div></div></div>";
+        html += "<div class='row-fluid feedbackRating'><div class = 'span6'>"+avgRating+"</div><div class = 'span6 star liveClassStar text-right'> "+rating+" <input type='hidden' value = '' id='ratingCount' ></div></div>"+success+"";
+        html += "<div id = 'feedbackBox' class = 'row-fluid commentHide'><div class='row-fluid checkboxDiv'>"+optionHtml+"<div class='commentHide' id = 'textareabox'><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedbackliveClass' name = 'feedback' rows='4' cols='59'></textarea></div></div>"
+        html += "<div class='row-fluid padding'><div class='submitButton span12 text-right'><button type = submit  value = Submit onclick = submitFeedback("+cm_id+","+userId+")>Submit</button></div></div></div>";
         html += "<div class='row-fluid text-center' ><input type='button' onclick = 'closePopup("+index+")' value='Skip'></div>";
         html += "</div></div></div></div>";
         $('body').append(html);
