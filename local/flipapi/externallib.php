@@ -1103,7 +1103,7 @@ class local_flipapi_external extends external_api {
         $where = "AND m.class_id=$class_id";
       }
       $now = time();
-      $mod_date = strtotime("+15 days",$now);
+      $mod_date = strtotime("-24 hours",$now);
       if (!empty($course)) {
         $getCourseModuleSql = "SELECT cm.*,m.name as modulename,m.id as moduleid FROM {modules} as m join {course_modules} as cm on m.id=cm.module WHERE m.name in ('braincert','wiziq') AND cm.course in ($course) ORDER BY id DESC";
         $courseResult = $DB->get_records_sql($getCourseModuleSql);
@@ -1115,11 +1115,11 @@ class local_flipapi_external extends external_api {
           $whereTime = "";
           $classDetailsSql = "";
           if($activity->modulename == "wiziq") {
-            $whereTime = " AND UNIX_TIMESTAMP(DATE_ADD(from_unixtime(m.wiziq_datetime), INTERVAL m.duration MINUTE)) BETWEEN $now AND $mod_date";
-            $classDetailsSql = "SELECT m.*,gr.id as remiderid, UNIX_TIMESTAMP(DATE_ADD(from_unixtime(m.wiziq_datetime), INTERVAL m.duration MINUTE)) as enddateTime from $modulename m left join {guru_reminder} gr on m.class_id=gr.class_id and gr.user_id='$userObj->id' WHERE m.id=$instance $whereTime $where LIMIT 15";
+            $whereTime = " AND UNIX_TIMESTAMP(DATE_ADD(from_unixtime(m.wiziq_datetime), INTERVAL m.duration MINUTE)) BETWEEN $mod_date AND $now";
+            $classDetailsSql = "SELECT m.*,gr.id as remiderid, UNIX_TIMESTAMP(DATE_ADD(from_unixtime(m.wiziq_datetime), INTERVAL m.duration MINUTE)) as enddateTime from $modulename m left join {guru_reminder} gr on m.class_id=gr.class_id and gr.user_id='$userObj->id' WHERE m.id=$instance $whereTime $where";        
           } else {
-            $whereTime = " AND UNIX_TIMESTAMP(STR_TO_DATE(concat(DATE_FORMAT(FROM_UNIXTIME(m.start_date), '%Y-%m-%d '), m.end_time), '%Y-%m-%d %h:%i%p')) BETWEEN $now AND $mod_date";
-            $classDetailsSql = "SELECT m.*,gr.id as remiderid, UNIX_TIMESTAMP(STR_TO_DATE(concat(DATE_FORMAT(FROM_UNIXTIME(m.start_date), '%Y-%m-%d '), m.end_time), '%Y-%m-%d %h:%i%p')) from $modulename m left join {guru_reminder} gr on m.class_id=gr.class_id and gr.user_id='$userObj->id'  WHERE m.id=$instance $whereTime $where LIMIT 15";
+            $whereTime = " AND UNIX_TIMESTAMP(STR_TO_DATE(concat(DATE_FORMAT(FROM_UNIXTIME(m.start_date), '%Y-%m-%d '), m.end_time), '%Y-%m-%d %h:%i%p')) BETWEEN $mod_date AND $now";
+            $classDetailsSql = "SELECT m.*,gr.id as remiderid, UNIX_TIMESTAMP(STR_TO_DATE(concat(DATE_FORMAT(FROM_UNIXTIME(m.start_date), '%Y-%m-%d '), m.end_time), '%Y-%m-%d %h:%i%p')) from $modulename m left join {guru_reminder} gr on m.class_id=gr.class_id and gr.user_id='$userObj->id'  WHERE m.id=$instance $whereTime $where";
           }
           $classResult = $DB->get_record_sql($classDetailsSql);
           $role = $DB->get_record('role', array('shortname' => 'editingteacher'));
