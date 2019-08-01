@@ -106,6 +106,13 @@ $functions = array(
     'classpath' => 'local/flipapi/externallib.php',
     'description' => 'Get averege rating.',
     'type' => 'write',
+  ),
+    'local_flipapi_get_feedback_options' => array(
+    'classname' => 'local_flipapi_external',
+    'methodname' => 'get_feedback_options',
+    'classpath' => 'local/flipapi/externallib.php',
+    'description' => 'Return feedback option details.',
+    'type' => 'read',
   )
 );
 
