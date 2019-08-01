@@ -45,7 +45,9 @@ class local_flipapi_external extends external_api {
    * @return string welcome message
    */
   public static function get_flip_user($paramuuid) {
-    global $DB;
+    //die("kkkkkkk");
+      global $DB;
+    
     $resp = array();
     //REQUIRED
     $params = self::validate_parameters(self::get_flip_user_parameters(), array('uuid' => $paramuuid));
@@ -1002,4 +1004,236 @@ class local_flipapi_external extends external_api {
       )
     );
   }
+  
+   /**
+   * Returns description of method parameters
+   * @return external_function_parameters
+   */
+//  public static function get_live_classes_parameters() {
+//    return new external_function_parameters(
+//      array(
+//      'course_id' => new external_value(PARAM_TEXT, 'User course id.'),
+//      'user_id' => new external_value(PARAM_TEXT, 'User id.'),
+//      'class_id' => new external_value(PARAM_TEXT, 'Class id.'),
+//      )
+//    );
+//  }
+
+  /**
+   * get user details by uuid 
+   */
+
+  /**
+   * Returns welcome message
+   * @return string welcome message
+   */
+//  public static function get_live_classes_for_feedback($course_id, $user_id, $class_id) {
+//    global $DB, $CFG;
+//    $return = false;
+//    //REQUIRED
+//    self::validate_parameters(
+//      self::get_live_classes_for_feedback_parameters(), array(
+//      'course_id' => $course_id,
+//      'user_id' => $user_id,
+//      'class_id' => $class_id
+//      )
+//    );
+//    $userSql = "SELECT u.id as id,u.firstname as firstname from {user} u join {guru_user_mapping} um on u.id=um.user_id where um.uuid=$user_id";
+//    $userObj = $DB->get_record_sql($userSql);
+//    if (empty($course_id)) {
+//      $coursies = enrol_get_all_users_courses($userObj->id);
+//      foreach ($coursies as $course) {
+//        $courseId[] = $course->id;
+//      }
+//      $course = implode(",", $courseId);
+//    } else {
+//      $course = $course_id;
+//    }
+//      $where = "";
+//      if (!empty($class_id)) {
+//        $where = "AND m.class_id=$class_id";
+//      }
+//      $now = time();
+//      $mod_date = strtotime("+15 days",$now);
+//      if (!empty($course)) {
+//        $getCourseModuleSql = "SELECT cm.*,m.name as modulename,m.id as moduleid FROM {modules} as m join {course_modules} as cm on m.id=cm.module WHERE m.name in ('braincert','wiziq') AND cm.course in ($course) ORDER BY id DESC";
+//        $courseResult = $DB->get_records_sql($getCourseModuleSql);
+//        $response = [];
+//        foreach ($courseResult as $activity) {
+//          $resp = [];
+//          $modulename = '{' . $activity->modulename . '}';
+//          $instance = $activity->instance;
+//          $whereTime = "";
+//          $classDetailsSql = "";
+//          if($activity->modulename == "wiziq") {
+//            $whereTime = " AND UNIX_TIMESTAMP(DATE_ADD(from_unixtime(m.wiziq_datetime), INTERVAL m.duration MINUTE)) BETWEEN $now AND $mod_date";
+//            $classDetailsSql = "SELECT m.*,gr.id as remiderid, UNIX_TIMESTAMP(DATE_ADD(from_unixtime(m.wiziq_datetime), INTERVAL m.duration MINUTE)) as enddateTime from $modulename m left join {guru_reminder} gr on m.class_id=gr.class_id and gr.user_id='$userObj->id' WHERE m.id=$instance $whereTime $where LIMIT 15";
+//          } else {
+//            $whereTime = " AND UNIX_TIMESTAMP(STR_TO_DATE(concat(DATE_FORMAT(FROM_UNIXTIME(m.start_date), '%Y-%m-%d '), m.end_time), '%Y-%m-%d %h:%i%p')) BETWEEN $now AND $mod_date";
+//            $classDetailsSql = "SELECT m.*,gr.id as remiderid, UNIX_TIMESTAMP(STR_TO_DATE(concat(DATE_FORMAT(FROM_UNIXTIME(m.start_date), '%Y-%m-%d '), m.end_time), '%Y-%m-%d %h:%i%p')) from $modulename m left join {guru_reminder} gr on m.class_id=gr.class_id and gr.user_id='$userObj->id'  WHERE m.id=$instance $whereTime $where LIMIT 15";
+//          }
+//          $classResult = $DB->get_record_sql($classDetailsSql);
+//          $role = $DB->get_record('role', array('shortname' => 'editingteacher'));
+//          $context = get_context_instance(CONTEXT_COURSE, $activity->course);
+//          $teachers = get_role_users($role->id, $context);
+//          if (!empty($classResult)) {
+//            $isteacher = 0;
+//            $teachersDetails = [];
+//            if (!empty($teachers)) {
+//              foreach ($teachers as $teacher) {
+//                $teacherD['id'] = $teacher->id;
+//                $teacherD['name'] = $teacher->firstname;
+//                $teacherD['picture'] = $CFG->wwwroot . '/user/pix.php/' . $teacher->id . '/f1.jpg';
+//                $teachersDetails[] = $teacherD;
+//                if ($userObj->id == $teacher->id) {
+//                  $isteacher = 1;
+//                }
+//              }
+//            } else {
+//              $teacherD['id'] = "";
+//              $teacherD['name'] = "";
+//              $teacherD['picture'] = "";
+//              $teachersDetails[] = $teacherD;
+//            }
+//            $resp['courseid'] = $classResult->course;
+//            $resp['classid'] = $classResult->class_id;
+//            $resp['teachers'] = $teachersDetails;
+//            $resp['addreminder'] = (!empty($classResult->remiderid)?'true':'false');
+//            
+//            if ($activity->modulename == "wiziq") {
+//              $resp['title'] = $classResult->name;
+//              $resp['starton'] = date('h:i A, d M', $classResult->wiziq_datetime);
+//              $resp['startin'] = $classResult->wiziq_datetime;
+//              $resp['duration'] = $classResult->duration;
+//              $attendee_url = "";
+//              $errormsg = "";
+//              if(!empty($class_id)) {
+//                $language_culture_name = $classResult->vc_language; 
+//                $attendee_screen_name = $userObj->firstname;
+//                wiziq_get_data_attendee($classResult->class_id, $userObj->id, $attendee_url , $classResult->course);
+//                wiziq_addattendee($classResult->course, $classResult->class_id, $userObj->id, $attendee_screen_name, $language_culture_name, $attendee_url, $errormsg);
+//              }
+//              $resp['joinurl'] = $attendee_url;
+//            } else {
+//              $item = array();
+//              $item['userid'] = $userObj->id;
+//              $item['username'] = $userObj->firstname;
+//              $item['classname'] = $classResult->name;
+//              $item['isteacher'] = $isteacher;
+//              $item['classid'] = $classResult->class_id;
+//              $getlaunchurl = braincert_get_launch_url($item);
+//              $launchurl = "";
+//              if ($getlaunchurl['status'] == "ok") {
+//                $launchurl = $getlaunchurl['launchurl'];
+//              }
+//              $resp['title'] = $classResult->name;
+//              $resp['starton'] = date('h:i A, d M', $classResult->start_date);
+//              $resp['startin'] = $classResult->start_date;
+//              $to_time = strtotime(date('y-m-d').' '.$classResult->start_time);
+//              $from_time = strtotime(date('y-m-d').' '.$classResult->end_time);
+//              $resp['duration'] = round(abs($to_time - $from_time) / 60,2);
+//              $resp['joinurl'] = $launchurl;
+//            }
+//          $response[$resp['startin']] = $resp;
+//          }
+//        }
+//        $return = true;
+//      }
+//    ksort($response);
+//    array_values($response);
+//    if ($return) {
+//      return ['status' => 'true', 'liveclass' => $response];
+//    } else {
+//      return ['status' => 'false', 'liveclass' => array()];
+//    }
+//  }
+//  
+//  /**
+//   * Returns description of method result value
+//   * @return external_description
+//   */
+//  public static function get_live_classes_for_feedback_returns() {
+//    return new external_single_structure(
+//      array(
+//      'status' => new external_value(PARAM_TEXT, 'status'),
+//      'liveclass' => new external_multiple_structure(new external_single_structure(array(
+//      'courseid' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+//      'addreminder' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+//      'classid' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+//        'teachers' => new external_multiple_structure(new external_single_structure(array(
+//        'id' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+//        'name' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+//        'picture' => new external_value(PARAM_TEXT, 'This is homework cm id.')
+//        ))),
+//      'title' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+//      'duration' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+//      'starton' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+//      'startin' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+//      'joinurl' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+//      )))
+//      )
+//    );
+//  }
+  
+    /**
+   * Returns description of method parameters
+   * @return external_function_parameters
+   */
+  public static function get_feedback_options_parameters() {
+    return new external_function_parameters(
+      array('rating' => new external_value(PARAM_TEXT, 'feedback option rating.'))
+    );
+  }
+
+  /**
+   * Returns welcome message
+   * @return string welcome message
+   */
+  public static function get_feedback_options($rating) {
+ 
+      global $DB;
+    
+    $resp = array();
+    //REQUIRED
+    $params = self::validate_parameters(self::get_feedback_options_parameters(), array('rating' => $rating));
+
+     $resp = array(); 
+    
+        $sql = "SELECT * FROM {guru_feedback_options}";
+        if (!empty($rating)) {
+            $sql .= " WHERE rating = '".$rating."'";
+        }
+        $record = $DB->get_records_sql($sql);
+        if (!empty($record)) {
+          
+          foreach($record as $key=>$val){
+              //print_r($val->id);
+              $resp[$val->rating][] = (array)$val;
+              //$resp[$val->rating][] = $val->rating;
+              //die("kkkk");
+          }
+        } 
+     echo  json_encode((array)$resp);
+  }
+
+  /**
+   * Returns description of method result value
+   * @return external_description
+   */
+  public static function get_feedback_options_returns() {
+//    return new external_single_structure(
+//      array(
+//      'feedback_options' => new external_multiple_structure(
+//       new external_single_structure(array(
+//      'id' => new external_value(PARAM_TEXT, 'This is  id.'),
+//      'feedback_option' => new external_value(PARAM_TEXT, 'This is option.'),
+//      'rating' => new external_value(PARAM_TEXT, 'This is rating.'),
+//       'status' => new external_value(PARAM_TEXT, 'This is status.')
+//       ))
+//      )
+//      )
+//    );
+  }
+
 }
+
