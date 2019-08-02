@@ -101,13 +101,15 @@ foreach ($courseResult as $activity) {
       exec("wget '" . $download_recording_link . "' -P $folderPath -O $localOutputFileName");
       $smileFile = $folderPath . '/playlist.smil';
       createSmilFile($smileFile, $localFileName);
+      $smileFile = 'Resourse/'. $activity->id.'/playlist.smil';
       $res['cm_id'] = $activity->id;
       $res['size'] = filesize($localFileName);
       $res['record_path'] = $localFileName;
       $res['record_url'] = getWowzaUrl($smileFile, $CFG->liveclass_bucket);
       $res['platform'] = $activity->modulename;
       createLiveClassMapping($res);
-      $request = array('cm_id' => $activity->id, 'file' =>  $localFileName);
+      $fileSQS = 'Resourse/'. $activity->id.'/'.$activity->id.'.mp4';
+      $request = array('cm_id' => $activity->id, 'file' =>  $fileSQS);
       sendInQueue($sqsClient, $request);
     }
   } else {
@@ -133,13 +135,15 @@ foreach ($courseResult as $activity) {
             exec("wget '" . $download_recording_link . "' -P $folderPath -O $localFileName");
             $smileFile = $folderPath . '/playlist.smil';
             createSmilFile($smileFile, $localFileName);
+            $smileFile = 'Resourse/'. $activity->id.'/playlist.smil';
             $res['cm_id'] = $activity->id;
             $res['size'] = filesize($localFileName);
             $res['record_path'] = $localFileName;
             $res['record_url'] = getWowzaUrl($smileFile, $CFG->liveclass_bucket);
             $res['platform'] = $activity->modulename;
             createLiveClassMapping($res);
-            $request = array('cm_id' => $activity->id, 'file' =>  $localFileName);
+            $fileSQS = 'Resourse/'. $activity->id.'/'.$activity->id.'.'.$ext;
+            $request = array('cm_id' => $activity->id, 'file' =>  $fileSQS);
             sendInQueue($sqsClient, $request);
           }
         }
@@ -150,17 +154,19 @@ foreach ($courseResult as $activity) {
 
 function createLiveClassMapping($res) {
   global $DB;
-  if ($checkVideo = $DB->get_records('guru_liveclass_recording', array('cm_id' => $res['cm_id']))) {
-    $insertRecord['cm_id'] = $res['cm_id'];
-    $insertRecord['size'] = $res['size'];
-    $insertRecord['record_path'] = $res['record_path'];
-    $insertRecord['record_url'] = $res['record_url'];
-    $insertRecord['platform'] = $res['platform'];
-    $DB->insert_record('guru_liveclass_recording', $insertRecord);
+  try {
+    $res['record_url'] = urlencode($res['record_url']);
+  if (!$checkVideo = $DB->get_records('guru_liveclass_recording', array('cm_id' => $res['cm_id']))) {
+    $reminderCreated = "INSERT INTO {guru_liveclass_recording} SET cm_id='{$res['cm_id']}', file_size='{$res['size']}', record_path='{$res['record_path']}', record_url='{$res['record_url']}', platform='{$res['platform']}'";
+    $DB->execute($reminderCreated);
   } else {
-    $reminderCreated = "UPDATE {guru_liveclass_recording} SET record_path='{$res['record_path']}', record_url='{$res['record_url']}' where cm_id='{$res['cm_id']}'";
+    $reminderCreated = "UPDATE {guru_liveclass_recording} SET record_path=\"{$res['record_path']}\", record_url=\"{$res['record_url']}\" where cm_id={$res['cm_id']}";
     $DB->execute($reminderCreated);
   }
+  } catch (\Exception $e) {
+    cli_heading('Error While Insert.'.$e->getMessage());
+  }
+  
 }
 
 function sendInQueue($sqsClient, $request) {
@@ -169,6 +175,7 @@ function sendInQueue($sqsClient, $request) {
   $sqsClient->sendMessage(array(
     'QueueUrl' => $CFG->amazon_sqs_url,
     'MessageBody' => $json,
+    'MessageGroupId' => 'prod'
   ));
 }
 cli_heading('Live class download and upload successfully');
