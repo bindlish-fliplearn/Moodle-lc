@@ -120,6 +120,7 @@ $functions = array(
     'classpath' => 'local/flipapi/externallib.php',
     'description' => 'Get Live classes for user by class id and user id.',
     'type' => 'read',
+    'ajax' => true,
   )
 );
 

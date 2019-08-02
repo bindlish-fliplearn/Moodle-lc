@@ -1034,16 +1034,14 @@ class local_flipapi_external extends external_api {
             $sql .= " WHERE rating = '".$rating."'";
         }
         $record = $DB->get_records_sql($sql);
-        if (!empty($record)) {
-          
-          foreach($record as $key=>$val){
-              //print_r($val->id);
-              $resp[$val->rating][] = (array)$val;
-              //$resp[$val->rating][] = $val->rating;
-              //die("kkkk");
-          }
-        } 
-     echo  json_encode((array)$resp);
+        
+    if (!empty($record)) {
+      $res = ['status' => 'true', 'feedback_options' => (array)$record];
+    } else {
+      $res = ['status' => 'false', 'avgrating' => 0];
+    }
+    $array = json_decode(json_encode($res), true);
+    return $array;
   }
 
   /**
@@ -1051,7 +1049,16 @@ class local_flipapi_external extends external_api {
    * @return external_description
    */
   public static function get_feedback_options_returns() {
-
+     return new external_single_structure(
+      array(
+      'status' => new external_value(PARAM_TEXT, 'status'),
+      'feedback_options' => new external_multiple_structure(new external_single_structure(array(
+      'id' => new external_value(PARAM_TEXT, 'This is id.'),
+      'feedback_option' => new external_value(PARAM_TEXT, 'This is feedback_option.'),
+      'rating' => new external_value(PARAM_TEXT, 'This is rating.'),
+       'status' => new external_value(PARAM_TEXT, 'This is status.'),
+    ))))
+    );
   }
 
   /**
