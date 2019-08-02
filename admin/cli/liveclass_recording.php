@@ -30,7 +30,7 @@ require_once($CFG->libdir . '/clilib.php');      // cli only functions
 require_once($CFG->libdir . '/fliplearnlib.php');      // cli only functions
 require_once($CFG->libdir . '/../mod/braincert/locallib.php'); // braincert Lib
 require_once($CFG->libdir . '/../mod/wiziq/locallib.php'); // wiziq Lib
-require_once $CFG->libdir . '/local/aws/aws-autoloader.php';
+require_once $CFG->libdir . '/../local/aws/aws-autoloader.php';
 
 $sqsClient = \Aws\Sqs\SqsClient::factory(array(
     'version' => 'latest',
@@ -164,6 +164,7 @@ function createLiveClassMapping($res) {
 }
 
 function sendInQueue($sqsClient, $request) {
+  global $CFG;
   $json = json_encode($request);
   $sqsClient->sendMessage(array(
     'QueueUrl' => $CFG->amazon_sqs_url,
