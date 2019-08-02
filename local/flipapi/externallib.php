@@ -1114,7 +1114,7 @@ class local_flipapi_external extends external_api {
       'class_id' => $class_id
       )
     );
-    $userSql = "SELECT u.id as id,u.firstname as firstname from {user} u join {guru_user_mapping} um on u.id=um.user_id where um.uuid=$user_id";
+    $userSql = "SELECT u.id as id,u.firstname as firstname from {user} u join {guru_user_mapping} um on u.id=um.user_id where um.user_id=$user_id";
     $userObj = $DB->get_record_sql($userSql);
     if (empty($course_id)) {
       $coursies = enrol_get_all_users_courses($userObj->id);
@@ -1175,7 +1175,10 @@ class local_flipapi_external extends external_api {
             $resp['classid'] = $classResult->class_id;
             $resp['teachers'] = $teachersDetails;
             $resp['addreminder'] = (!empty($classResult->remiderid)?'true':'false');
-            
+            $resp['cmid'] = $activity->id;
+            $resp['modulename'] = $activity->modulename;
+            $resp['classlink'] = $CFG->wwwroot."/mod/".$activity->modulename."/view.php?id=".$activity->id;
+              
             if ($activity->modulename == "wiziq") {
               $resp['title'] = $classResult->name;
               $resp['starton'] = date('h:i A, d M', $classResult->wiziq_datetime);
@@ -1190,8 +1193,7 @@ class local_flipapi_external extends external_api {
                 wiziq_addattendee($classResult->course, $classResult->class_id, $userObj->id, $attendee_screen_name, $language_culture_name, $attendee_url, $errormsg);
               }
               $resp['joinurl'] = $attendee_url;
-              $resp['modulename'] = $activity->modulename;
-              
+             
             } else {
               $item = array();
               $item['userid'] = $userObj->id;
@@ -1210,14 +1212,35 @@ class local_flipapi_external extends external_api {
               $to_time = strtotime(date('y-m-d').' '.$classResult->start_time);
               $from_time = strtotime(date('y-m-d').' '.$classResult->end_time);
               $resp['duration'] = round(abs($to_time - $from_time) / 60,2);
-              $resp['joinurl'] = $launchurl;
-              $resp['modulename'] = $activity->modulename;
-            }
-          $response[$resp['startin']] = $resp;
+              $resp['joinurl'] = $launchurl;            }
+            
+          $response1[$resp['startin']] = $resp;
           }
         }
         $return = true;
       }
+      //print_r($response); die;
+      $response = array();
+      if(!empty($response1)){
+          foreach($response1 as $key=>$val){
+                $cmid = $val['cmid'];
+                if ($val['modulename'] == "wiziq") {
+                    $attendanceDetailsSql = "SELECT id FROM {guru_braincert_user} where class_id = '{$cmid}' and user_id =  '{$userObj->id}'";
+                }else{
+                    $attendanceDetailsSql = "SELECT id FROM {guru_wiziq_user} where class_id = '{$cmid}' and user_id =  '{$userObj->id}'";
+                }
+                
+                $attendanceResult = $DB->get_record_sql($attendanceDetailsSql);
+                if(!empty($attendanceResult)){
+                    $feedbackStatusSql = "SELECT id FROM {guru_activity_rating} WHERE user_id='{$userObj->id}' and cm_id='{$cmid}'";
+                    $feedbackStatusResult = $DB->get_record_sql($feedbackStatusSql);
+                    if(empty($feedbackStatusResult)){
+                        $response[$key]=  $val;
+                    }
+                }
+          }
+      }
+    
     ksort($response);
     array_values($response);
     if ($return) {
