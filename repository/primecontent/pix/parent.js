@@ -596,10 +596,14 @@ function studentFeedback(index,studentData,userId){
        if (avg >0) {
              avgRating = 'Avg Rating : '+avg;
        }
-
+    var url = window.location;
+        var path = url.host;
+        if(url.host == "localhost") {
+            path = url.host + "/flip_moodle";
+        }
+    var modulename = studentData.modulename;
+    var classLink = url.protocol+'//'+path+'/mod/'+modulename+'/view.php?id='+cm_id;
     var success =   '<div class="success" id="ratingSuccess"></div>';
-
-
     html += "<div class='modal liveClass' id='joinLiveClassNew' role='dialog' aria-labelledby='myModalLabel'>";
     html += "<div class='modal-dialog modal-sm' role='document'>";
     html += "<div class='modal-content '>";
@@ -609,7 +613,7 @@ function studentFeedback(index,studentData,userId){
     html += "<div class='row-fluid'><div class='span6'><p><span class = 'text-grey'>Starts on:</span> "+studentData.starton+"</p></div>";
     html += "<div class='span6 text-right'><p><span class = 'text-grey'>Duration:</span> "+studentData.duration+" Minutes</p></div></div>";
     html += "<div class='row-fluid m-t-28'><div class='span3'><img src="+profilePic+" class='radius10 img-responsive'></div>";
-    html += "<div class='span9'><h4>"+teacherName+"</h4><div><a class ='link' href = '#' >Class Link</a></div></span></div></div>";
+    html += "<div class='span9'><h4>"+teacherName+"</h4><div><a class ='link' href = "+classLink+" >Class Link</a></div></span></div></div>";
     html += "<div class='row-fluid feedbackRating'><div class = 'span6'>"+avgRating+"</div><div class = 'span6 star liveClassStar text-right'> "+rating+" <input type='hidden' value = '' id='ratingCount' ></div></div>"+success+"";
     html += "<div id = 'feedbackBox' class = 'row-fluid commentHide'><div class='row-fluid checkboxDiv'><div id = 'optiondivlist'></div><div class='commentHide' id = 'textareabox'><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedbackliveClass' name = 'feedback' rows='4' cols='59'></textarea></div></div>"
     html += "<div class='row-fluid padding'><div class='submitButton span12 text-right'><button type = submit  value = Submit onclick = submitFeedback("+cm_id+","+userId+")>Submit</button></div><div class = 'commentHide' id = 'successMsg'>Feedback successfully submitted ! Happy Learning </div></div></div>";
