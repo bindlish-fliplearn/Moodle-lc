@@ -219,7 +219,8 @@ function submitPTM() {
         }
     });   
 }
-function addReminder(rating,contextId, userId){
+function addReminder(rating,contextId, userId,live = ''){
+
     $('#feedback').val('');
     $('#successMsg').removeClass('commentShow');      
     $('#successMsg').addClass('commentHide'); 
@@ -253,6 +254,45 @@ function addReminder(rating,contextId, userId){
     if(url.host == "localhost") {
         path = url.host + "/flip_moodle";
     }
+    if(live == 'true'){
+        var options = [];
+        let promiselist = new Promise(function(resolve, reject) {
+            getOptionList(resolve, reject, '');
+        });
+         promiselist.then(function(data){
+            if(data.status == 'true'){
+
+                if(!$('#checkboxDiv').hasClass('commentShow')){
+                    $('#checkboxDiv').removeClass('commentHide');   
+                    $('#checkboxDiv').addClass('commentShow');   
+                }
+
+                for(let i=0 ; i<= data.feedback_options.length-1; i++){
+                    var feedback = data.feedback_options[i];
+                    if(feedback.rating == rating ){
+                        options.push(feedback.feedback_option);
+                    }
+                }
+                   var optionHtml = '';
+                   $('#optionlivedivlist').html('');
+                    for (var i = 0; i <= options.length - 1; i++) {
+                    var text = options[i];
+
+                    var chkid = 'checkboxid_'+i;
+                    var input = 'input_'+i;
+                    if(i == options.length-1){
+                        optionHtml += "<label onclick = otheroption('"+chkid+"','true') class='containerForCheckBox'>"+text+"<input class = 'checkBoxoption' name='foptionpopup' value = "+i+" id = '"+chkid+"' type='checkbox' ><span class='checkmark'></span></label>";
+                    }else{ 
+                        optionHtml += "<label class='containerForCheckBox'>"+text+"<input class = 'checkBoxoption' id = '"+chkid+"' type='checkbox' name='foptionpopup' value = "+i+" ><span class='checkmark'></span></label>";
+                    }
+                    optionHtml += "<input type = 'hidden' value = '"+text+"' id = '"+input+"'>";
+                }
+            $('#optionlivedivlist').append(optionHtml);
+            }
+         })
+
+    }
+
     $.ajax({
         type: "POST",
         data: request,
@@ -457,7 +497,7 @@ function addrating(rating,contextId, userId,status){
                     var chkid = 'checkboxid_'+i;
                     var input = 'input_'+i;
                     if(i == options.length-1){
-                        optionHtml += "<label onclick = otheroption('"+chkid+"') class='containerForCheckBox'>"+text+"<input class = 'checkBoxoption' name='foption' value = "+i+" id = '"+chkid+"' type='checkbox' ><span class='checkmark'></span></label>";
+                        optionHtml += "<label onclick = otheroption('"+chkid+"','false') class='containerForCheckBox'>"+text+"<input class = 'checkBoxoption' name='foption' value = "+i+" id = '"+chkid+"' type='checkbox' ><span class='checkmark'></span></label>";
                     }else{ 
                         optionHtml += "<label class='containerForCheckBox'>"+text+"<input class = 'checkBoxoption' id = '"+chkid+"' type='checkbox' name='foption' value = "+i+" ><span class='checkmark'></span></label>";
                     }
@@ -506,23 +546,37 @@ function addrating(rating,contextId, userId,status){
     });
 
 }
-function otheroption(id){
-    if($("#"+id).prop('checked') == true){
-        $('#textareabox').addClass('commentShow');  
-        $('#textareabox').addClass('span12');   
-        $('#textareabox').removeClass('commentHide'); 
+function otheroption(id,live =''){
+  
+    if(live == 'true'){
+            if($("#"+id).prop('checked') == true){
+            $('#textareaboxlive').addClass('commentShow');  
+            $('#textareaboxlive').removeClass('commentHide'); 
+        }else{
+            $('#textareaboxlive').addClass('commentHide');  
+            $('#textareaboxlive').removeClass('commentShow'); 
+        }
     }else{
-        $('#textareabox').addClass('commentHide');  
-        $('#textareabox').removeClass('span12');   
-        $('#textareabox').removeClass('commentShow'); 
+              if($("#"+id).prop('checked') == true){
+            $('#textareabox').addClass('commentShow');  
+            $('#textareabox').addClass('span12');   
+            $('#textareabox').removeClass('commentHide'); 
+        }else{
+            $('#textareabox').addClass('commentHide');  
+            $('#textareabox').removeClass('span12');   
+            $('#textareabox').removeClass('commentShow'); 
+        }
     }
 
 }
-function submitFeedback(contextId,userId){
+function submitFeedback(contextId,userId,popup){
     var feedback =  document.getElementById("feedbackliveClass").value;
     var optionsdata = [];
     var i = 1;
-    $.each($("input[name='foption']:checked"), function(){          
+    var rating =  '';
+    if(popup == 'true'){
+         rating =  $('#ratingCount').val();
+        $.each($("input[name='foption']:checked"), function(){          
         var id = "input_"+$(this).val();
         var textvalue = $('#'+id).val();
         if($(this).val()==5){
@@ -532,10 +586,24 @@ function submitFeedback(contextId,userId){
             optionsdata.push(textvalue);
         }
     });
+    }else{
+            rating =  $('#starcount').val();
+            var feedback =  document.getElementById("feedbackliveClasspopup").value;
+            $.each($("input[name='foptionpopup']:checked"), function(){          
+            var id = "input_"+$(this).val();
+            var textvalue = $('#'+id).val();
+            if($(this).val()==5){
+                textvalue = textvalue+"-"+feedback;
+                    optionsdata.push(textvalue);
+            }else{
+                optionsdata.push(textvalue);
+            }
+        });
+    }
+  
     //var feedbackstring = JSON.stringify(optionsdata);
     var feedbackstring = optionsdata.toString();
     if(feedbackstring != ''){
-        var rating =  $('#ratingCount').val();
         var request = {
             user_id:userId,
             cm_id: contextId,
@@ -556,8 +624,8 @@ function submitFeedback(contextId,userId){
             if(data.status == 'true'){
                 var succMsg = "<div class='success'>Feedback successfully submitted ! Happy Learning.</div>"
                 $('#successMsg').html(succMsg);
-                $('#commentBox').addClass('commentHide');
-                $('#commentBox').removeClass('commentShow');      
+                $('#checkboxDiv').addClass('commentHide');
+                $('#checkboxDiv').removeClass('commentShow');      
                 $('#successMsg').removeClass('commentHide');      
                 $('#successMsg').addClass('commentShow'); 
             }
@@ -585,7 +653,7 @@ function studentFeedback(index,studentData,userId){
     var profilePic = studentData.teachers[0].picture;
     var teacherName = studentData.teachers[0].name;
     var teacherCount  = '';
-    var cm_id = studentData.classid;
+    var cm_id = studentData.cm_id;
 
     let promise = new Promise(function(resolve, reject) {
         getRating(resolve, reject, 55215);
@@ -601,8 +669,7 @@ function studentFeedback(index,studentData,userId){
         if(url.host == "localhost") {
             path = url.host + "/flip_moodle";
         }
-    var modulename = studentData.modulename;
-    var classLink = url.protocol+'//'+path+'/mod/'+modulename+'/view.php?id='+cm_id;
+    var classLink = studentData.classlink;
     var success =   '<div class="success" id="ratingSuccess"></div>';
     html += "<div class='modal liveClass' id='joinLiveClassNew' role='dialog' aria-labelledby='myModalLabel'>";
     html += "<div class='modal-dialog modal-sm' role='document'>";
@@ -615,8 +682,8 @@ function studentFeedback(index,studentData,userId){
     html += "<div class='row-fluid m-t-28'><div class='span3'><img src="+profilePic+" class='radius10 img-responsive'></div>";
     html += "<div class='span9'><h4>"+teacherName+"</h4><div><a class ='link' href = "+classLink+" >Class Link</a></div></span></div></div>";
     html += "<div class='row-fluid feedbackRating'><div class = 'span6'>"+avgRating+"</div><div class = 'span6 star liveClassStar text-right'> "+rating+" <input type='hidden' value = '' id='ratingCount' ></div></div>"+success+"";
-    html += "<div id = 'feedbackBox' class = 'row-fluid commentHide'><div class='row-fluid checkboxDiv'><div id = 'optiondivlist'></div><div class='commentHide' id = 'textareabox'><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedbackliveClass' name = 'feedback' rows='4' cols='59'></textarea></div></div>"
-    html += "<div class='row-fluid padding'><div class='submitButton span12 text-right'><button type = submit  value = Submit onclick = submitFeedback("+cm_id+","+userId+")>Submit</button></div><div class = 'commentHide' id = 'successMsg'>Feedback successfully submitted ! Happy Learning </div></div></div>";
+    html += "<div id = 'feedbackBox' class = 'row-fluid commentHide'><div class='row-fluid checkboxDiv' id='checkboxDiv'><div id = 'optiondivlist'></div><div class='commentHide' id = 'textareabox'><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedbackliveClass' name = 'feedback' rows='4' cols='59'></textarea></div></div>"
+    html += "<div class='row-fluid padding'><div class='submitButton span12 text-right'><button type = submit  value = Submit onclick = submitFeedback("+cm_id+","+userId+",'true')>Submit</button></div><div class = 'commentHide' id = 'successMsg'>Feedback successfully submitted ! Happy Learning </div></div></div>";
     html += "<div class='row-fluid text-center' ><input type='button' onclick = 'closePopup("+index+","+userId+")' value='Skip'></div>";
     html += "</div></div></div></div>";
     $('body').append(html);
