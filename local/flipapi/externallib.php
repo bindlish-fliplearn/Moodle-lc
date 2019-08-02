@@ -912,11 +912,12 @@ class local_flipapi_external extends external_api {
       'cm_id' => new external_value(PARAM_TEXT, 'Activity Id.'),
       'rating' => new external_value(PARAM_TEXT, 'Rating.'),
       'feedback' => new external_value(PARAM_TEXT, 'Feedback.'),
+      'status' => new external_value(PARAM_TEXT, 'Status.'),    
       )
     );
   }
   
-  public  function add_activity_rating($user_id, $cm_id, $rating, $feedback) {
+  public  function add_activity_rating($user_id, $cm_id, $rating, $feedback, $status) {
     global $DB;
     $return = false;
     //REQUIRED
@@ -926,28 +927,47 @@ class local_flipapi_external extends external_api {
       'cm_id' => $cm_id,
       'rating' => $rating,
       'feedback' => $feedback,
+      'status'   => $status, 
       )
     );
     $date = time();
     $checkRemider = "SELECT id from {guru_activity_rating} where user_id='{$user_id}' AND cm_id='{$cm_id}'";
     $remiderObj = $DB->get_record_sql($checkRemider);
+    
     if (empty($remiderObj)) {
+        
       if(!empty($user_id) && !empty($cm_id) && !empty($rating)) {
-        $reminderCreated = "INSERT INTO {guru_activity_rating} SET user_id='{$user_id}', cm_id='{$cm_id}',rating='{$rating}',feedback='{$feedback}',timecreated='$date'";
+          
+         $statusStr = ""; 
+        if(!empty($status)){
+            $statusStr = ",status='{$status}'";
+        }
+        if($rating == 'null'){
+            $rating = '0';
+          }
+          $rating = (int)$rating;
+        $reminderCreated = "INSERT INTO {guru_activity_rating} SET user_id='{$user_id}', cm_id='{$cm_id}',rating='{$rating}',feedback='{$feedback}',timecreated='$date'$statusStr";
         $DB->execute($reminderCreated);
         $return = true;
       }
-    } else {
+    } else {   
       if(!empty($user_id) && !empty($cm_id) && !empty($rating)) {
         if(!empty($feedback)) {
           $feedbackSql = "feedback='$feedback',";
         }
-        $reminderCreated = "UPDATE {guru_activity_rating} SET rating='{$rating}', $feedbackSql timemodified='$date' where user_id='{$user_id}' and cm_id='{$cm_id}'";
+        $statusStr = ""; 
+        if(!empty($status)){
+            $statusStr = "status='{$status}',";
+        }
+        
+        if($rating == 'null'){
+            $rating = '0';
+          }
+        $reminderCreated = "UPDATE {guru_activity_rating} SET rating='{$rating}', $feedbackSql $statusStr timemodified='$date' where user_id='{$user_id}' and cm_id='{$cm_id}'";
         $DB->execute($reminderCreated);
         $return = true;
       }
     }
-    
     if ($return) {
       return ['status' => 'true'];
     } else {
