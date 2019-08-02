@@ -6,11 +6,7 @@ $CFG = new stdClass();
 
 $CFG->dbtype    = 'mysqli';
 $CFG->dblibrary = 'native';
-//$CFG->dbhost    = 'prodedgedbm1.fliplearn.com';
-//$CFG->dbname    = 'flip_guru';
-//$CFG->dbuser    = 'gauravs';
-//$CFG->dbpass    = 'Gauravs$$18';
-$CFG->dbhost    = 'stgquizdb.fliplearn.com';
+$CFG->dbhost    = 'stgumsdb.fliplearn.com';
 $CFG->dbname    = 'stg_moodle_lc';
 $CFG->dbuser    = 'root';
 $CFG->dbpass    = 'flip@159$$';
@@ -22,11 +18,9 @@ $CFG->dboptions = array (
   'dbcollation' => 'utf8mb4_unicode_ci',
 );
 
-$CFG->customscripts = '/var/www/html/flip-moodle-lc/customscript';
-$CFG->wwwroot   = 'http://localhost/flip-moodle-lc';
-$CFG->dirroot   = '/var/www/html/flip-moodle-lc';
-$CFG->libdir   = '/var/www/html/flip-moodle-lc/lib';
-$CFG->dataroot  = '/var/www/flip-moodledata';
+$CFG->customscripts = '/var/www/html/flip-moodleguru/customscript';
+$CFG->wwwroot   = 'http://localhost/flip_moodle';
+$CFG->dataroot  = '/var/www/html/moodledata_lc';
 $CFG->admin     = 'admin';
 
 $CFG->directorypermissions = 0777;
@@ -39,12 +33,7 @@ $CFG->SEND_NOTIFICATION     = true;
 $CFG->COMMUNICATION_API_URL = 'http://stgeventapi.fliplearn.com:8084/event/';
 $CFG->DOMAIN_NAME     = 'stgmoodlelc.fliplearn.com';
 $CFG->BASE_URL     = 'https://stgmoodlelc.fliplearn.com';
-$CFG->liveclass_path = '/var/www/html/s3_liveclass/';
-$CFG->wowza_key = '4fd684a604849e77dfJ3dflHkjds45549SC8O';
-$CFG->wowza_token_end_days = 365;
-$CFG->wowza_cdn_url = 'https://d12qsoed6q4q41.cloudfront.net/';
-$CFG->path_to_media_file = 'fliplearnaes/_definst_/s3/';
-$CFG->liveclass_bucket = 'fliplearnjeee';
+
 
 // end here 
 
@@ -72,6 +61,6 @@ define('DOMAIN_NAME','stgmoodlelc.fliplearn.com');
 define('BASE_URL','https://stgmoodlelc.fliplearn.com');
 define('PQUIZ_URL','https://dev5pquiz.fliplearn.com');
 define('JWPLAYER_KEY', 'gvD6tOcIdFv2QesR3M1VVucjXUCn7hMBtiAtoQXmP8b86K71');
-define('C_NAME',["WS"=>"Work Sheet","WL"=>"Web Links", "WKS"=>"Printable Worksheet", "VDOEN"=>"Animation", "TS"=>"Topic Synopsis", "TI"=>"Teaching Idea", "SP"=>"Sample Papers", "RAP"=>"Real Life Application", "PYP"=>"Past Year Papers", "PA"=>"Practice Assignment", "OTWSR"=>"Animation", "OTWS"=>"Animation", "OTWG"=>"Animation", "OTNS1"=>"Animation", "NTWG"=>"Animation", "ILNEW"=>"Animation", "ILGUJ"=>"Animation", "ILAS3"=>"Animation", "HA"=>"Home Assignment", "H5P"=>"Interactive Worksheet", "DM"=>"Diagram Maker", "CM"=>"Mind Maps", "BQ"=>"Board Questions", "AFL"=>"Assessment For Learning", "IL-TOS-2D"=>"Animation", "IL-FS-2D"=>"Animation", "CR"=>"Community Resource", "3d"=>"3D Animation", "NCERT"=>"NCERT E-book", "MPE"=>"Practice Exercise", "PHET"=>"HTML 5 Simulations"]);
+
 // There is no php closing tag in this file,
 // it is intentional because it prevents trailing whitespace problems!
