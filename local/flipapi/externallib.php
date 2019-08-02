@@ -1143,7 +1143,7 @@ class local_flipapi_external extends external_api {
           $classDetailsSql = "";
           if($activity->modulename == "wiziq") {
             $whereTime = " AND UNIX_TIMESTAMP(DATE_ADD(from_unixtime(m.wiziq_datetime), INTERVAL m.duration MINUTE)) BETWEEN $mod_date AND $now";
-            $classDetailsSql = "SELECT m.*,gr.id as remiderid, UNIX_TIMESTAMP(DATE_ADD(from_unixtime(m.wiziq_datetime), INTERVAL m.duration MINUTE)) as enddateTime from $modulename m left join {guru_reminder} gr on m.class_id=gr.class_id and gr.user_id='$userObj->id' WHERE m.id=$instance $whereTime $where";        
+            $classDetailsSql = "SELECT m.*,gr.id as remiderid, UNIX_TIMESTAMP(DATE_ADD(from_unixtime(m.wiziq_datetime), INTERVAL m.duration MINUTE)) as enddateTime from $modulename m left join {guru_reminder} gr on m.class_id=gr.class_id and gr.user_id='$userObj->id' WHERE m.id=$instance $whereTime $where";               
           } else {
             $whereTime = " AND UNIX_TIMESTAMP(STR_TO_DATE(concat(DATE_FORMAT(FROM_UNIXTIME(m.start_date), '%Y-%m-%d '), m.end_time), '%Y-%m-%d %h:%i%p')) BETWEEN $mod_date AND $now";
             $classDetailsSql = "SELECT m.*,gr.id as remiderid, UNIX_TIMESTAMP(STR_TO_DATE(concat(DATE_FORMAT(FROM_UNIXTIME(m.start_date), '%Y-%m-%d '), m.end_time), '%Y-%m-%d %h:%i%p')) from $modulename m left join {guru_reminder} gr on m.class_id=gr.class_id and gr.user_id='$userObj->id'  WHERE m.id=$instance $whereTime $where";
@@ -1190,6 +1190,8 @@ class local_flipapi_external extends external_api {
                 wiziq_addattendee($classResult->course, $classResult->class_id, $userObj->id, $attendee_screen_name, $language_culture_name, $attendee_url, $errormsg);
               }
               $resp['joinurl'] = $attendee_url;
+              $resp['modulename'] = $activity->modulename;
+              
             } else {
               $item = array();
               $item['userid'] = $userObj->id;
@@ -1209,6 +1211,7 @@ class local_flipapi_external extends external_api {
               $from_time = strtotime(date('y-m-d').' '.$classResult->end_time);
               $resp['duration'] = round(abs($to_time - $from_time) / 60,2);
               $resp['joinurl'] = $launchurl;
+              $resp['modulename'] = $activity->modulename;
             }
           $response[$resp['startin']] = $resp;
           }
@@ -1246,6 +1249,7 @@ class local_flipapi_external extends external_api {
       'starton' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
       'startin' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
       'joinurl' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+      'modulename' => new external_value(PARAM_TEXT, 'This is homework cm id.'),    
       )))
       )
     );
