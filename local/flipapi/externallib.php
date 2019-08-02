@@ -912,11 +912,12 @@ class local_flipapi_external extends external_api {
       'cm_id' => new external_value(PARAM_TEXT, 'Activity Id.'),
       'rating' => new external_value(PARAM_TEXT, 'Rating.'),
       'feedback' => new external_value(PARAM_TEXT, 'Feedback.'),
+      'status' => new external_value(PARAM_TEXT, 'Status.'),    
       )
     );
   }
   
-  public  function add_activity_rating($user_id, $cm_id, $rating, $feedback) {
+  public  function add_activity_rating($user_id, $cm_id, $rating, $feedback, $status) {
     global $DB;
     $return = false;
     //REQUIRED
@@ -926,28 +927,47 @@ class local_flipapi_external extends external_api {
       'cm_id' => $cm_id,
       'rating' => $rating,
       'feedback' => $feedback,
+      'status'   => $status, 
       )
     );
     $date = time();
     $checkRemider = "SELECT id from {guru_activity_rating} where user_id='{$user_id}' AND cm_id='{$cm_id}'";
     $remiderObj = $DB->get_record_sql($checkRemider);
+    
     if (empty($remiderObj)) {
+        
       if(!empty($user_id) && !empty($cm_id) && !empty($rating)) {
-        $reminderCreated = "INSERT INTO {guru_activity_rating} SET user_id='{$user_id}', cm_id='{$cm_id}',rating='{$rating}',feedback='{$feedback}',timecreated='$date'";
+          
+         $statusStr = ""; 
+        if(!empty($status)){
+            $statusStr = ",status='{$status}'";
+        }
+        if($rating == 'null'){
+            $rating = '0';
+          }
+          $rating = (int)$rating;
+        $reminderCreated = "INSERT INTO {guru_activity_rating} SET user_id='{$user_id}', cm_id='{$cm_id}',rating='{$rating}',feedback='{$feedback}',timecreated='$date'$statusStr";
         $DB->execute($reminderCreated);
         $return = true;
       }
-    } else {
+    } else {   
       if(!empty($user_id) && !empty($cm_id) && !empty($rating)) {
         if(!empty($feedback)) {
           $feedbackSql = "feedback='$feedback',";
         }
-        $reminderCreated = "UPDATE {guru_activity_rating} SET rating='{$rating}', $feedbackSql timemodified='$date' where user_id='{$user_id}' and cm_id='{$cm_id}'";
+        $statusStr = ""; 
+        if(!empty($status)){
+            $statusStr = "status='{$status}',";
+        }
+        
+        if($rating == 'null'){
+            $rating = '0';
+          }
+        $reminderCreated = "UPDATE {guru_activity_rating} SET rating='{$rating}', $feedbackSql $statusStr timemodified='$date' where user_id='{$user_id}' and cm_id='{$cm_id}'";
         $DB->execute($reminderCreated);
         $return = true;
       }
     }
-    
     if ($return) {
       return ['status' => 'true'];
     } else {
@@ -1034,16 +1054,14 @@ class local_flipapi_external extends external_api {
             $sql .= " WHERE rating = '".$rating."'";
         }
         $record = $DB->get_records_sql($sql);
-        if (!empty($record)) {
-          
-          foreach($record as $key=>$val){
-              //print_r($val->id);
-              $resp[$val->rating][] = (array)$val;
-              //$resp[$val->rating][] = $val->rating;
-              //die("kkkk");
-          }
-        } 
-     echo  json_encode((array)$resp);
+        
+    if (!empty($record)) {
+      $res = ['status' => 'true', 'feedback_options' => (array)$record];
+    } else {
+      $res = ['status' => 'false', 'avgrating' => 0];
+    }
+    $array = json_decode(json_encode($res), true);
+    return $array;
   }
 
   /**
@@ -1051,7 +1069,16 @@ class local_flipapi_external extends external_api {
    * @return external_description
    */
   public static function get_feedback_options_returns() {
-
+     return new external_single_structure(
+      array(
+      'status' => new external_value(PARAM_TEXT, 'status'),
+      'feedback_options' => new external_multiple_structure(new external_single_structure(array(
+      'id' => new external_value(PARAM_TEXT, 'This is id.'),
+      'feedback_option' => new external_value(PARAM_TEXT, 'This is feedback_option.'),
+      'rating' => new external_value(PARAM_TEXT, 'This is rating.'),
+       'status' => new external_value(PARAM_TEXT, 'This is status.'),
+    ))))
+    );
   }
 
   /**
@@ -1116,7 +1143,7 @@ class local_flipapi_external extends external_api {
           $classDetailsSql = "";
           if($activity->modulename == "wiziq") {
             $whereTime = " AND UNIX_TIMESTAMP(DATE_ADD(from_unixtime(m.wiziq_datetime), INTERVAL m.duration MINUTE)) BETWEEN $mod_date AND $now";
-            $classDetailsSql = "SELECT m.*,gr.id as remiderid, UNIX_TIMESTAMP(DATE_ADD(from_unixtime(m.wiziq_datetime), INTERVAL m.duration MINUTE)) as enddateTime from $modulename m left join {guru_reminder} gr on m.class_id=gr.class_id and gr.user_id='$userObj->id' WHERE m.id=$instance $whereTime $where";        
+            $classDetailsSql = "SELECT m.*,gr.id as remiderid, UNIX_TIMESTAMP(DATE_ADD(from_unixtime(m.wiziq_datetime), INTERVAL m.duration MINUTE)) as enddateTime from $modulename m left join {guru_reminder} gr on m.class_id=gr.class_id and gr.user_id='$userObj->id' WHERE m.id=$instance $whereTime $where";               
           } else {
             $whereTime = " AND UNIX_TIMESTAMP(STR_TO_DATE(concat(DATE_FORMAT(FROM_UNIXTIME(m.start_date), '%Y-%m-%d '), m.end_time), '%Y-%m-%d %h:%i%p')) BETWEEN $mod_date AND $now";
             $classDetailsSql = "SELECT m.*,gr.id as remiderid, UNIX_TIMESTAMP(STR_TO_DATE(concat(DATE_FORMAT(FROM_UNIXTIME(m.start_date), '%Y-%m-%d '), m.end_time), '%Y-%m-%d %h:%i%p')) from $modulename m left join {guru_reminder} gr on m.class_id=gr.class_id and gr.user_id='$userObj->id'  WHERE m.id=$instance $whereTime $where";
@@ -1163,6 +1190,8 @@ class local_flipapi_external extends external_api {
                 wiziq_addattendee($classResult->course, $classResult->class_id, $userObj->id, $attendee_screen_name, $language_culture_name, $attendee_url, $errormsg);
               }
               $resp['joinurl'] = $attendee_url;
+              $resp['modulename'] = $activity->modulename;
+              
             } else {
               $item = array();
               $item['userid'] = $userObj->id;
@@ -1182,6 +1211,7 @@ class local_flipapi_external extends external_api {
               $from_time = strtotime(date('y-m-d').' '.$classResult->end_time);
               $resp['duration'] = round(abs($to_time - $from_time) / 60,2);
               $resp['joinurl'] = $launchurl;
+              $resp['modulename'] = $activity->modulename;
             }
           $response[$resp['startin']] = $resp;
           }
@@ -1219,6 +1249,7 @@ class local_flipapi_external extends external_api {
       'starton' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
       'startin' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
       'joinurl' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+      'modulename' => new external_value(PARAM_TEXT, 'This is homework cm id.'),    
       )))
       )
     );
