@@ -245,6 +245,7 @@ function addReminder(rating,contextId, userId){
         cm_id: contextId,
         rating: rating,
         feedback: '',
+         status:1,
    
     };
     var url = window.location;
@@ -277,6 +278,7 @@ function addFeedback(contextId,userId){
             cm_id: contextId,
             rating: rating,
             feedback: feedback,
+            status:1,
        
         };
         var url = window.location;
@@ -436,6 +438,7 @@ function addrating(rating,contextId, userId,status){
             cm_id: contextId,
             rating: rating,
             feedback: '',
+            status :status
        
         };
 }
@@ -444,7 +447,8 @@ function addrating(rating,contextId, userId,status){
             user_id:userId,
             cm_id: contextId,
             rating: 'null',
-            feedback: '',       
+            feedback: '', 
+            status :status      
         };
     }
     var url = window.location;
@@ -501,6 +505,7 @@ function submitFeedback(contextId,userId){
             cm_id: contextId,
             rating: rating,
             feedback: feedbackstring,
+            status:1
         };
         var url = window.location;
         var path = url.host;
