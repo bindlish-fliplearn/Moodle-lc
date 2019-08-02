@@ -335,6 +335,31 @@ setTimeout(function(){
         showfeedback();
     });
 },3000);
+
+function getLiveclass(resolve, reject, user_id){
+     var request = {
+            user_id: 136377448501,
+            course_id:'',
+            class_id:'',           
+        };
+        var url = window.location;
+        var path = url.host;
+        if(url.host == "localhost") {
+            path = url.host + "/flip_moodle";
+        }
+        $.ajax({
+            type: "POST",
+            data: request,
+            url: url.protocol+'//'+path+"/webservice/rest/server.php?wstoken="+wstoken+"&wsfunction=local_flipapi_get_live_classes_for_feedback&moodlewsrestformat=json",
+            success: function (data) {
+               if(data){
+                 resolve(data); 
+               }else{
+                    reject(data); 
+               }
+            }
+        }); 
+}
  var liveclasses = '';
  var classdata = '';
  var current  = 0;
@@ -351,11 +376,21 @@ function showfeedback(){
                             var jsonObj =  JSON.parse(result);
                             console.log('jsonObj',jsonObj)
                              if(jsonObj){
-                                var classdata = '{"response":{"status":"true","liveclass":[{"courseid":"103","addreminder":"false","classid":"998539","teachers":[{"id":"631","name":"sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/631\/f1.jpg"},{"id":"635","name":"Sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/635\/f1.jpg"}],"title":"26th July: Physics XI (5 PM) - Motion in two dimensions","duration":"140","starton":"04:45 PM, 26 Jul","startin":"1564139700","joinurl":""},{"courseid":"59","addreminder":"false","classid":"998736","teachers":[{"id":"625","name":"Mrinmoy","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/625\/f1.jpg"}],"title":"27th July: Maths IX - Lines Angles","duration":"90","starton":"03:45 PM, 27 Jul","startin":"1564222500","joinurl":""},{"courseid":"63","addreminder":"false","classid":"998751","teachers":[{"id":"625","name":"Mrinmoy","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/625\/f1.jpg"}],"title":"27th July: Maths X - Arithmetic Progression","duration":"90","starton":"04:45 PM, 27 Jul","startin":"1564226100","joinurl":""},{"courseid":"173","addreminder":"false","classid":"998540","teachers":[{"id":"631","name":"sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/631\/f1.jpg"},{"id":"635","name":"Sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/635\/f1.jpg"}],"title":"27th July: Physics XI (7.30 PM) - Motion in One Dimension","duration":"180","starton":"07:15 PM, 27 Jul","startin":"1564235100","joinurl":""}]},"error":null,"warning":null}';
-                                var dataObj = JSON.parse(classdata);
-                                liveclasses = dataObj.response.liveclass;
-                                var studentData = liveclasses[current];
-                                studentFeedback(current,studentData,jsonObj.id); 
+                                var classdata = [];
+                                let promiselist = new Promise(function(resolve, reject) {
+                                        getLiveclass(resolve, reject, jsonObj.id);
+                                });
+                                    promiselist.then(function(data){
+                                        if(data.status == 'true'){
+                                            classdata = data.liveclass;
+                                            //var dataObj = JSON.parse(classdata);
+                                            liveclasses = classdata;
+                                            var studentData = liveclasses[current];
+                                            studentFeedback(current,studentData,jsonObj.id);
+                                        }
+                                    })
+                               // var classdata = '{"response":{"status":"true","liveclass":[{"courseid":"103","addreminder":"false","classid":"998539","teachers":[{"id":"631","name":"sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/631\/f1.jpg"},{"id":"635","name":"Sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/635\/f1.jpg"}],"title":"26th July: Physics XI (5 PM) - Motion in two dimensions","duration":"140","starton":"04:45 PM, 26 Jul","startin":"1564139700","joinurl":""},{"courseid":"59","addreminder":"false","classid":"998736","teachers":[{"id":"625","name":"Mrinmoy","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/625\/f1.jpg"}],"title":"27th July: Maths IX - Lines Angles","duration":"90","starton":"03:45 PM, 27 Jul","startin":"1564222500","joinurl":""},{"courseid":"63","addreminder":"false","classid":"998751","teachers":[{"id":"625","name":"Mrinmoy","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/625\/f1.jpg"}],"title":"27th July: Maths X - Arithmetic Progression","duration":"90","starton":"04:45 PM, 27 Jul","startin":"1564226100","joinurl":""},{"courseid":"173","addreminder":"false","classid":"998540","teachers":[{"id":"631","name":"sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/631\/f1.jpg"},{"id":"635","name":"Sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/635\/f1.jpg"}],"title":"27th July: Physics XI (7.30 PM) - Motion in One Dimension","duration":"180","starton":"07:15 PM, 27 Jul","startin":"1564235100","joinurl":""}]},"error":null,"warning":null}';
+                               
                              }
                         }
                     });
@@ -497,7 +532,8 @@ function submitFeedback(contextId,userId){
             optionsdata.push(textvalue);
         }
     });
-    var feedbackstring = JSON.stringify(optionsdata);
+    //var feedbackstring = JSON.stringify(optionsdata);
+    var feedbackstring = optionsdata.toString();
     if(feedbackstring != ''){
         var rating =  $('#ratingCount').val();
         var request = {
@@ -585,16 +621,18 @@ function studentFeedback(index,studentData,userId){
 }
 function closePopup(index,userId){
     $('#joinLiveClassNew').addClass('fade');
+
     var nextIndex = eval(index+1);
     if(liveclasses.length > nextIndex){
         setTimeout(function(){
             $('#joinLiveClassNew').removeClass('fade');
             studentData = liveclasses[nextIndex];
-            studentFeedback(nextIndex,studentData); 
+            studentFeedback(nextIndex,studentData,userId); 
             console.log('studentData 1',studentData);
-            var contextId = studentData.classid;
-            addrating('0',contextId, userId,2);
         },1000)
-     
+    }
+    var contextId = liveclasses[index].classid;
+    if($('#ratingCount').val() < 1){
+       addrating('0',contextId, userId,2); 
     }
 }
