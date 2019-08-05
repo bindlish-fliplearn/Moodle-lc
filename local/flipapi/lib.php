@@ -26,11 +26,11 @@ function jwplayerInitialize($option){
         </script>";
 		return $jwplayer;
 } 
-function getRatingBox($instanceId = 2){
-		global $USER,$DB;
+function getRatingBox($instanceId){
+		global $USER,$DB,$CFG;
 		$userId = $USER->id;
 		$rating = '';
-		$avgsql = "SELECT sum(rating) as totalRating, count(id) as totalRecord FROM {guru_activity_rating} WHERE cm_id= $instanceId";
+		 $avgsql = "SELECT sum(rating) as totalRating, count(id) as totalRecord FROM {guru_activity_rating} WHERE cm_id= $instanceId";
         $avgrecord = $DB->get_record_sql($avgsql);
         $avgrating  	= 0 ;
         $totalRecord 	= 0;
@@ -39,18 +39,32 @@ function getRatingBox($instanceId = 2){
         if(!empty($avgrecord)){
           $totalRating = $avgrecord->totalrating;
           $totalRecord = $avgrecord->totalrecord;
-          if($totalRating>0){
+          if($totalRating > 0){
               $avgrating  = round(($totalRating/$totalRecord), 2);
           }
         }
         if($CFG->AVG_RATING <= $avgrating && $CFG->MAX_USER <= $totalRecord){
-            $avgrating  = 'Avg Rating:'.round(($totalRating/$totalRecord), 2);  
+            $avgrating  = 'Avg Rating:'.$avgrating;  
         }else {
            $avgrating = ''; 
         }
+
         $startCount = 0;
+        $sql = "SELECT * FROM {guru_activity_rating} WHERE user_id = $userId AND cm_id= $instanceId";
+        $record = $DB->get_record_sql($sql);
+        if(!empty($record)){
+                $startCount = $record->rating;
+                $feedback = $record->feedback;
+        }
+
 	   for ($i=1; $i <=5 ; $i++) { 
-           $rating .="<span class='fa fa-star-o' onclick = addReminder($i,$instanceId,$userId,'true') id =rating_$i></span>";
+
+	   	 if($startCount >= $i){
+                $rating .="<span class='fa fa-star' onclick = addReminder($i,$instanceId,$userId,'true') id =rating_$i></span>";
+            }else{
+
+            	  $rating .="<span class='fa fa-star-o' onclick = addReminder($i,$instanceId,$userId,'true') id =rating_$i></span>";
+            }
         }
         $rRatingDiv = "<div class='star'> $rating <input type='hidden' value = $startCount id='starcount' ></div>";
         $lRatingDiv = "<div class='avg' > $avgrating</div><div class='success ratingSuccess' id='ratingSuccess'></div>";

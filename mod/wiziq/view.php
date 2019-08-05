@@ -676,7 +676,7 @@ if(!empty($recording)){
     $path = $recording->record_path;  
     $optionArray = array('path' => $path, 'JWPLAYER_KEY'=>JWPLAYER_KEY);
     echo $jwplayer = jwplayerInitialize($optionArray);
-    $instanceId = 4;
+    $instanceId = $id;
     $ratingBox = getRatingBox($instanceId);
     echo $ratingBox;
 }

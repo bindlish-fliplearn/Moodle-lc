@@ -375,11 +375,13 @@
         $(document).ready(function(){
             var url = window.location;
             var pathName = url.pathname;
-            var path = '/mod/wiziq/view.php';
+            var wiziqpath = '/mod/wiziq/view.php';
+            var braincertpath = '/mod/braincert/view.php';
             if(url.host == "localhost") {
-                path == '/flip_moodle/mod/wiziq/view.php';
+                wiziqpath == '/flip_moodle/mod/wiziq/view.php';
+                braincertpath = '/flip_moodle/mod/braincert/view.php';
             }
-            if(pathName != path){
+            if(pathName != wiziqpath && pathName != braincertpath ){
                 showfeedback(); 
             }
         });
