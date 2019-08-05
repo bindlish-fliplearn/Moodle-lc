@@ -715,7 +715,7 @@
                 console.log('studentData 1',studentData);
             },1000)
         }
-        var contextId = liveclasses[index].classid;
+        var contextId = liveclasses[index].cmid;
         if($('#ratingCount').val() < 1){
            addrating('0',contextId, userId,2); 
         }
