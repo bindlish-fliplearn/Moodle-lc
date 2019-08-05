@@ -389,7 +389,7 @@
 
     function getLiveclass(resolve, reject, user_id){
          var request = {
-                user_id: 28,
+                user_id: user_id,
                 course_id:'',
                 class_id:'',           
             };
