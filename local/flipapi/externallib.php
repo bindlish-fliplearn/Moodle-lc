@@ -1268,6 +1268,8 @@ class local_flipapi_external extends external_api {
         'picture' => new external_value(PARAM_TEXT, 'This is homework cm id.')
         ))),
       'title' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+      'cmid' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
+      'classlink' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
       'duration' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
       'starton' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
       'startin' => new external_value(PARAM_TEXT, 'This is homework cm id.'),
