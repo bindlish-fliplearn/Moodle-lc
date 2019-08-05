@@ -1219,16 +1219,18 @@ class local_flipapi_external extends external_api {
         }
         $return = true;
       }
-      //print_r($response); die;
+      //print_r($response1); die("kk");
       $response = array();
       if(!empty($response1)){
           foreach($response1 as $key=>$val){
+              //print_r($val); die;
                 $cmid = $val['cmid'];
+                $classid1 = $val['classid'];
                 if ($val['modulename'] == "wiziq") {
-                    $attendanceDetailsSql = "SELECT id FROM {guru_braincert_user} where class_id = '{$cmid}' and user_id =  '{$userObj->id}'";
-                }else{
-                    $attendanceDetailsSql = "SELECT id FROM {guru_wiziq_user} where class_id = '{$cmid}' and user_id =  '{$userObj->id}'";
-                }
+                        $attendanceDetailsSql = "SELECT id FROM {guru_wiziq_user} where class_id = '{$classid1}' and user_id =  '{$userObj->id}'";
+                    }else{  
+                        $attendanceDetailsSql = "SELECT id FROM {guru_braincert_user} where class_id = '{$classid1}' and user_id =  '{$userObj->id}'";
+                    }
                 
                 $attendanceResult = $DB->get_record_sql($attendanceDetailsSql);
                 if(!empty($attendanceResult)){
