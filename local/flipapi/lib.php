@@ -9,7 +9,7 @@ function jwplayerInitialize($option){
         <script src= $CFG->wwwroot/repository/primecontent/pix/jwplayer-8.7.3/jwplayer.js></script>
         <script type='text/javascript'>
         jwplayer.key =  '$jwplayerKey';
-            var path =  '$path';
+            var path = '$path';
             var playerInstance = jwplayer('player');
                         playerInstance.setup({
                             width: '620',
