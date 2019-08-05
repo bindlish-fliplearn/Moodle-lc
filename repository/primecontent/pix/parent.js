@@ -287,6 +287,7 @@
                         }
                         optionHtml += "<input type = 'hidden' value = '"+text+"' id = '"+input+"'>";
                     }
+                    $('#checkboxDiv').addClass('checkboxDiv');
                 $('#optionlivedivlist').append(optionHtml);
                 }
              })
@@ -372,7 +373,15 @@
     }
     setTimeout(function(){
         $(document).ready(function(){
-            showfeedback();
+            var url = window.location;
+            var pathName = url.pathname;
+            var path = '/mod/wiziq/view.php';
+            if(url.host == "localhost") {
+                path == '/flip_moodle/mod/wiziq/view.php';
+            }
+            if(pathName != path){
+                showfeedback(); 
+            }
         });
     },3000);
 
@@ -425,8 +434,11 @@
                                                 classdata = data.liveclass;
                                                 //var dataObj = JSON.parse(classdata);
                                                 liveclasses = classdata;
-                                                var studentData = liveclasses[current];
-                                                studentFeedback(current,studentData,jsonObj.id);
+                                                if(liveclasses.length > 0){
+                                                     var studentData = liveclasses[current];
+                                                    studentFeedback(current,studentData,jsonObj.id);
+                                                }
+                                               
                                             }
                                         })
                                    // var classdata = '{"response":{"status":"true","liveclass":[{"courseid":"103","addreminder":"false","classid":"998539","teachers":[{"id":"631","name":"sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/631\/f1.jpg"},{"id":"635","name":"Sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/635\/f1.jpg"}],"title":"26th July: Physics XI (5 PM) - Motion in two dimensions","duration":"140","starton":"04:45 PM, 26 Jul","startin":"1564139700","joinurl":""},{"courseid":"59","addreminder":"false","classid":"998736","teachers":[{"id":"625","name":"Mrinmoy","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/625\/f1.jpg"}],"title":"27th July: Maths IX - Lines Angles","duration":"90","starton":"03:45 PM, 27 Jul","startin":"1564222500","joinurl":""},{"courseid":"63","addreminder":"false","classid":"998751","teachers":[{"id":"625","name":"Mrinmoy","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/625\/f1.jpg"}],"title":"27th July: Maths X - Arithmetic Progression","duration":"90","starton":"04:45 PM, 27 Jul","startin":"1564226100","joinurl":""},{"courseid":"173","addreminder":"false","classid":"998540","teachers":[{"id":"631","name":"sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/631\/f1.jpg"},{"id":"635","name":"Sushobhan","picture":"https:\/\/guru.fliplearn.com\/user\/pix.php\/635\/f1.jpg"}],"title":"27th July: Physics XI (7.30 PM) - Motion in One Dimension","duration":"180","starton":"07:15 PM, 27 Jul","startin":"1564235100","joinurl":""}]},"error":null,"warning":null}';
@@ -570,7 +582,6 @@
 
     }
     function submitFeedback(contextId,userId,popup){
-        var feedback =  document.getElementById("feedbackliveClass").value;
         var optionsdata = [];
         var i = 1;
         var rating =  '';
@@ -580,6 +591,7 @@
             var id = "input_"+$(this).val();
             var textvalue = $('#'+id).val();
             if($(this).val()==5){
+                var feedback =  document.getElementById("feedbackliveClass").value;
                 textvalue = textvalue+"-"+feedback;
                     optionsdata.push(textvalue);
             }else{
@@ -588,11 +600,11 @@
         });
         }else{
                 rating =  $('#starcount').val();
-                var feedback =  document.getElementById("feedbackliveClasspopup").value;
                 $.each($("input[name='foptionpopup']:checked"), function(){          
                 var id = "input_"+$(this).val();
                 var textvalue = $('#'+id).val();
                 if($(this).val()==5){
+                                    var feedback =  document.getElementById("feedbackliveClasspopup").value;
                     textvalue = textvalue+"-"+feedback;
                         optionsdata.push(textvalue);
                 }else{
@@ -681,8 +693,8 @@
         html += "<div class='row-fluid m-t-28'><div class='span3'><img src="+profilePic+" class='radius10 img-responsive'></div>";
         html += "<div class='span9'><h4>"+teacherName+"</h4><div><a class ='link' href = "+classLink+" >Class Link</a></div></span></div></div>";
         html += "<div class='row-fluid feedbackRating'><div class = 'span6'>"+avgRating+"</div><div class = 'span6 star liveClassStar text-right'> "+rating+" <input type='hidden' value = '' id='ratingCount' ></div></div>"+success+"";
-        html += "<div id = 'feedbackBox' class = 'row-fluid commentHide'><div class='row-fluid checkboxDiv' id='checkboxDiv'><div id = 'optiondivlist'></div><div class='commentHide' id = 'textareabox'><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedbackliveClass' name = 'feedback' rows='4' cols='59'></textarea></div></div>"
-        html += "<div class='row-fluid padding'><div class='submitButton span12 text-right'><button type = submit  value = Submit onclick = submitFeedback("+cm_id+","+userId+",'true')>Submit</button></div><div class = 'commentHide' id = 'successMsg'>Feedback successfully submitted ! Happy Learning </div></div></div>";
+        html += "<div id = 'feedbackBox' class = 'row-fluid commentHide'><div class='row-fluid checkboxDiv' id='checkboxDiv'><div id = 'optiondivlist'></div><div class='commentHide' id = 'textareabox'><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedbackliveClass' name = 'feedback' rows='4' cols='59'></textarea></div><div class='submitButton span12 text-right'><button type = submit  value = Submit onclick = submitFeedback("+cm_id+","+userId+",'true')>Submit</button></div></div>"
+        html += "<div class='row-fluid padding'><div class = 'commentHide' id = 'successMsg'>Feedback successfully submitted ! Happy Learning </div></div></div>";
         html += "<div class='row-fluid text-center' ><input type='button' onclick = 'closePopup("+index+","+userId+")' value='Skip'></div>";
         html += "</div></div></div></div>";
         $('body').append(html);
