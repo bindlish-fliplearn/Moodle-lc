@@ -63,7 +63,7 @@ Example:
   die;
 }
 
-if (!$wiziqClass = $DB->get_records_sql("select * from {wiziq}")) {
+if (!$wiziqClass = $DB->get_records_sql("select * from {wiziq} where DATE(FROM_UNIXTIME(wiziq_datetime)) = DATE(NOW())")) {
   cli_error("Can not find classes");
 }
 $diffMin = "20";
@@ -71,42 +71,48 @@ foreach ($wiziqClass as $class) {
   $insertRecord = [];  
   $id = $class->course;
   $class_id = $class->class_id;
-  wiziq_getattendancereport($id, $class_id, $id, $errormsg,
-        $attendancexmlch_dur, $attendancexmlch_attlist);
-  print_r($errormsg);
-//  cli_heading("Api response for class id:- " . $class->class_id . ' Response is :- ' . json_encode($resp));
-//    if (!empty($resp)) {
-//      foreach ($resp as $res) {
-//        if (isset($res['classId']) && !empty($res['classId'])) {
-//          $wiziqClass = $DB->get_record('guru_wiziq_user', array('class_id' => $res['classId'], 'user_id' => $res['userId']));
-//          if (!$wiziqClass) {
-//            $insertRecord['class_id'] = $res['classId'];
-//            $insertRecord['user_id'] = $res['userId'];
-//            $insertRecord['duration'] = $res['duration'];
-//            $insertRecord['percentage'] = $res['percentage'];
-//            $insertRecord['attendance'] = $res['attendance'];
-//            $insertRecord['is_teacher'] = $res['isTeacher'];
-//            $insertRecord['session'] = json_encode($res['session']);
-//            $respQuery = $DB->insert_record('guru_wiziq_user', $insertRecord);
-//            if ($respQuery) {
-//              cli_heading("Insert record successfully.");
-//            }
-//          } else {
-//            $wiziqClass->duration = $res['duration'];
-//            $wiziqClass->percentage = $res['percentage'];
-//            $wiziqClass->attendance = $res['attendance'];
-//            $wiziqClass->is_teacher = $res['isTeacher'];
-//            $wiziqClass->session = json_encode($res['session']);
-//            $respQuery = $DB->update_record('guru_wiziq_user', $wiziqClass);
-//            cli_heading("Update record successfully.");
-//          }
-//        } else {
-//          cli_heading("Api response don't have class id:- " . $class->class_id);
-//        }
-//      }
-//    } else {
-//      cli_error("Can not find class:- " . json_encode($resp));
-//    }
+  try {
+   wiziq_getattendancereport($id, $class_id, $id, $errormsg,
+        $attendancexmlch_dur, $attendancexmlch_attlist); 
+  } catch (\Exception $ex) {
+    print_r($ex->getMessage());
+  } 
+  cli_heading("Api response for class id:- " . $class->class_id . ' Response is :- ' . json_encode($attendancexmlch_attlist));
+    if (empty($errormsg)) {
+      foreach ($attendancexmlch_attlist->attendee as $res) {
+        if (isset($class->class_id) && !empty($class->class_id)) {
+          $user = $DB->get_record('user', array('firstname' => (string)$res->screen_name));
+          if(!empty($user)) {
+            $wiziqClass = $DB->get_record('guru_wiziq_user', array('class_id' => $class->class_id, 'user_id' => $user->id));
+            if (!$wiziqClass) {
+              $insertRecord['class_id'] = $class->class_id;
+              $insertRecord['user_id'] = $user->id;
+              $insertRecord['duration'] = (string)$res->attended_minutes." "."Minutes";
+              $insertRecord['percentage'] = @$res['percentage'];
+              $insertRecord['attendance'] = @$res['attendance'];
+              $insertRecord['is_teacher'] = @$res['isTeacher'];
+              $insertRecord['session'] = (string)$res->screen_name.','.wiziq_attendance_time($entry_time, $wiziqclass->id).','.wiziq_attendance_time($exit_time, $wiziqclass->id);
+              $respQuery = $DB->insert_record('guru_wiziq_user', $insertRecord);
+              if ($respQuery) {
+                cli_heading("Insert record successfully.");
+              }
+            } else {
+              $wiziqClass->duration = (string)$res->attended_minutes." "."Minutes";
+              $wiziqClass->percentage = @$res['percentage'];
+              $wiziqClass->attendance = @$res['attendance'];
+              $wiziqClass->is_teacher = @$res['isTeacher'];
+              $wiziqClass->session = (string)$res->screen_name.','.wiziq_attendance_time($entry_time, $wiziqclass->id).','.wiziq_attendance_time($exit_time, $wiziqclass->id);
+              $respQuery = $DB->update_record('guru_wiziq_user', $wiziqClass);
+              cli_heading("Update record successfully.");
+            }
+          }
+        } else {
+          cli_heading("Api response don't have class id:- " . $class->class_id);
+        }
+      }
+    } else {
+      cli_error("Can not find class:- " . json_encode($resp));
+    }
 }
 
 echo "Braincert user migrated\n";
