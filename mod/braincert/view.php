@@ -838,15 +838,13 @@ if (!empty($braincertclass)) {
 
 // For display jwplayer
 require_once($CFG->dirroot . '/local/flipapi/lib.php');
-$path = "https://d12qsoed6q4q41.cloudfront.net/fliplearnaes/_definst_/s3/fliplearnjeee/Resourse/949/playlist.smil/playlist.m3u8?wowzatokenstarttime=1560164319&wowzatokenendtime=1591786719&wowzatokenhash=ltry-YyeNVI3jKHqr5X8vrWocydjnhuKfnruYfJvKAM=";
-
 $sql = "SELECT * FROM {guru_liveclass_recording} WHERE cm_id= $id";
 $recording = $DB->get_record_sql($sql);
 if(!empty($recording)){
-    $path = $recording->record_path;  
+    $path = $recording->record_url;  
     $optionArray = array('path' => $path, 'JWPLAYER_KEY'=>JWPLAYER_KEY);
     echo $jwplayer = jwplayerInitialize($optionArray);
-    $instanceId = 4;
+    $instanceId = $id;
     $ratingBox = getRatingBox($instanceId);
     echo $ratingBox;
 }
