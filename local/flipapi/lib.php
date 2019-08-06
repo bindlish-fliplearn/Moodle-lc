@@ -71,7 +71,7 @@ function getRatingBox($instanceId){
         $ratingDiv = "<div class='ratingarea'> $lRatingDiv  $rRatingDiv</div>";
         $textArea = "<div class='commentHide' id = 'textareaboxlive'><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedbackliveClasspopup' name = 'feedback' rows='4' cols='59'></textarea></div>";
         $lnote = "<div class = 'feedbacknote' ><span>Note : This feedback will remain anonymous</span></div>";
-        $rsubmitButton = "<div class='submitButton'><button type = submit  value = Submit onclick = submitFeedback($instanceId,$userId,'false')>Submit</button></div>";
+        $rsubmitButton = "<div class='submitButton liveClassStar'><button type = submit  value = Submit onclick = submitFeedback($instanceId,$userId,'false')>Submit</button></div>";
         $mainbuttonDiv = "<div class = 'mainButton'>$lnote $rsubmitButton</div>";
         $commentMainDiv = "<div id = 'checkboxDiv'><div id = 'optionlivedivlist'></div><div id ='commentBox' class = 'commentHide'>$textArea $mainbuttonDiv </div>";
         $successMSG = "<div class = 'commentHide' id = 'successMsg'>Feedback successfully submitted ! Happy Learning </div></div>";
