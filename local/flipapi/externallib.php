@@ -1051,7 +1051,7 @@ class local_flipapi_external extends external_api {
     
         $sql = "SELECT * FROM {guru_feedback_options}";
         if (!empty($rating)) {
-            $sql .= " WHERE rating = '".$rating."'";
+            $sql .= " WHERE rating = '".$rating."' AND status = 1";
         }
         $record = $DB->get_records_sql($sql);
         
