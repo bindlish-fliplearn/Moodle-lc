@@ -389,7 +389,7 @@
 
     function getLiveclass(resolve, reject, user_id){
          var request = {
-                user_id: 22,
+                user_id: user_id,
                 course_id:'',
                 class_id:'',           
             };
@@ -644,7 +644,7 @@
                     $('#successMsg').addClass('commentShow'); 
 
                     setTimeout(function(){
-                       // $( "#closePopup" ).trigger("click");
+                        $( "#closePopup" ).trigger("click");
                     },3000)
                 }
                 }
