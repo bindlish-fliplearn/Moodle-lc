@@ -882,7 +882,7 @@ function wiziq_get_data_manageperma($courseid, $wiziq_classmasterid_array, &$wiz
  * @param integer $courseid the course id in which the class is scheduled.
  * @param array $classids the class id for which class attendees will be added.
  */
-function wiziq_get_data_managepermaview($courseid, $wiziq_classmasterid_array, &$wiziq_classidperma1 , &$classstatus , &$presenter_url ,&$presenter_id, &$recording_url) {
+function wiziq_get_data_managepermaview($courseid, $wiziq_classmasterid_array, &$wiziq_classidperma1 , &$classstatus =null, &$presenter_url =null ,&$presenter_id = null, &$recording_url=null) {
 
 
     //print_r($wiziq_classmasterid_array);

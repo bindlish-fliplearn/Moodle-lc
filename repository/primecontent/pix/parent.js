@@ -389,7 +389,7 @@
 
     function getLiveclass(resolve, reject, user_id){
          var request = {
-                user_id: user_id,
+                user_id: 22,
                 course_id:'',
                 class_id:'',           
             };
@@ -642,6 +642,10 @@
                     $('#checkboxDiv').removeClass('commentShow');      
                     $('#successMsg').removeClass('commentHide');      
                     $('#successMsg').addClass('commentShow'); 
+
+                    setTimeout(function(){
+                       // $( "#closePopup" ).trigger("click");
+                    },3000)
                 }
                 }
             }); 
@@ -695,9 +699,9 @@
         html += "<div class='row-fluid m-t-28'><div class='span3'><img src="+profilePic+" class='radius10 img-responsive'></div>";
         html += "<div class='span9'><h4>"+teacherName+"</h4><div><a class ='link' href = "+classLink+" >Class Link</a></div></span></div></div>";
         html += "<div class='row-fluid feedbackRating'><div class = 'span6'>"+avgRating+"</div><div class = 'span6 star liveClassStar text-right'> "+rating+" <input type='hidden' value = '' id='ratingCount' ></div></div>"+success+"";
-        html += "<div id = 'feedbackBox' class = 'row-fluid commentHide'><div class='row-fluid checkboxDiv' id='checkboxDiv'><div id = 'optiondivlist'></div><div class='commentHide' id = 'textareabox'><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedbackliveClass' name = 'feedback' rows='4' cols='59'></textarea></div><div class='submitButton span12 text-right'><button type = submit  value = Submit onclick = submitFeedback("+cm_id+","+userId+",'true')>Submit</button></div></div>"
-        html += "<div class='row-fluid padding'><div class = 'commentHide' id = 'successMsg'>Feedback successfully submitted ! Happy Learning </div></div></div>";
-        html += "<div class='row-fluid text-center' ><input type='button' onclick = 'closePopup("+index+","+userId+")' value='Skip'></div>";
+        html += "<div id = 'feedbackBox' class = 'row-fluid commentHide'><div class='row-fluid checkboxDiv' id='checkboxDiv'><div id = 'optiondivlist'></div><div class='commentHide' id = 'textareabox'><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedbackliveClass' name = 'feedback' rows='4' cols='53'></textarea></div><div class='submitButton span12 liveClassStar' text-right'><button type = submit  value = Submit onclick = submitFeedback("+cm_id+","+userId+",'true')>Submit</button></div></div>"
+        html += "<div class='row-fluid'><div class = 'commentHide' id = 'successMsg'>Feedback successfully submitted ! Happy Learning </div></div></div>";
+        html += "<div class='row-fluid text-center' ><input type='button' id = 'closePopup'  onclick = 'closePopup("+index+","+userId+")' value='Skip'></div>";
         html += "</div></div></div></div>";
         $('body').append(html);
         $( "#joinLiveClassNew" ).trigger("click");

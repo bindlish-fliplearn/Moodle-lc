@@ -151,20 +151,20 @@ margin:auto ;
         margin-left: 0 !important;
         margin-top: 22px;
 }
-.liveClassStar{position: inherit;}
+.liveClassStar{position: inherit;text-align: right; margin-top: 0px;padding-right: 24px;}
 /*for option popup*/
 
-.checkboxDiv {border:solid 1px #d1dfe9; padding:20px 20px 35px 20px; border-radius:10px;}
+.checkboxDiv {border:solid 1px #d1dfe9; padding:20px 3px 12px 15px; border-radius:10px;margin-right: 12px;
+    box-sizing: border-box;}
 
 /* The container */
 .containerForCheckBox {
   display: block;
   position: relative;
-  padding-left: 35px;
+  padding-left: 29px;
   cursor: pointer;
-  margin-bottom:20px;
   color:#2b2b2b;
-  font-size: 16px;
+  font-size: 14px;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -185,8 +185,8 @@ margin:auto ;
   position: absolute;
   top: 0;
   left: 0;
-  height: 20px;
-  width: 20px;
+  height: 16px;
+  width: 16px;
   background-color: #ffffff;
   border:solid 1px #5421a2;
 }
