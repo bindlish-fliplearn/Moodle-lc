@@ -91,7 +91,7 @@ foreach ($wiziqClass as $class) {
               $insertRecord['percentage'] = @$res['percentage'];
               $insertRecord['attendance'] = @$res['attendance'];
               $insertRecord['is_teacher'] = @$res['isTeacher'];
-              $insertRecord['session'] = (string)$res->screen_name.wiziq_attendance_time($entry_time, $wiziqclass->id).wiziq_attendance_time($exit_time, $wiziqclass->id);
+              $insertRecord['session'] = (string)$res->screen_name.','.wiziq_attendance_time($entry_time, $wiziqclass->id).','.wiziq_attendance_time($exit_time, $wiziqclass->id);
               $respQuery = $DB->insert_record('guru_wiziq_user', $insertRecord);
               if ($respQuery) {
                 cli_heading("Insert record successfully.");
@@ -101,7 +101,7 @@ foreach ($wiziqClass as $class) {
               $wiziqClass->percentage = @$res['percentage'];
               $wiziqClass->attendance = @$res['attendance'];
               $wiziqClass->is_teacher = @$res['isTeacher'];
-              $wiziqClass->session = (string)$res->screen_name.wiziq_attendance_time($entry_time, $wiziqclass->id).wiziq_attendance_time($exit_time, $wiziqclass->id);
+              $wiziqClass->session = (string)$res->screen_name.','.wiziq_attendance_time($entry_time, $wiziqclass->id).','.wiziq_attendance_time($exit_time, $wiziqclass->id);
               $respQuery = $DB->update_record('guru_wiziq_user', $wiziqClass);
               cli_heading("Update record successfully.");
             }
