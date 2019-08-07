@@ -2,7 +2,7 @@
 function jwplayerInitialize($option){
 	   global $CFG;
 	   $jwplayerKey = $option['JWPLAYER_KEY'];
-	   $path = $option['path'];
+	   $path = urldecode($option['path']);
 	 	$jwplayer = "<div class='player_div' id='player_div'>
             <div id='player'></div>
         </div>
@@ -21,7 +21,8 @@ function jwplayerInitialize($option){
                             primary: 'flash',
                             hlshtml: true,
                             file: path,
-                            defaultBandwidthEstimate : 240000
+                            defaultBandwidthEstimate : 240000,
+                            playbackRateControls: [0.5, 1.0, 1.5, 2.0, 2.5, 3]
                         });
         </script>";
 		return $jwplayer;

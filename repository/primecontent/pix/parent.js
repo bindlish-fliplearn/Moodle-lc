@@ -663,7 +663,7 @@
             $('#joinLiveClassNew').remove(); 
         }
         var html = "";
-        var startCount = 3;
+        var startCount = 0;
         var rating = '';
         var cm_id = studentData.cmid;
         for (var i=1; i <=5 ; i++) {    
@@ -674,7 +674,7 @@
         var teacherCount  = '';
 
         let promise = new Promise(function(resolve, reject) {
-            getRating(resolve, reject, 55215);
+            getRating(resolve, reject, cm_id);
         });
         var avgRating = "";
         promise.then(function(data){
