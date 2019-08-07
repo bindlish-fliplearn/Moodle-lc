@@ -554,7 +554,8 @@
                 if(status==1)
                 $('#ratingSuccess').html('Thank you for rating the video lesson!');
                 //setTimeout(function(){ $('#ratingSuccess').html(''); }, 3000);
-
+                var element = document.getElementById('scrollId');
+                element.scrollTop = element.scrollHeight;
                }
             }
         });
@@ -687,12 +688,12 @@
                 path = url.host + "/flip_moodle";
             }
         var classLink = studentData.classlink;
-        var success =   '<div class="success" id="ratingSuccess"></div>';
-        html += "<div class='modal liveClass' id='joinLiveClassNew' role='dialog' aria-labelledby='myModalLabel'>";
+        var success =   '<div class="success ratingSuccess" style="z-index:99999;" id="ratingSuccess"></div>';
+        html += '<div class="modal-container moodle-has-zindex show" data-region="modal-container" aria-hidden="false" role="dialog" style="z-index: 4052;background:#696868;opacity: 0.8;"></div><div class="modal liveClass" id="joinLiveClassNew" role="dialog" style="z-index:99999" aria-labelledby="myModalLabel">';
         html += "<div class='modal-dialog modal-sm' role='document'>";
         html += "<div class='modal-content '>";
         html += "<div class='modal-header promotion-head text-center feedbackHead'><h3 class='modal-title fontregular text-color-purple'>Live Class Feedback ! </h3></div>";
-        html += "<h3 class='modal-title fontregular text-color-purple text-center'>"+studentData.title+"</h3></div><div class='modal-body head_bottom'>";
+        html += "<h3 class='modal-title fontregular text-color-purple text-center'>"+studentData.title+"</h3></div><div id = 'scrollId' class='modal-body head_bottom'>";
         html += "<div class='head_bottom'>";
         html += "<div class='row-fluid'><div class='span6'><p><span class = 'text-grey'>Starts on:</span> "+studentData.starton+"</p></div>";
         html += "<div class='span6 text-right'><p><span class = 'text-grey'>Duration:</span> "+studentData.duration+" Minutes</p></div></div>";
@@ -701,7 +702,7 @@
         html += "<div class='row-fluid feedbackRating'><div class = 'span6'>"+avgRating+"</div><div class = 'span6 star liveClassStar text-right'> "+rating+" <input type='hidden' value = '' id='ratingCount' ></div></div>"+success+"";
         html += "<div id = 'feedbackBox' class = 'row-fluid commentHide'><div class='row-fluid checkboxDiv' id='checkboxDiv'><div id = 'optiondivlist'></div><div class='commentHide' id = 'textareabox'><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedbackliveClass' name = 'feedback' rows='4' cols='53'></textarea></div><div class='submitButton span12 liveClassStar' text-right'><button type = submit  value = Submit onclick = submitFeedback("+cm_id+","+userId+",'true')>Submit</button></div></div>"
         html += "<div class='row-fluid'><div class = 'commentHide' id = 'successMsg'>Feedback successfully submitted ! Happy Learning </div></div></div>";
-        html += "<div class='row-fluid text-center' ><input type='button' id = 'closePopup'  onclick = 'closePopup("+index+","+userId+")' value='Skip'></div>";
+        html += "<div class='row-fluid text-center' ><input type='button' style='margin-top: 10px; background-color: #fff;color: #292b2c!important;border: 1px solid #ddd' id = 'closePopup'  onclick = 'closePopup("+index+","+userId+")' value='Skip'></div>";
         html += "</div></div></div></div>";
         $('body').append(html);
         $( "#joinLiveClassNew" ).trigger("click");
