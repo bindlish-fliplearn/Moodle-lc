@@ -21,7 +21,8 @@ function jwplayerInitialize($option){
                             primary: 'flash',
                             hlshtml: true,
                             file: path,
-                            defaultBandwidthEstimate : 240000
+                            defaultBandwidthEstimate : 240000,
+                            playbackRateControls: [0.5, 1.0, 1.5, 2.0, 2.5, 3]
                         });
         </script>";
 		return $jwplayer;
