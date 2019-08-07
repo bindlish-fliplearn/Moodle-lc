@@ -63,7 +63,7 @@ Example:
   die;
 }
 
-if (!$wiziqClass = $DB->get_records_sql("select w.* from {wiziq} as w LEFT JOIN {guru_wiziq_user} as gwu on w.class_id=gwu.class_id WHERE gwu.class_id is null")) {
+if (!$wiziqClass = $DB->get_records_sql("select w.* from {wiziq} as w LEFT JOIN {guru_wiziq_user} as gwu on w.class_id=gwu.class_id WHERE gwu.class_id is null and w.class_status='completed' ORDER BY id DESC")) {
   cli_error("Can not find classes");
 }
 $diffMin = "20";
