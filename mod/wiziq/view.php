@@ -668,8 +668,11 @@ if ($wiziq->insescod == '-1') {
 
 // For display jwplayer
 require_once($CFG->dirroot . '/local/flipapi/lib.php');
-
-$sql = "SELECT * FROM {guru_liveclass_recording} WHERE cm_id= $id";
+$currentTime = strtotime("now");
+$wiziqSql = "SELECT wiziq_datetime FROM {wiziq} WHERE class_id = $class_id AND wiziq_datetime < $currentTime";
+$wizidRecord = $DB->get_record_sql($wiziqSql);
+if(!empty($wizidRecord)){
+    $sql = "SELECT * FROM {guru_liveclass_recording} WHERE cm_id= $id";
 $recording = $DB->get_record_sql($sql);
 if(!empty($recording)){
     $path = $recording->record_url;  
@@ -679,6 +682,10 @@ if(!empty($recording)){
     $instanceId = $id;
     $ratingBox = getRatingBox($instanceId);
     echo $ratingBox;
+
+}
+
+
 echo $OUTPUT->footer();
 
 

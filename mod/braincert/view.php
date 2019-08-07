@@ -838,15 +838,23 @@ if (!empty($braincertclass)) {
 
 // For display jwplayer
 require_once($CFG->dirroot . '/local/flipapi/lib.php');
-$sql = "SELECT * FROM {guru_liveclass_recording} WHERE cm_id= $id";
-$recording = $DB->get_record_sql($sql);
-if(!empty($recording)){
-    $path = $recording->record_url;  
-    $optionArray = array('path' => $path, 'JWPLAYER_KEY'=>JWPLAYER_KEY);
-    echo $jwplayer = jwplayerInitialize($optionArray);
- 
+
+$currentTime = strtotime("now");
+$classid = $braincertclass->class_id;
+$braincertSql = "SELECT id FROM mdl_braincert WHERE class_id = $classid AND UNIX_TIMESTAMP(STR_TO_DATE(concat(DATE_FORMAT(FROM_UNIXTIME(start_date), '%Y-%m-%d '), end_time), '%Y-%m-%d %h:%i%p')) < $currentTime";
+
+$braincertRecord = $DB->get_record_sql($braincertSql);
+if(!empty($braincertRecord)){
+    $sql = "SELECT * FROM {guru_liveclass_recording} WHERE cm_id= $id";
+    $recording = $DB->get_record_sql($sql);
+    if(!empty($recording)){
+        $path = $recording->record_url;  
+        $optionArray = array('path' => $path, 'JWPLAYER_KEY'=>JWPLAYER_KEY);
+        echo $jwplayer = jwplayerInitialize($optionArray);
+     
+    }
+    $instanceId = $id;
+    $ratingBox = getRatingBox($instanceId);
+    echo $ratingBox;
 }
-$instanceId = $id;
-$ratingBox = getRatingBox($instanceId);
-echo $ratingBox;
 echo $OUTPUT->footer();
