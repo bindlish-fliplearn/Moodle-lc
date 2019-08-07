@@ -689,7 +689,7 @@
             }
         var classLink = studentData.classlink;
         var success =   '<div class="success ratingSuccess" style="z-index:99999;" id="ratingSuccess"></div>';
-        html += '<div class="modal-container moodle-has-zindex show" data-region="modal-container" aria-hidden="false" role="dialog" style="z-index: 4052;background:#696868;opacity: 0.8;"></div><div class="modal liveClass" id="joinLiveClassNew" role="dialog" style="z-index:99999" aria-labelledby="myModalLabel">';
+        html += '<div id ="modalContainer" class="modal-container moodle-has-zindex show" data-region="modal-container" aria-hidden="false" role="dialog" style="z-index: 4052;background:#696868;opacity: 0.8;"></div><div class="modal liveClass" id="joinLiveClassNew" role="dialog" style="z-index:99999" aria-labelledby="myModalLabel">';
         html += "<div class='modal-dialog modal-sm' role='document'>";
         html += "<div class='modal-content '>";
         html += "<div class='modal-header promotion-head text-center feedbackHead'><h3 class='modal-title fontregular text-color-purple'>Live Class Feedback ! </h3></div>";
@@ -698,7 +698,7 @@
         html += "<div class='row-fluid'><div class='span6'><p><span class = 'text-grey'>Starts on:</span> "+studentData.starton+"</p></div>";
         html += "<div class='span6 text-right'><p><span class = 'text-grey'>Duration:</span> "+studentData.duration+" Minutes</p></div></div>";
         html += "<div class='row-fluid m-t-28'><div class='span3'><img src="+profilePic+" class='radius10 img-responsive'></div>";
-        html += "<div class='span9'><h4>"+teacherName+"</h4><div><a class ='link' href = "+classLink+" >Class Link</a></div></span></div></div>";
+        html += "<div class='span9'><h4>"+teacherName+"</h4><div><a class ='link' href = "+classLink+" >Go to class</a></div></span></div></div>";
         html += "<div class='row-fluid feedbackRating'><div class = 'span6'>"+avgRating+"</div><div class = 'span6 star liveClassStar text-right'> "+rating+" <input type='hidden' value = '' id='ratingCount' ></div></div>"+success+"";
         html += "<div id = 'feedbackBox' class = 'row-fluid commentHide'><div class='row-fluid checkboxDiv' id='checkboxDiv'><div id = 'optiondivlist'></div><div class='commentHide' id = 'textareabox'><textarea placeholder = '(Optional feedback about the video lesson)' id ='feedbackliveClass' name = 'feedback' rows='4' cols='53'></textarea></div><div class='submitButton span12 liveClassStar' text-right'><button type = submit  value = Submit onclick = submitFeedback("+cm_id+","+userId+",'true')>Submit</button></div></div>"
         html += "<div class='row-fluid'><div class = 'commentHide' id = 'successMsg'>Feedback successfully submitted ! Happy Learning </div></div></div>";
@@ -710,7 +710,7 @@
     }
     function closePopup(index,userId){
         $('#joinLiveClassNew').addClass('fade');
-
+        $('#modalContainer').remove();
         var nextIndex = eval(index+1);
         if(liveclasses.length > nextIndex){
             setTimeout(function(){
