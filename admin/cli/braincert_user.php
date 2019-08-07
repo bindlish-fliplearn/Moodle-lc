@@ -62,7 +62,7 @@ Example:
   die;
 }
 
-if (!$braincertClass = $DB->get_records_sql("select * from {braincert} where DATE(FROM_UNIXTIME(start_date)) = DATE(NOW())")) {
+if (!$braincertClass = $DB->get_records_sql("select b.* from {braincert} as b LEFT JOIN {guru_braincert_user} as gbu on b.class_id=gbu.class_id WHERE gbu.class_id is null")) {
   cli_error("Can not find classes");
 }
 $diffMin = "20";
