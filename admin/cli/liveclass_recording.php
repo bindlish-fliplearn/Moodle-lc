@@ -24,6 +24,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 define('CLI_SCRIPT', true);
+$_SERVER['HTTP_HOST'] = 'guru.fliplearn.com';
 
 require(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/clilib.php');      // cli only functions
@@ -135,7 +136,9 @@ foreach ($courseResult as $activity) {
               $ext = end(explode(".", $filename));
             }
             $localFileName = $folderPath . '/output.' . $ext;
+            $localOutputFileName = $folderPath . '/output.mp4';
             exec("wget '" . $download_recording_link . "' -P $folderPath -O $localFileName");
+            exec("wget '" . $download_recording_link . "' -P $folderPath -O $localOutputFileName");
             $smileFile = $folderPath . '/playlist.smil';
             createSmilFile($smileFile, $localFileName);
             $smileFile = 'Resourse/' . $activity->id . '/playlist.smil';
