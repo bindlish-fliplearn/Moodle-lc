@@ -24,6 +24,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 define('CLI_SCRIPT', true);
+$_SERVER['HTTP_HOST'] = 'guru.fliplearn.com';
 
 require(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/clilib.php');      // cli only functions
@@ -65,7 +66,7 @@ Example:
 if (!$braincertClass = $DB->get_records_sql("select b.* from {braincert} as b LEFT JOIN {guru_braincert_user} as gbu on b.class_id=gbu.class_id WHERE gbu.class_id is null ORDER BY id DESC LIMIT 15")) {
   cli_error("Can not find classes");
 }
-$diffMin = "20";
+$diffMin = "80";
 foreach ($braincertClass as $class) {
   $insertRecord = [];
   $todayClass = date('y-m-d') . ' ' . $class->end_time;
