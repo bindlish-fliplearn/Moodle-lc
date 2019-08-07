@@ -695,7 +695,7 @@
         html += "<div class='modal-header promotion-head text-center feedbackHead'><h3 class='modal-title fontregular text-color-purple'>Live Class Feedback ! </h3></div>";
         html += "<h3 class='modal-title fontregular text-color-purple text-center'>"+studentData.title+"</h3></div><div id = 'scrollId' class='modal-body head_bottom'>";
         html += "<div class='head_bottom'>";
-        html += "<div class='row-fluid'><div class='span6'><p><span class = 'text-grey'>Starts on:</span> "+studentData.starton+"</p></div>";
+        html += "<div class='row-fluid'><div class='span6'><p><span class = 'text-grey'>Conducted on:</span> "+studentData.starton+"</p></div>";
         html += "<div class='span6 text-right'><p><span class = 'text-grey'>Duration:</span> "+studentData.duration+" Minutes</p></div></div>";
         html += "<div class='row-fluid m-t-28'><div class='span3'><img src="+profilePic+" class='radius10 img-responsive'></div>";
         html += "<div class='span9'><h4>"+teacherName+"</h4><div><a class ='link' href = "+classLink+" >Go to class</a></div></span></div></div>";
