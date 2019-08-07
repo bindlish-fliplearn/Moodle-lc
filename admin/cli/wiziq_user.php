@@ -63,7 +63,7 @@ Example:
   die;
 }
 
-if (!$wiziqClass = $DB->get_records_sql("select * from {wiziq} where DATE(FROM_UNIXTIME(wiziq_datetime)) = DATE(NOW())")) {
+if (!$wiziqClass = $DB->get_records_sql("select w.* from {wiziq} as w LEFT JOIN {guru_wiziq_user} as gwu on w.class_id=gwu.class_id WHERE gwu.class_id is null")) {
   cli_error("Can not find classes");
 }
 $diffMin = "20";
@@ -76,6 +76,7 @@ foreach ($wiziqClass as $class) {
         $attendancexmlch_dur, $attendancexmlch_attlist); 
   } catch (\Exception $ex) {
     print_r($ex->getMessage());
+    continue;
   } 
   cli_heading("Api response for class id:- " . $class->class_id . ' Response is :- ' . json_encode($attendancexmlch_attlist));
     if (empty($errormsg)) {
