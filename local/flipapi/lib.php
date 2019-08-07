@@ -2,7 +2,7 @@
 function jwplayerInitialize($option){
 	   global $CFG;
 	   $jwplayerKey = $option['JWPLAYER_KEY'];
-	   $path = $option['path'];
+	   $path = urldecode($option['path']);
 	 	$jwplayer = "<div class='player_div' id='player_div'>
             <div id='player'></div>
         </div>
