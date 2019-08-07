@@ -1005,7 +1005,7 @@ class local_flipapi_external extends external_api {
     if(!empty($record)){
       $totalRating = $record->totalrating;
       $totalRecord = $record->totalrecord;
-      if($totalRating>0){
+    if($CFG->AVG_RATING <= $totalRating && $CFG->MAX_USER <= $totalRecord){
           $avgrating  = round(($totalRating/$totalRecord), 2);
       }
     }
